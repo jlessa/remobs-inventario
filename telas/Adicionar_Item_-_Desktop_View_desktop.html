@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Adicionar Item - InventoryPro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#8455ef",
+                    "inverse-surface": "#2d3133",
+                    "error": "#ba1a1a",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-surface": "#191c1e",
+                    "inverse-primary": "#d0bcff",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#825100",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-error": "#ffffff",
+                    "surface-container-low": "#f2f4f6",
+                    "surface-tint": "#6d3bd7",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-container": "#fffbff",
+                    "tertiary-fixed": "#ffddb8",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "on-secondary-container": "#00714d",
+                    "outline-variant": "#cbc3d7",
+                    "primary": "#6b38d4",
+                    "outline": "#7b7486",
+                    "on-background": "#191c1e",
+                    "on-secondary-fixed": "#002113",
+                    "on-primary-fixed": "#23005c",
+                    "background": "#f7f9fb",
+                    "on-tertiary-fixed": "#2a1700",
+                    "primary-fixed-dim": "#d0bcff",
+                    "secondary-fixed": "#6ffbbe",
+                    "surface-dim": "#d8dadc",
+                    "secondary": "#006c49",
+                    "on-surface-variant": "#494454",
+                    "on-secondary-fixed-variant": "#005236",
+                    "on-primary-container": "#fffbff",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#4edea3",
+                    "surface-variant": "#e0e3e5",
+                    "surface-container": "#eceef0",
+                    "surface": "#f7f9fb",
+                    "surface-container-high": "#e6e8ea",
+                    "secondary-container": "#6cf8bb",
+                    "tertiary-container": "#a36700",
+                    "primary-fixed": "#e9ddff",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "on-primary-fixed-variant": "#5516be",
+                    "surface-bright": "#f7f9fb",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "sm": "8px",
+                    "margin-mobile": "16px",
+                    "gutter": "16px",
+                    "xl": "32px",
+                    "margin-desktop": "24px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "title-lg": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "label-sm": ["Inter"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #f7f9fb;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbc3d7;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="text-on-background">
+<!-- SideNavBar (Shared Component) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low flex flex-col py-xl px-md gap-sm z-30">
+<div class="flex items-center gap-md px-sm mb-lg">
+<img alt="InventoryPro Logo" class="w-10 h-10 object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLvaUKM6WmdWsrkjd_Fu8iJ0SB9I-For9cljY5o2-uGzdbG4LHeBSS3PQwmQI74CXj8L7NIoivCHLjmCs_8-CTlWuSuXVtz-gXSBI6tZJZDVEjBHPYRnHzverpo9eMhi9XDLvyt2EzIrR61nsivG7QAhsGKCbe7ecL8NP9DlAa_pMlSzaroFgDTZ1ezDQQf8ZvY0oAgccyOEqXzhPYpZj1sQ0_cftOqbUN4KCrDjqU7zOpVQZrVyUb8nAhKf"/>
+<span class="text-title-lg font-title-lg font-black text-on-surface">InventoryPro</span>
+</div>
+<div class="space-y-1">
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg scale-95 active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-label-lg font-label-lg">Dashboard</span>
+</a>
+<!-- ACTIVE TAB: Inventory (Adding item belongs here) -->
+<a class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container font-semibold rounded-lg scale-95 active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="text-label-lg font-label-lg">Inventory</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg scale-95 active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="swap_horiz">swap_horiz</span>
+<span class="text-label-lg font-label-lg">Stock Movements</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg scale-95 active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+<span class="text-label-lg font-label-lg">Suppliers</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg scale-95 active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="text-label-lg font-label-lg">Reports</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto pt-lg border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg scale-95 active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="text-label-lg font-label-lg">Support</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg scale-95 active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="text-label-lg font-label-lg">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Shell -->
+<main class="ml-64 min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<header class="w-full top-0 sticky bg-surface-container-lowest shadow-sm flex justify-between items-center px-margin-desktop py-md max-w-full z-20">
+<div class="flex items-center gap-lg">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="pl-xl pr-md py-sm bg-surface-container-low border-none rounded-full w-80 text-label-md focus:ring-2 focus:ring-primary" placeholder="Pesquisar no inventário..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="flex items-center gap-xs px-md py-sm text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="text-label-md font-label-md">Help</span>
+</button>
+<div class="w-px h-6 bg-outline-variant"></div>
+<div class="flex items-center gap-sm">
+<button class="p-sm text-on-surface-variant hover:bg-surface-container transition-colors rounded-full cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-sm text-on-surface-variant hover:bg-surface-container transition-colors rounded-full cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="ml-sm w-10 h-10 rounded-full bg-primary-fixed-dim overflow-hidden border-2 border-surface-container-high">
+<img alt="Warehouse Admin" class="w-full h-full object-cover" data-alt="A professional warehouse administrator with a focused expression, wearing a smart casual outfit in a brightly lit, modern office setting with industrial accents. The lighting is crisp and high-key, reinforcing a clean, corporate modern aesthetic with soft shadows. The background is slightly blurred, showing hints of a clean, organized logistics facility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKbf4EpwPeeLX3QscI5_6wIA9LFq-p7KZM0RM9Gm21HQNpTXeZ_Cn0Y_SfrOgB55IudWlvj10jsqNT1oO40AaRERRO9QBKIANFOhA0gQYXMEJdlSddg29jqMGii7UjRWufWJ4-GTd2R72d6o72ZP7gUL3ED3qQtzunQ3tJud_HSkuHPOo1YUChQPcQ6je9LCRyGbgIly8Kop6W_mlTFWu54YfknzWpoh9Sw_vaU5aNJBPTJPIBRvUqEswHr6cpnjI3uMK9tlwwImMu"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Canvas Area -->
+<div class="p-xl max-w-6xl mx-auto">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-xs text-label-md font-label-md text-outline mb-md">
+<a class="hover:text-primary" href="#">Inventário</a>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-surface font-semibold">Adicionar Item</span>
+</nav>
+<div class="mb-xl">
+<h1 class="text-headline-lg font-headline-lg text-on-surface mb-xs">Adicionar Item</h1>
+<p class="text-body-lg text-on-surface-variant">Insira as informações detalhadas para registrar um novo ativo ou consumível no sistema.</p>
+</div>
+<!-- Form Container -->
+<form class="space-y-lg">
+<!-- Segmented Control -->
+<div class="bg-surface-container-low p-xs rounded-xl inline-flex gap-xs">
+<button class="px-xl py-md rounded-lg text-label-lg font-semibold bg-primary text-on-primary transition-all shadow-sm" id="btn-consumivel" onclick="selectType(this)" type="button">
+                        Consumível
+                    </button>
+<button class="px-xl py-md rounded-lg text-label-lg font-semibold text-on-surface-variant hover:bg-surface-container-high transition-all" id="btn-permanente" onclick="selectType(this)" type="button">
+                        Permanente
+                    </button>
+</div>
+<!-- 2-Column Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Left Column (General Info) -->
+<div class="bg-surface-container-lowest p-xl rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container">
+<h2 class="text-title-lg font-title-lg text-on-surface mb-lg flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="info">info</span>
+                            Informações Gerais
+                        </h2>
+<div class="space-y-md">
+<div class="flex flex-col gap-xs">
+<label class="text-label-md font-label-md text-on-surface-variant px-xs">Nome do Item</label>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all" placeholder="Ex: Monitor Dell UltraSharp 27" type="text"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="text-label-md font-label-md text-on-surface-variant px-xs">Marca (Marca)</label>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all" placeholder="Ex: Dell" type="text"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="text-label-md font-label-md text-on-surface-variant px-xs">Modelo (Modelo)</label>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all" placeholder="Ex: U2723QE" type="text"/>
+</div>
+</div>
+</div>
+<!-- Right Column (Quantities & Location) -->
+<div class="bg-surface-container-lowest p-xl rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container">
+<h2 class="text-title-lg font-title-lg text-on-surface mb-lg flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="inventory">inventory</span>
+                            Estoque e Localização
+                        </h2>
+<div class="space-y-md">
+<div class="grid grid-cols-2 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="text-label-md font-label-md text-on-surface-variant px-xs">Unidade (un)</label>
+<select class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none">
+<option>Unidade (un)</option>
+<option>Caixa (cx)</option>
+<option>Pacote (pct)</option>
+<option>Litro (L)</option>
+<option>Quilo (kg)</option>
+</select>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="text-label-md font-label-md text-on-surface-variant px-xs">Quantidade</label>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all" placeholder="0" type="number"/>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="text-label-md font-label-md text-on-surface-variant px-xs">Localização</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline" data-icon="location_on">location_on</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-xl pr-md py-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all" placeholder="Ex: Almoxarifado A - Prateleira 4" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="text-label-md font-label-md text-on-surface-variant px-xs">Fornecedor</label>
+<select class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none">
+<option>Selecione um fornecedor</option>
+<option>Tech Global Logistics</option>
+<option>Office Supply Co.</option>
+<option>Industrial Solutions S.A.</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- File Upload Area -->
+<div class="bg-surface-container-lowest p-xl rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container">
+<h2 class="text-title-lg font-title-lg text-on-surface mb-lg flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="attach_file">attach_file</span>
+                        Anexar Foto ou Nota Fiscal
+                    </h2>
+<div class="border-2 border-dashed border-outline-variant rounded-xl p-xl flex flex-col items-center justify-center gap-md hover:bg-surface-container transition-colors cursor-pointer group" id="drop-zone">
+<div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[32px]" data-icon="cloud_upload">cloud_upload</span>
+</div>
+<div class="text-center">
+<p class="text-title-lg font-title-lg text-on-surface">Clique ou arraste para enviar arquivos</p>
+<p class="text-body-md text-on-surface-variant mt-xs">Suporta JPG, PNG e PDF (Máx. 10MB)</p>
+</div>
+<input class="hidden" id="file-input" multiple="" type="file"/>
+</div>
+<!-- File Preview List (Hidden by default) -->
+<div class="mt-lg hidden space-y-sm" id="file-list">
+<!-- Items will be injected here -->
+</div>
+</div>
+<!-- Form Actions -->
+<div class="flex items-center justify-end gap-md pt-lg">
+<button class="px-xl py-md rounded-xl text-label-lg font-semibold text-on-surface-variant border border-outline-variant hover:bg-surface-container transition-all scale-95 active:scale-90" type="button">
+                        Cancelar
+                    </button>
+<button class="px-xl py-md rounded-xl text-label-lg font-semibold bg-primary text-on-primary shadow-lg shadow-primary/20 hover:bg-primary-container transition-all scale-95 active:scale-90 flex items-center gap-sm" type="submit">
+<span class="material-symbols-outlined" data-icon="save">save</span>
+                        Salvar Item
+                    </button>
+</div>
+</form>
+</div>
+</main>
+<script>
+        // Segmented Control Logic
+        function selectType(selectedBtn) {
+            const btns = [document.getElementById('btn-consumivel'), document.getElementById('btn-permanente')];
+            
+            btns.forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+                btn.classList.add('text-on-surface-variant', 'hover:bg-surface-container-high');
+            });
+
+            selectedBtn.classList.remove('text-on-surface-variant', 'hover:bg-surface-container-high');
+            selectedBtn.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+        }
+
+        // File Upload Logic
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const fileList = document.getElementById('file-list');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('bg-surface-container', 'border-primary');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('bg-surface-container', 'border-primary');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('bg-surface-container', 'border-primary');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', () => {
+            handleFiles(fileInput.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                fileList.classList.remove('hidden');
+                Array.from(files).forEach(file => {
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center justify-between p-md bg-surface-container-low rounded-lg border border-outline-variant animate-in fade-in slide-in-from-bottom-2';
+                    row.innerHTML = `
+                        <div class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-primary" data-icon="description">description</span>
+                            <div>
+                                <p class="text-body-md font-semibold text-on-surface">${file.name}</p>
+                                <p class="text-label-md text-on-surface-variant">${(file.size / 1024).toFixed(1)} KB</p>
+                            </div>
+                        </div>
+                        <button type="button" class="p-sm text-error hover:bg-error-container/20 rounded-full transition-colors">
+                            <span class="material-symbols-outlined" data-icon="delete">delete</span>
+                        </button>
+                    `;
+                    fileList.appendChild(row);
+                });
+            }
+        }
+    </script>
+</body></html>

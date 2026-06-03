@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Detalhes do Item - REMOBS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#cbc3d7",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "tertiary-fixed": "#ffddb8",
+                        "primary": "#6b38d4",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-secondary": "#ffffff",
+                        "background": "#f7f9fb",
+                        "tertiary": "#825100",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#a36700",
+                        "surface-bright": "#f7f9fb",
+                        "on-secondary-fixed": "#002113",
+                        "on-primary-fixed-variant": "#5516be",
+                        "on-surface": "#191c1e",
+                        "on-primary-fixed": "#23005c",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface-container-high": "#e6e8ea",
+                        "on-surface-variant": "#494454",
+                        "secondary-container": "#6cf8bb",
+                        "secondary": "#006c49",
+                        "on-primary-container": "#fffbff",
+                        "error": "#ba1a1a",
+                        "on-background": "#191c1e",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface": "#f7f9fb",
+                        "primary-container": "#8455ef",
+                        "surface-container": "#eceef0",
+                        "surface-tint": "#6d3bd7",
+                        "surface-dim": "#d8dadc",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-variant": "#e0e3e5",
+                        "primary-fixed-dim": "#d0bcff",
+                        "on-secondary-container": "#00714d",
+                        "inverse-primary": "#d0bcff",
+                        "primary-fixed": "#e9ddff",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#7b7486",
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary-container": "#fffbff",
+                        "inverse-surface": "#2d3133"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "margin-mobile": "16px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "margin-desktop": "24px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "base": "4px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "label-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "label-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        ::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md antialiased min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface shadow-sm h-14 flex justify-between items-center px-margin-mobile">
+<div class="flex items-center gap-4">
+<button class="p-2 transition-all duration-200 active:scale-95 text-primary">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile font-bold text-primary">Detalhes do Item</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 transition-all duration-200 active:scale-95 text-on-surface-variant">
+<span class="material-symbols-outlined">info</span>
+</button>
+<img alt="Logo" class="w-8 h-8 rounded-md" src="https://lh3.googleusercontent.com/aida/AP1WRLvaUKM6WmdWsrkjd_Fu8iJ0SB9I-For9cljY5o2-uGzdbG4LHeBSS3PQwmQI74CXj8L7NIoivCHLjmCs_8-CTlWuSuXVtz-gXSBI6tZJZDVEjBHPYRnHzverpo9eMhi9XDLvyt2EzIrR61nsivG7QAhsGKCbe7ecL8NP9DlAa_pMlSzaroFgDTZ1ezDQQf8ZvY0oAgccyOEqXzhPYpZj1sQ0_cftOqbUN4KCrDjqU7zOpVQZrVyUb8nAhKf"/>
+</div>
+</header>
+<main class="pt-20 pb-40 px-margin-mobile flex flex-col gap-lg">
+<!-- Item Header Section -->
+<section class="flex flex-col gap-md">
+<div class="flex flex-col gap-xs">
+<div class="flex items-center gap-sm">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-secondary mr-2"></span>
+                        Em Operação
+                    </span>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Sensor de Pressão Keller</h2>
+</div>
+<div class="w-full h-56 rounded-xl overflow-hidden shadow-sm bg-surface-container-lowest">
+<img class="w-full h-full object-cover" data-alt="A professional studio product photograph of a Keller industrial pressure sensor made of high-grade stainless steel. The sensor is placed against a clean, minimal white background with soft, even studio lighting that highlights its metallic texture and precision engineering details. The image has a clean, high-end corporate aesthetic with a bright and airy feel, consistent with modern industrial design documentation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4y8LL83-jQnW2j7B3mCkF21i4rdJaf2sG-OVGUPTN-zpjbP9Og84FpliBvSSP3rIhdTYYyye9jxWcq7pyMxvkuVvrOQI3BJiBW-08eVHCQS7JjQfVSF5f9p5N72w2rT3_2jUtGZG1NLf63KCUUr8V_us-HKC2z4zY-_m1ONwSBTpfZ8IZmX-fTGNebQwfxL6fAO05dGWDagwpD6VlmooYRiVx3DxhHYCJFBle2_EX0IjGMIhiIA7Q8a0WxJKk9-AHiMPrls4cniGP"/>
+</div>
+</section>
+<!-- Item Details Card -->
+<section class="bg-surface-container-lowest p-lg rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container">
+<h3 class="font-title-lg text-title-lg mb-md text-on-surface">Informações Técnicas</h3>
+<div class="flex flex-col gap-md">
+<div class="flex justify-between items-center py-sm border-b border-surface-container">
+<span class="text-on-surface-variant font-label-lg text-label-lg">Número de Série</span>
+<span class="font-body-lg text-body-lg text-on-surface">KLR-98234</span>
+</div>
+<div class="flex justify-between items-center py-sm border-b border-surface-container">
+<span class="text-on-surface-variant font-label-lg text-label-lg">Marca</span>
+<span class="font-body-lg text-body-lg text-on-surface">Keller</span>
+</div>
+<div class="flex justify-between items-center py-sm">
+<span class="text-on-surface-variant font-label-lg text-label-lg">Modelo</span>
+<span class="font-body-lg text-body-lg text-on-surface">PA-21Y</span>
+</div>
+</div>
+</section>
+<!-- Current Location Section -->
+<section class="bg-surface-container-lowest p-lg rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-container">
+<h3 class="font-title-lg text-title-lg mb-md text-on-surface">Localização Atual</h3>
+<button class="w-full flex items-center justify-between p-md rounded-lg bg-surface-container-low transition-all active:scale-[0.98] border border-outline-variant">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<div class="text-left">
+<span class="block font-title-lg text-title-lg text-primary">Boia 03</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">Setor Norte • Monitoramento</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">map</span>
+</button>
+</section>
+<!-- Photo Gallery Section -->
+<section class="flex flex-col gap-md">
+<h3 class="font-title-lg text-title-lg px-2 text-on-surface">Galeria de Instalação</h3>
+<div class="flex gap-md overflow-x-auto no-scrollbar pb-sm -mx-margin-mobile px-margin-mobile">
+<div class="flex-none w-48 h-32 rounded-xl overflow-hidden shadow-sm bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A close-up shot of a pressure sensor installed on a professional industrial manifold. The background shows a clean technical environment with blue and steel piping under bright fluorescent industrial lighting. The atmosphere is professional and highlights the precision of the installation within a modern water treatment facility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9O_hsqDyUEbjek2jRT2trFSUUMjeyGz66wMpN63dVD8V7pKkXWe8Hgu4eyUHgUQuLM2Fn-Kt3DGrPqksthX6s4VY34mrGj0fBGlLebJtYNsYYVEsnq2Ovb_yu2MJB9vbTpGjd-YPKBuiZE3pT7FT_Nw-ZKYjtPxfwh9B-00eMoDhHM_wmzmoSRCBO27zZs6AIhbKs4ynAkkkxakMrY8ipOiuca167wcizCWQS3Sg59gO5tQVdfeDMvg2FpSGp0Wa18PoXFYu18TKQ"/>
+</div>
+<div class="flex-none w-48 h-32 rounded-xl overflow-hidden shadow-sm bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A wide perspective shot of an offshore buoy in calm blue waters during a bright, sunny day. The sensor is visible mounted on a specialized technical bracket on the buoy's central mast. The lighting is high-key and natural, emphasizing the rugged yet precise nature of the field monitoring equipment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuClxv4izKfM3bIlCvh-x-bVD3REsgljkrtTjvbIsue33NkMg05QxOjSn8McX-vzJonUfmUJH8upOL737oOE7HF9_MMQJGLXY-oRFR_Ip2pEpBhvEBvKzPdiy6X3DEzVFOf2BXr5AultEkpTj_wndL_Y6DF6wq3OS5WvOmi1VCJQ-nfWjZiMPYk20Yvp5xCyo8T3QpYK6xON9RD3MdiId2c3C_pDnxrQQYQ2QGoW-LEq0LK13NRsSvDCTnUqxWXsMWm_33niT1PAsmRz"/>
+</div>
+<div class="flex-none w-48 h-32 rounded-xl overflow-hidden shadow-sm bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A technical documentation photo showing the wiring and hermetic sealing of a Keller sensor inside a protective industrial housing. The lighting is bright and clear, highlighting the clean cable management and high-quality industrial connectors. The style is strictly professional and documentary." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuWa_SCbBdro6uC_8MzCv3_kqWrm1Up8jDaXCAd_soCASRc-JmhhpXkc-85Zq1HEkPAan-_3a3gvJ_fWCoPd2hV0pbdy3wNHqJMKhJfSy3cbT6ZK251WIoivcjCuh1rwMH787Yv4NTka27VCEWYIuzG0RuHhCBFWUyQ2hPbhAh6mBrl7uCd2nWk_89X6edEtEUFwhMo11Hai59LCUnNUqQdSz3QIQH1LYGeR4dtIU6jYsfKEA0Hq-P2rTCqD8gZBlM6DbGW1HvZgBL"/>
+</div>
+</div>
+</section>
+<!-- Audit/Movement History -->
+<section class="flex flex-col gap-md">
+<h3 class="font-title-lg text-title-lg px-2 text-on-surface">Histórico de Movimentação</h3>
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container overflow-hidden">
+<div class="flex flex-col">
+<!-- History Item 1 -->
+<div class="p-md flex gap-md border-b border-surface-container last:border-0">
+<div class="flex flex-col items-center gap-xs">
+<div class="w-2.5 h-2.5 rounded-full bg-primary mt-2"></div>
+<div class="w-0.5 grow bg-outline-variant"></div>
+</div>
+<div class="flex flex-col gap-xs pb-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant">12 Out 2023</span>
+<span class="font-title-lg text-title-lg text-on-surface">Instalação Realizada</span>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm text-outline" style="font-size: 16px;">person</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Ricardo Santos</span>
+</div>
+</div>
+</div>
+<!-- History Item 2 -->
+<div class="p-md flex gap-md border-b border-surface-container last:border-0">
+<div class="flex flex-col items-center gap-xs">
+<div class="w-2.5 h-2.5 rounded-full bg-primary mt-2"></div>
+<div class="w-0.5 grow bg-outline-variant"></div>
+</div>
+<div class="flex flex-col gap-xs pb-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant">05 Out 2023</span>
+<span class="font-title-lg text-title-lg text-on-surface">Manutenção Preventiva</span>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm text-outline" style="font-size: 16px;">person</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Ricardo Santos</span>
+</div>
+</div>
+</div>
+<!-- History Item 3 -->
+<div class="p-md flex gap-md last:border-0">
+<div class="flex flex-col items-center gap-xs">
+<div class="w-2.5 h-2.5 rounded-full bg-outline-variant mt-2"></div>
+</div>
+<div class="flex flex-col gap-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant">20 Set 2023</span>
+<span class="font-title-lg text-title-lg text-on-surface">Recebido no Inventário</span>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm text-outline" style="font-size: 16px;">person</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Almoxarifado Central</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Actions -->
+<footer class="fixed bottom-0 left-0 w-full bg-surface p-margin-mobile flex flex-col gap-sm shadow-[0_-4px_12px_rgba(0,0,0,0.08)] z-50">
+<button class="w-full bg-primary text-on-primary h-12 rounded-xl font-title-lg text-title-lg flex items-center justify-center gap-sm transition-all active:scale-[0.97] hover:bg-primary-container">
+<span class="material-symbols-outlined">edit_location_alt</span>
+            Alterar Local
+        </button>
+<button class="w-full bg-surface border-2 border-error text-error h-12 rounded-xl font-title-lg text-title-lg flex items-center justify-center gap-sm transition-all active:scale-[0.97] hover:bg-error-container/10">
+<span class="material-symbols-outlined">report_problem</span>
+            Registrar Inconsistência
+        </button>
+</footer>
+<script>
+        // Simple ripple-like effect for primary button
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                let ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+    </script>
+</body></html>

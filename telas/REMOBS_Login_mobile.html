@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>REMOBS - Login</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#ffdad6",
+                    "error-container": "#93000a",
+                    "tertiary-fixed": "#6ffbbe",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "primary": "#d0bcff",
+                    "on-primary": "#3c0091",
+                    "outline-variant": "#494454",
+                    "on-tertiary-fixed": "#002113",
+                    "on-primary-fixed-variant": "#5516be",
+                    "on-secondary-fixed": "#001e2f",
+                    "on-surface": "#dae2fd",
+                    "on-primary-fixed": "#23005c",
+                    "surface-container-highest": "#2d3449",
+                    "surface-container-high": "#222a3d",
+                    "on-tertiary": "#003824",
+                    "background": "#0b1326",
+                    "secondary-fixed-dim": "#89ceff",
+                    "on-secondary": "#00344d",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "on-error": "#690005",
+                    "tertiary": "#4edea3",
+                    "tertiary-container": "#00a572",
+                    "surface-bright": "#31394d",
+                    "surface": "#0b1326",
+                    "primary-container": "#a078ff",
+                    "surface-container": "#171f33",
+                    "on-surface-variant": "#cbc3d7",
+                    "secondary-container": "#00a2e6",
+                    "secondary": "#89ceff",
+                    "on-primary-container": "#340080",
+                    "error": "#ffb4ab",
+                    "inverse-on-surface": "#283044",
+                    "on-background": "#dae2fd",
+                    "on-secondary-fixed-variant": "#004c6e",
+                    "primary-fixed": "#e9ddff",
+                    "surface-container-lowest": "#060e20",
+                    "outline": "#958ea0",
+                    "surface-container-low": "#131b2e",
+                    "on-tertiary-container": "#00311f",
+                    "inverse-surface": "#dae2fd",
+                    "surface-tint": "#d0bcff",
+                    "surface-dim": "#0b1326",
+                    "secondary-fixed": "#c9e6ff",
+                    "surface-variant": "#2d3449",
+                    "primary-fixed-dim": "#d0bcff",
+                    "on-secondary-container": "#00344e",
+                    "inverse-primary": "#6d3bd7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "16px",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "16px",
+                    "base": "4px",
+                    "md": "24px",
+                    "margin-desktop": "32px",
+                    "lg": "48px",
+                    "xl": "64px",
+                    "gutter": "24px",
+                    "margin-mobile": "16px",
+                    "xs": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "code-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "code-md": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0b1326; /* Hardcoded fallback for dark mode */
+        }
+        .glass-glow {
+            background: radial-gradient(circle at 50% -20%, rgba(139, 92, 246, 0.15), transparent 70%);
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #a078ff 0%, #8b5cf6 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md text-body-md antialiased overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-50 bg-background border-b border-outline-variant/10 flex items-center justify-between px-margin-mobile py-base">
+<div class="flex items-center gap-xs">
+<img alt="REMOBS Logo" class="h-8 w-8 object-contain" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAQAElEQVR4AexdCZgU1bU+t3p6BZW4LyCoICgoLnFBREGfWzSIiagwg0tcouaLGJlhMcbw9BnDzIDip3kP46c+GRgEF3zhxTWicSMmRjBRQVBQBFEwIkL39Mx035xT3dVV3dPV013TM13LGfp21d1OnfOf89ddqphRoII/91XL3eurW86unxi7sr46Or2hOjq3via6GNOfG2qiazH/HR4lp6h7MaiOko/Xpn3+OPp8LsVCY3XsinqMDYqRCoYo9DhB5tS0DEQQbsag/1NcxLYJkXxeKPIRIeBuEHCTABiPaRSCMhDzvfHIHzcjIIB8PDDt80vQ5zdRLEghH6XYoBhBwryEBJpMsdPTUHQ7QRaPl76GmtjohprobExrEpBciyDcg4aegcmPiT+MQCEE/EiYM5FA91LsUAwhYRrrJ8VOp9gq1LEcdd1GkJkzpULD5KeB2McAcjkqewumwzHxhxHoCgKHI2GmCClf2RCIrWuojtVQrHVFYKG+3UKQWTW7xvZaF11FwySOFv0LKcB1jIBVBJAoA0DI+ZG10ZUNNS3nW5VTqF9ZCdIwKXpSfXX0LQXEMwBiWKELcx0jUC4EhBBHASSXYey9Prsmekq55JIchb66mhqr40fWV+/6A0hYIQSc3FV53J8RsIIAxt7IJMAbuE75v4ZJ8bLcoLtMkMaJsUkSEu8JIS6wYhT3YQS6AYEfQjKB067YVV2VbZkgEqTAUeNOqcjHcJ3h66oi3J8RKCsCAjAm5cMYo/9JsQoWfywRZN510o87VE/gqHGbxetyN0agRxDAGL29oSb2+MzxMmDlgiUT5DeXy712RGMv46jxIysXLEsfFsIIlIAAPkMZHwnGXmicIPcuoZvatCSCNEyKHVKViL2NPU/FxB9GwDEIIElOT/piK+ZMbDm0FKWLJsisn8jdQMrnhICSLlCKMtyWEehOBJAkh7WL5B9Leb+rKILQIkeJR5eg8vwkHEHgj3MRwBv84DhEF1FMF2NFUQRprIndDUKcU4xAbsMI2B4BIc5TY7oIRTslSMPE2NUoZxomT3zYSM8gMK2hJnpJZ9YWJIj62F6R/92ZEK5nBByJgIRH66ujIwvpbkqQWdXRvgmQS7Ezv5KOIPDHhQgICIOQT1Osm1lnShCsuF+A2MesI5czAm5AgGKcYt3MFqzrWKUOOwIu7FjDJYyACxHAWG+YED86n2V5CQIC7srXmMu6hAB3tjMCSnt9PvU6EKShJjZaAJyerzGXMQKuRQAfY1Ds59rXgSAA8s7cRpxnBLyAAD48nJlrZxZBZtXsGocN+D0rBIE/3kOAZk71NS3nGi3PIoiQcIexks8ZAa8hICDxW6PNGYLUT2w9Rqj/t9dYzefOQIC1LB8CYnjjhPgQTV6GICDas4YWrQEfGQGvIZBUErTUUM3OEEQIyBQC/zACHkbAyAWVIPXj5f4g4UQPY8KmMwI6AsiFe2p2HUAFKkGUQHQcPhzERTwVcWIEPI6AAJGQoL5JohJEAowD/mEE8iHg0TKNEwr9V1oJYoxHcWCzGYG8CBAn6L/mKhCPDRUCLP1KlLySuZARcAECxIkYxI5UQOAC3QUGsQmMQNkRQG4oihQDyi6YBTICLkCAuIEjCOzvAlvYBAciYHuVBeyvgOQplu0dxQpWBgHkBo4iPMWqDPp8VQcgQCMIT7Ec4ChWsRIIqFMs4ClWJbDna9ofASlhgCKE2MP+qrKGjEBJCJSlMXFDKYskFsIIuBQBJohLHctmlQcBJkh5cGQpLkWACeJSx7JZ5UGACVIeHFmKSxHoSBCXGspmMQJWEGCCWEGN+3gGASaIZ1zNhlpBgAliBTXu4xkEmCCecTUbagWBHiWIFQW5DyNQSQRcR5Da+WHgVDkMKhnM3XFt1xGkO0Bimd5FgAniXd+z5UUgwAQpAiRu4l0E3EIQ73qQLe9WBJgg3QovC3c6AkwQp3uQ9e9WBJgg3QovC3c6AkwQp3uQ9e9WBJggncLLDbyMABPEy95n2ztFgAnSKUTcwMsIMEG87H22vVMEmCCdQsQNvIwAE6SS3udr2x4BJojtXcQKVhIBJkgO+o2TYuDllAOH57NMEM+HAANQCAEmSCF0uM7zCDBBXBoCbFZ5EGCClAdHluJSBJggLnUsm1UeBJgg5cGRpbgUASaISx3LZpUHASaIBRwHHueDibcH4efzwmqi80OPsQ6l3eXlQOSprHWvegom3VgiwrhfBODAQQoEI6AmOv/RlCAcMrx0OO0uT7fcm2ele9SbOGWsPnmsP3OeezLiQvO63LZa3u7yND29emSClOj5vfsJ0x57HlA6nHaXZ2qsRypK96hHgDEzMxAyJ0iot1kv83K7yzPX3Bs1TBBv+NkhVtpPTSaI/XzCGtkIASaIjZzBqtgPASaI/XzCGtkIASaIjZzBqtgPASaI/XzCGnUHAhZlMkEsAsfdvIEAE8QbfmYrLSLABLEIHHfzBgJMEG/4ma20iAATxCJw3M0bCBRDEG8gwVYyAnkQYILkAYWLGAENASaIhgQfGYE8CDBB8oDCRYyAhgATREOCj4xAHgQqTJA8GnERI2AjBJggNnIGq2I/BJgg9vMJa2QjBJggNnIGq2I/BJgg9vMJa2QjBNxLEBuBzKo4FwEmiHN9x5r3AAJMkB4AmS/hXASYIM71HWveAwgwQXoAZL6EcxFggljwHXfxDgJMEO/4mi21gAATxAJo3MU7CDBBvONrttQCAkwQC6BxF+8gwASxl69ZG5shwASxmUNYHXshwASxlz9YG5shwASxmUNYHXshwASxlz9YG5shwASxmUO6Tx2WbAUBJogV1LiPZxBggnjG1WyoFQSYICWi1rLTvEOhOrNehfoUquspeWbX8Uo5E6RET3+9OWnao1CdWadCfQrV9ZQ8s+t4pZwJUqKn//KHNtMeK54xrzPrZHd5Znpnlbs4wwQp0bmfrEzCU7PjsHltElpjAC27ADZ9lIQnG+Ow/j3z0cXsMnaXZ6a3V8qZIBY8TUG98I443HddDO6/PgbNdyI5VpVODu3Sdpen6enFIxPEi15nm4tGgAlSNFTc0IsIMEG86HUH2VxpVZkglfYAX9/WCDBBbO0eVq7SCDBBKu0Bvr6tEWCC2No9rFylEWCC5Higdn4YvJxy4HBztijbmCBFwcSNvIoAE8Srnme7i0KACVIUTNzIqwgwQbzqeba7KASYIEXBxI28ioA1gngVLbbbcwgwQTzncja4FASYIKWgxW09hwATxHMuZ4NLQYAJUgpa3NZzCNiOIJ7zABtsawSYILZ2DytXaQSYIJX2AF/f1ggwQWztHlau0ggwQSrtAb6+rRFwHUEaJ8XAJHF5D2Bj62i3oJzrCGIBA+7CCJgiwAQxhYYrGAEAJghHASNQAAFXEGTgcT4YeHz+NOBoBfrsJwDwAwV+9u4rTGWYyY7srgvc5+CO/Q8cmB/eUG/Iey3Fp8vLd9b7ewKOPMUHI8ZVwcgf++GIET7Y7xAFfP58rfWyQvgcfKQCex0owB/U2xdz1newAseeVQWnXeqHk8ZWwVGjfUAYFNPXSW3ye9BJFqCuF04OwLib86eL64JwTWMIbnkkDNfOCcH5NwQgvBt2yvkcdXqVqQwz2fsfqqSlABz7H/4O/elamQaGkyEn5b9WIGxoZDg9cJACE38dhOvnhuAHqP9IJMcIJMn5NwZg0h1BuOG+MAw6wWfokX1aCJ9LZgThqlkhmPxQWMXp6DHmckjq98+rgp+iHpfdFoQzL/fDiRdUwajxfjjn6gBcfmcIzrrSD4EQtXRH0j3sDntMrVDQ73vsI+AIvANPvD0EoV6mTctWsce+Anbfu+PQ1e+I4mGnO/QEDEZ1NOooStWVRqQLfx6AMTV+EMWLVvsav/rgSHv2TwJwwg+qjMXquc8PMH5aEEZP9MNue+ZXhK49/Mwq+DHelNROLvjqApz2tH7nNxK++DiZlbasT0Iyoev7vf0FnIp3Pb0k50xCVv9ceVqe/jZITs8OWZqe5RYedHhxsFMw0h2aAk+TsWlNEj54IwGrlrfDhn8koS2ersGYPf6c1N08XZL3kA+fbZ+jwYbWp13mh336oUBD2bDTqqD/MF1vsv3T95Ow6uV22PihQQ/sQ/aNwBEOTx3/0S12vCkpAz58KwELZsazUtPtcZj/qxaIfZdqQ9+Dju94l6RySgkkU66MfHn6IzrUPjclDH9oKne0oHk6rSWoj7Ed5Y1p3/4CKOC1snaU+ey8Vmj+rzj88X9a4cWH2+CJ+jg8/ps4UNBr7Y5DkuyJawotn3vMh8+jM1rUv3Ei03/iRCA3Bp2Qjc+hw/VQoRvO/TfEYMlv4/DiI22qDr+/JZalx+EnZvfP1cMped1qp2hsUc+tGyV8/C5Gfrp/rz0AaNqVznb5IEG/C3+5IR1pKLXvYB9+658Bw/S8sZ3aQhcBx53tB2HwzptPtcH7r+v6q+3xa8snSXh6Thy04K7yA64NAlhT2of+StaOr3UFcqeg/qDICGxvxVO9KWYAojsAPvprAlpbAL77l1T1oWmZWungL4MLHGxFkaoHe+kNW3FqYpx26TVdP4tHAb7ZkoqgcG8Adf2QFtt3iA75prU6kdLVmcOAo9LtsOTbrRL+9mw7nuX/fLlBwuq/6OTpP1SBiGGHLX+v7NJefQB67aGTYOtn2bpt+1zP98UdrPOuCwAdjbuDL89vg/uujcG8yS3w2G0tUGiEzL66fXO6F+yrY1k0I2ca7960jjATrCAqY6r9UCjRdqtZfyqnOzIdKRmDvd8QfQTZ+KEe1NROS+HdALRpGJXRKNEZmWltQm21tNdBaISWMRx330vfjj4Kt2ZprUB2XjojBFWBVMPPPkjCP17N1m3N24msgB86ygeX4ebB5AfDMH56EEZd4ofc6WRKmrO/FSnlt842IVt72oHJ97t1yZn+YKot/fHN5U00T0jlc79panP8uVVQKB0yXA/03P6U/3yNHmB906Q4CO+82lbuvzZL9Q+AUttMSt/AjXdyqqMpCx0Lpe1b9Ts8taMdOzrmpsEn+TLb0bQ1S1vGZOee6XXLJtwEWPYADq85Hal8+UJcCKUGxkytPwRAI9ZJP6yCS28NqqShbelMAwefEDfwNiO2ONiGklXfuDoJ829vgW05OzclC+qkg/Ev3tIUi+bj/YfqpCo0vQqE0kxJX2PXtzlRmS43HuK7jDnAKVa2jOxa8xxtTR+Dz3TytVj5UjssxoX5Vzily1dPZTRSX/bLINBDTMo7O4ktCs4hXUUQ2tGhBXlm+zPtISp/DHeyHr8rnlkfpKs6HGjB+85z7VAorV+ljxAkQCCQdFSTANi1XcLXOEpQnqYuB+Ozj36G9cfG1dn9qZ2Wtn+VPRr07oMCtUqTIwW2sWonLpSNee1887pkxq6/v9AOq3HX79N/JmH7lykS0tTulIuq4PQJfq1L1pGmX4Tjw9Na4I0n2+BzHHFy1xq0+UHP5hfJxgAACDNJREFUU0pdB2VdyA4ZAUgQCa4iCG1j/u+tLTD3mhi89Kg+JSDHn3ddEPYb0HmwJTE+ly9og0LpgzfNA1zz7eaPUFA6c8jRPjjgMCWVw1j8ZKV5f9oRopRqDEDrBu3c7NgHH4Ia67Zt0q9tLKe1kWYXLaqX/a4VlsyKw0O1LbB6ha7TcWdVwW64XjH2NZ7TFPGtpe2wCLedact36b2tYNz2pqnXEac4fKsXuaHgjc9VBDE6ceWf2uGd5/XdH3r4dfHUEPTBJ8bQAz/GUWLoqKrMInjbJlx/7CyswPYv9QDvj1vDYVy4F+phfO5AI6CVKeT7r+lY0ZSQ3tOiaxKx6XWVK+4KwU0PhmHfnJsMjdbr3knAU7PjQM9rqA8leiBLR8cmN44guc54pbkN6MGWVk6BRrs2Wr47j5/QNAxHC7pGMELfqWS806ZKOn4bt21pYT+mOtCxUbpk+JgqoAeL6az6PKKzXS+trfG4+z6KMYuETo22sZ0SBn3fB/SQk3QZdmr+kYGej6R6pMRY0SHV0ybf6ggihWtHEIKZ7qbLHmhVH2BRntJhx/rAuPVKZd2RWnCU0NYhRvnGkcVYbjyn9cHXONJoZUeO9MEFPwsA3dm1MhoJz746AGddpa8X6G7+Kt4UtDbFHmmUOBl3ooztv/g4NeXajuuTb79KMx0b0Fu89NIiPZTErPpRcP/hjEnZ+m3dqI+CaiOnfSE3FFDcTRDyCTn4tcW4HqFMOp15ebYz08XqwYc3yHxbxbll515rfldXBeFXh90qjLP176UCD6vNP9julebsreghJ/vgpnlh9a1bekOZ0tH4LAOnyRk5tLFgfCKeqUifmG2DV88MgnHNQQt3427Vm0/r+NE2OL0ndsP9YbjgxgDQ9Oun94bA+Cbwjm1SfWcsfVlHHtDODYofEqtA4j9HmlC80u++2A60xav1oPnxqRfrd16tvNzHz3N2q7Zu7Hz9oemwflUSaBFtXLDTCEIjByWtHR1pJ2nFM+3wxlN6IFO5lfTNFgnPP5RNTnrN5e1l+hqF5NK0ccgInzr96mXYadv5jVRffyGdqJ0Tk5TQmgyE3lF+0dTrC7wDve1EI0rVmV72a2vRe9HLgPvmLDj12vKcfWJYh5DETWuLGD2oYTrRNuyjM2Lqdiw9METHpWtSB3oBk7ZeF9zRAq8/0aa+A5WqKf2bRto/P96mviaSbxSiOtrxMk79jFeh6ex6JHXTr+NANwJjndPOBcjl0x4W36mrMgR9qdMMMOo7+wr9N5kUmn/TsD/3Wr3tnCtjoE0jaOuz1N+G8tzv9bvsCw+3gtb/yQb9STStQxov16+pbj2nlafFutaHjtQ2XZV1oBGERpJ5k1tg7tUxoACkN2nvvz4GD9wYg8V3xzN2ZHVMZ4z40HXMEm310ihB65h01w4Hmno9Mr0FfvezmPqG9JONcaAt3qX3tMIDWEZ5eubUoaPDCgTAUsAflSBK0qdmMM8fmyNA26j0bhb9Xwz6PxmVUpdISy9J0ohBW7zr/p4AM4JXSkfL18UlR7I1onJCJUhtc3A1jiJrLAvkjoyAmxAQ8PbUJanNK5UgZJsQoDIG+IcRsDUC3a8cDhYZLmQIkpSQKQT+YQQ8jIBxyZEhyLQFkRXInM0exoVNZwQAObCGlhwaFBmCqAVCuVo98hcj4FUEhHKz0XTFmJnaFHoOH+C+aizjc0bAKwhQ7BMHjPZmEUStkPBL9chfjIDHEBAJmJFrcgeCTF0QeQMkPJPbkPOMgKsRwJiva468lWtjB4KoDRTfbUiS0t6JUDvyFyPgQAQkJBJJX96ZU16C1M0P/hNANjnQVFaZEbCAgHhoenPw/Xwd8xKEGra1Rupw0fIZnXNiBFyLgISNIhm6zcw+U4LcukRs9bVXjUOSRM06czkj4GgEJMSkrBpb2yy2mdlhShDqMGVR4F08XoOpsw/XMwLOQ0DAlVMXBlYWUrwgQajj1KZIMx5nYeIPI+AmBGbVNUUWd2ZQpwQhAbVNYdwflv9P55wYAccjIOWzqZju3JKiCCJAyKCMTMSt39Wdi+QWjIB9EaB3rYIQuYxiuhgtlWIaUZubFogdSaGMo99XSnlOjIDTEKDY9fmUsRTLxepeNEFI4LSm0BoZjPTDkaQHn7TTlTkxAl1DAMmxjGJ3ymOhj0qRVBJBSDD9R/baBeGL8JwX7ggCfxyBQGPdgshYit1StS2ZIHQBmr/VNUWm40hSjXM6/TcXUCUnRsAuCOBzDlTlUozVOopZPC/5Y4kg2lWQlQtFEkYjSfg/Wmmg8NEmCMgvIOk7GcnR6VZuIYW7RBASTG9AJmR4GJJkNiYeTQgUThVDIB2Dc9qTkaF1zcH3uqpIlwlCCsxYKL6ZuiBSm0iIwTL9+4So3PaJFXQPAhIn/ACLKAZx1JhCMVkO48pCEE2RGYvCG6Y2RS5CoSORKH/TyvnICHQnAhRrQsoTkBgTKAbLeS2M5XKKS8ma0hR5s64pfCLmLsW0HhN/GIHuQGA9JGECxVrtwl7vdMcFuoUgpCjtGiCjF/ePhweJBIzCAbAB54f8y+kIHE5dQYCeYzRKEKdRbNUtjCyiWOuKwEJ9u40g2kUvWSIStc2R13HHayquU4b4QBmEddMxvSkB+Y8n/GEETBGQkMA4eTUpoZZiB2+6gzHVTW0Kv0axZdqvTBVKmeQULeaWptA6NJDepBwZjYfDPiRMMinOkCCukEnxK1xrPQhSPotPPt/H446iBdusIatTJAJS7kj7+lnyPcWAkOJKigmKjV2t4Qiua0dPWxCZTbFTpNSyNfs3AAAA//9pSRyqAAAABklEQVQDADMq2WELadCPAAAAAElFTkSuQmCC"/>
+<span class="font-headline-md text-headline-md font-bold text-primary">REMOBS</span>
+</div>
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity p-xs active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex items-center justify-center px-margin-mobile glass-glow">
+<!-- Login Card -->
+<div class="w-full max-w-md bg-surface-container border border-outline-variant/10 rounded-lg shadow-xl p-md flex flex-col gap-md">
+<!-- Title Section -->
+<div class="space-y-base text-center">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Login</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Bem-vindo de volta!</p>
+</div>
+<!-- Form -->
+<form class="flex flex-col gap-sm" onsubmit="event.preventDefault();">
+<!-- Email Field -->
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" for="email">Email</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant transition-colors group-focus-within:text-primary" data-icon="mail">mail</span>
+<input class="w-full bg-surface-container-low border-1.5 border-outline-variant rounded-lg py-sm pl-12 pr-sm text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" id="email" placeholder="nome@exemplo.com" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" for="password">Senha</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant transition-colors group-focus-within:text-primary" data-icon="lock">lock</span>
+<input class="w-full bg-surface-container-low border-1.5 border-outline-variant rounded-lg py-sm pl-12 pr-12 text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-sm top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors" onclick="togglePassword()" type="button">
+<span class="material-symbols-outlined" data-icon="visibility" id="eye-icon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Forgot Password -->
+<div class="flex justify-end">
+<a class="font-label-md text-label-md text-primary hover:underline transition-all" href="#">Esqueceu a senha?</a>
+</div>
+<!-- Submit Button -->
+<button class="btn-gradient mt-sm w-full py-sm rounded-lg text-on-primary-container font-headline-sm text-headline-sm shadow-lg hover:opacity-90 active:scale-95 transition-all duration-200" type="submit">
+                    Entrar
+                </button>
+</form>
+<!-- Social Login / Divider -->
+<div class="relative flex items-center py-xs">
+<div class="flex-grow border-t border-outline-variant/10"></div>
+<span class="flex-shrink mx-sm text-label-md text-outline">OU</span>
+<div class="flex-grow border-t border-outline-variant/10"></div>
+</div>
+<!-- Register Footer -->
+<div class="text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    Ainda não tem conta? 
+                    <a class="text-primary font-bold hover:underline" href="#">Cadastre-se</a>
+</p>
+</div>
+</div>
+</main>
+<!-- Bottom Margin for Mobile Visual Balance (Since Nav is suppressed) -->
+<div class="h-sm"></div>
+<script>
+        function togglePassword() {
+            const pwd = document.getElementById('password');
+            const eye = document.getElementById('eye-icon');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                eye.textContent = 'visibility_off';
+            } else {
+                pwd.type = 'password';
+                eye.textContent = 'visibility';
+            }
+        }
+
+        // Ripple/Active State micro-interaction for button
+        const btn = document.querySelector('.btn-gradient');
+        btn.addEventListener('mousedown', () => btn.classList.add('scale-95'));
+        btn.addEventListener('mouseup', () => btn.classList.remove('scale-95'));
+        btn.addEventListener('mouseleave', () => btn.classList.remove('scale-95'));
+    </script>
+</body></html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>REMOBS - Checklist Operacional</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-tertiary-fixed-variant": "#653e00",
+                "on-primary": "#ffffff",
+                "inverse-primary": "#d0bcff",
+                "tertiary-container": "#a36700",
+                "on-primary-fixed": "#23005c",
+                "inverse-on-surface": "#eff1f3",
+                "secondary-fixed": "#6ffbbe",
+                "surface": "#f7f9fb",
+                "error-container": "#ffdad6",
+                "secondary-fixed-dim": "#4edea3",
+                "on-surface": "#191c1e",
+                "on-secondary-container": "#00714d",
+                "on-error": "#ffffff",
+                "secondary-container": "#6cf8bb",
+                "surface-variant": "#e0e3e5",
+                "surface-container-lowest": "#ffffff",
+                "surface-dim": "#d8dadc",
+                "on-secondary-fixed": "#002113",
+                "outline-variant": "#cbc3d7",
+                "primary-fixed": "#e9ddff",
+                "secondary": "#006c49",
+                "inverse-surface": "#2d3133",
+                "error": "#ba1a1a",
+                "on-surface-variant": "#494454",
+                "surface-bright": "#f7f9fb",
+                "on-tertiary-container": "#fffbff",
+                "surface-container": "#eceef0",
+                "on-background": "#191c1e",
+                "surface-container-highest": "#e0e3e5",
+                "on-tertiary-fixed": "#2a1700",
+                "tertiary": "#825100",
+                "on-primary-container": "#fffbff",
+                "on-secondary-fixed-variant": "#005236",
+                "on-secondary": "#ffffff",
+                "tertiary-fixed-dim": "#ffb95f",
+                "tertiary-fixed": "#ffddb8",
+                "surface-container-high": "#e6e8ea",
+                "on-primary-fixed-variant": "#5516be",
+                "on-error-container": "#93000a",
+                "outline": "#7b7486",
+                "surface-tint": "#6d3bd7",
+                "primary-container": "#8455ef",
+                "on-tertiary": "#ffffff",
+                "background": "#f7f9fb",
+                "surface-container-low": "#f2f4f6",
+                "primary-fixed-dim": "#d0bcff",
+                "primary": "#6b38d4"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "xl": "32px",
+                "margin-desktop": "24px",
+                "md": "16px",
+                "base": "4px",
+                "margin-mobile": "16px",
+                "gutter": "16px",
+                "lg": "24px",
+                "sm": "8px",
+                "xs": "4px"
+            },
+            "fontFamily": {
+                "title-lg": ["Inter"],
+                "label-sm": ["Inter"],
+                "headline-lg-mobile": ["Inter"],
+                "label-md": ["Inter"],
+                "headline-md": ["Inter"],
+                "body-md": ["Inter"],
+                "body-lg": ["Inter"],
+                "headline-sm": ["Inter"],
+                "label-lg": ["Inter"],
+                "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                "label-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f7f9fb;
+            color: #191c1e;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .step-active {
+            background-color: #6b38d4;
+            color: white;
+        }
+        .step-inactive {
+            background-color: #e0e3e5;
+            color: #494454;
+        }
+        .step-completed {
+            background-color: #006c49;
+            color: white;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen flex flex-col font-body-md text-body-md">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-on-background shadow-sm w-full top-0 sticky flex items-center justify-between px-margin-mobile h-14 w-full z-50">
+<button class="text-primary active:opacity-80 transition-opacity flex items-center justify-center w-10 h-10">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed">Checklist Operacional</h1>
+<div class="text-on-surface-variant font-label-md text-label-md bg-surface-container px-3 py-1 rounded-full">
+            Etapa 2 de 4
+        </div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto pb-32">
+<!-- Progress Indicator -->
+<div class="px-margin-mobile py-lg">
+<div class="flex items-center justify-between relative">
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-surface-variant -translate-y-1/2 z-0"></div>
+<!-- Step 1 (Completed) -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full step-completed flex items-center justify-center text-sm font-bold shadow-sm">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+</div>
+<!-- Step 2 (Active) -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full step-active flex items-center justify-center text-sm font-bold shadow-md ring-4 ring-primary/20">
+                        2
+                    </div>
+</div>
+<!-- Step 3 (Pending) -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full step-inactive flex items-center justify-center text-sm font-bold">
+                        3
+                    </div>
+</div>
+<!-- Step 4 (Pending) -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full step-inactive flex items-center justify-center text-sm font-bold">
+                        4
+                    </div>
+</div>
+</div>
+</div>
+<!-- Section: Inspeção de Rotina -->
+<section class="px-margin-mobile mb-xl">
+<div class="flex items-center gap-2 mb-md">
+<span class="material-symbols-outlined text-primary">analytics</span>
+<h2 class="font-title-lg text-title-lg text-on-surface">Inspeção de Rotina</h2>
+</div>
+<!-- Checklist Cards -->
+<div class="space-y-gutter">
+<!-- Item 1 -->
+<label class="block bg-surface-container-lowest border border-transparent rounded-xl p-md shadow-[0_4px_12px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all cursor-pointer">
+<div class="flex items-start justify-between gap-md">
+<div class="flex items-start gap-md">
+<input class="mt-1 w-5 h-5 rounded border-outline text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col gap-1">
+<span class="font-label-lg text-label-lg text-on-surface leading-tight">Verificar integridade física do casco</span>
+<div class="flex items-center gap-1.5 px-2 py-0.5 bg-surface-container rounded-full w-fit">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Pendente</span>
+</div>
+</div>
+</div>
+</div>
+</label>
+<!-- Item 2 -->
+<label class="block bg-surface-container-lowest border border-transparent rounded-xl p-md shadow-[0_4px_12px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all cursor-pointer">
+<div class="flex items-start justify-between gap-md">
+<div class="flex items-start gap-md">
+<input class="mt-1 w-5 h-5 rounded border-outline text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col gap-1">
+<span class="font-label-lg text-label-lg text-on-surface leading-tight">Testar tensão das baterias (tensão medida &gt; 12V)</span>
+<div class="flex items-center gap-1.5 px-2 py-0.5 bg-surface-container rounded-full w-fit">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Pendente</span>
+</div>
+</div>
+</div>
+</div>
+</label>
+<!-- Item 3 -->
+<label class="block bg-surface-container-lowest border border-transparent rounded-xl p-md shadow-[0_4px_12px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all cursor-pointer">
+<div class="flex items-start justify-between gap-md">
+<div class="flex items-start gap-md">
+<input class="mt-1 w-5 h-5 rounded border-outline text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col gap-1">
+<span class="font-label-lg text-label-lg text-on-surface leading-tight">Limpar lentes dos sensores óticos</span>
+<div class="flex items-center gap-1.5 px-2 py-0.5 bg-surface-container rounded-full w-fit">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Pendente</span>
+</div>
+</div>
+</div>
+</div>
+</label>
+</div>
+</section>
+<!-- Evidence Section -->
+<section class="px-margin-mobile mb-xl">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-md">Evidências e Notas</h3>
+<div class="bg-surface-container-low rounded-xl p-md space-y-md">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-1 ml-1">Observações / Notas de Campo</label>
+<textarea class="w-full h-32 bg-surface-container-lowest border border-outline-variant rounded-lg p-md font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none" placeholder="Descreva qualquer anomalia ou detalhe técnico observado..."></textarea>
+</div>
+<div class="flex flex-col gap-md">
+<button class="flex items-center justify-center gap-2 w-full py-3 px-4 border-2 border-dashed border-outline rounded-xl text-on-surface-variant font-label-lg transition-colors hover:bg-surface-container-high active:bg-surface-container-highest">
+<span class="material-symbols-outlined">camera</span>
+                        Anexar Foto
+                    </button>
+<!-- Image Placeholder for Field Documentation -->
+<div class="relative w-full aspect-video rounded-xl overflow-hidden shadow-sm group">
+<img alt="Offshore Platform Detail" class="w-full h-full object-cover grayscale-[0.2]" data-alt="A highly detailed close-up of a maritime sensor array mounted on a weathered steel offshore platform. The lighting is harsh natural daylight, casting deep functional shadows that emphasize the industrial textures of the metal and glass. The scene is shot in a professional documentary style, utilizing a clean light-mode aesthetic with high contrast. The ocean is visible in the soft-focus background, reflecting a bright, clear sky." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxNIpcy4HaIZx0Hal6N7e_FWqo1zbg-wU55lcaw7raO6JN7QZqdV1dhPYOz-kFp5t68IIJawXWnI_mEOTBKa4_VuTCt2bhGLdFCxxdOSnyfBn9Lp_vcVHATtl8lM1CkhZCTqik32Qo88t4gORdRFVBBHFjpz4n59W3BepsAYjFdARfGNXO1hgdZ3jmeoExInqEUhs9UsEVQhL02QPiZpILL2_qa0WWYTIRAuWDcOZNG_7Pp5cfr-nokl7OnjFuFC_mt9U5UJss-vi4"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+<span class="material-symbols-outlined text-white">delete</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Controls -->
+<footer class="fixed bottom-0 left-0 w-full bg-surface-container-lowest p-margin-mobile flex flex-col gap-sm shadow-[0_-8px_24px_rgba(0,0,0,0.06)] z-50">
+<button class="w-full bg-primary text-on-primary font-label-lg py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform">
+            Próxima Etapa
+            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="w-full bg-transparent text-primary font-label-lg py-3 rounded-xl flex items-center justify-center gap-2 border border-primary active:bg-primary-container/10 transition-all">
+            Salvar Rascunho
+        </button>
+</footer>
+<script>
+        // Micro-interactions for the checklist items
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const badge = this.closest('label').querySelector('.bg-surface-container');
+                const badgeDot = badge.querySelector('.rounded-full');
+                const badgeText = badge.querySelector('span:last-child');
+                
+                if (this.checked) {
+                    badge.classList.remove('bg-surface-container');
+                    badge.classList.add('bg-secondary-container');
+                    badgeDot.classList.remove('bg-outline');
+                    badgeDot.classList.add('bg-secondary');
+                    badgeText.textContent = 'Concluído';
+                    badgeText.classList.remove('text-on-surface-variant');
+                    badgeText.classList.add('text-on-secondary-container');
+                    this.closest('label').classList.add('ring-2', 'ring-secondary/20');
+                } else {
+                    badge.classList.add('bg-surface-container');
+                    badge.classList.remove('bg-secondary-container');
+                    badgeDot.classList.add('bg-outline');
+                    badgeDot.classList.remove('bg-secondary');
+                    badgeText.textContent = 'Pendente';
+                    badgeText.classList.add('text-on-surface-variant');
+                    badgeText.classList.remove('text-on-secondary-container');
+                    this.closest('label').classList.remove('ring-2', 'ring-secondary/20');
+                }
+            });
+        });
+    </script>
+</body></html>

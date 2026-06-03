@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #eceef0;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-primary": "#d0bcff",
+                      "inverse-surface": "#2d3133",
+                      "surface-variant": "#e0e3e5",
+                      "tertiary-fixed": "#ffddb8",
+                      "tertiary-container": "#a36700",
+                      "on-error": "#ffffff",
+                      "on-secondary-fixed-variant": "#005236",
+                      "on-primary": "#ffffff",
+                      "on-primary-fixed-variant": "#5516be",
+                      "surface-tint": "#6d3bd7",
+                      "on-primary-fixed": "#23005c",
+                      "secondary": "#006c49",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-container": "#00714d",
+                      "surface": "#f7f9fb",
+                      "surface-dim": "#d8dadc",
+                      "secondary-fixed-dim": "#4edea3",
+                      "on-secondary-fixed": "#002113",
+                      "outline-variant": "#cbc3d7",
+                      "surface-container-high": "#e6e8ea",
+                      "on-error-container": "#93000a",
+                      "on-background": "#191c1e",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "background": "#f7f9fb",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "outline": "#7b7486",
+                      "on-secondary": "#ffffff",
+                      "surface-container-low": "#f2f4f6",
+                      "on-primary-container": "#fffbff",
+                      "primary": "#6b38d4",
+                      "surface-bright": "#f7f9fb",
+                      "surface-container": "#eceef0",
+                      "primary-container": "#8455ef",
+                      "on-surface": "#191c1e",
+                      "primary-fixed-dim": "#d0bcff",
+                      "primary-fixed": "#e9ddff",
+                      "surface-container-highest": "#e0e3e5",
+                      "secondary-fixed": "#6ffbbe",
+                      "inverse-on-surface": "#eff1f3",
+                      "on-surface-variant": "#494454",
+                      "error-container": "#ffdad6",
+                      "error": "#ba1a1a",
+                      "tertiary": "#825100"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "sm": "8px",
+                      "margin-desktop": "24px",
+                      "base": "4px",
+                      "gutter": "16px",
+                      "xs": "4px",
+                      "lg": "24px",
+                      "margin-mobile": "16px",
+                      "xl": "32px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "title-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "label-lg": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "label-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full z-40 hidden lg:flex flex-col py-md h-screen w-64 bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant/20">
+<div class="px-lg mb-xl">
+<h1 class="font-headline-sm text-headline-sm font-black text-primary">Fleet Control</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Vessel &amp; Buoy Ops</p>
+</div>
+<nav class="flex-grow">
+<ul class="space-y-sm">
+<li>
+<a class="flex items-center px-lg py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all active:translate-x-1 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="dashboard">dashboard</span>
+                        Dashboard
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-lg py-sm text-primary dark:text-inverse-primary font-bold border-r-4 border-primary bg-primary-container/10 transition-all active:translate-x-1 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="sailing">sailing</span>
+                        Assets
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-lg py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all active:translate-x-1 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="sensors">sensors</span>
+                        Telemetry
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-lg py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all active:translate-x-1 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="history">history</span>
+                        History
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-lg py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all active:translate-x-1 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="assessment">assessment</span>
+                        Reports
+                    </a>
+</li>
+</ul>
+</nav>
+<div class="px-lg mt-auto">
+<button class="w-full bg-primary text-on-primary py-md px-lg rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="file_download">file_download</span>
+                Export Fleet Data
+            </button>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="flex justify-between items-center px-lg w-full sticky top-0 z-50 bg-surface dark:bg-inverse-surface shadow-sm h-16 lg:ml-64 lg:w-[calc(100%-16rem)]">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">MarineMonitor</span>
+</div>
+<div class="flex items-center gap-lg">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="bg-surface-container border-none rounded-full pl-xl pr-lg py-xs font-body-md text-body-md w-64 focus:ring-2 focus:ring-primary" placeholder="Pesquisar sensores..." type="text"/>
+</div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-sm rounded-full transition-colors" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-sm rounded-full transition-colors" data-icon="settings">settings</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-sm rounded-full transition-colors" data-icon="help">help</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="Chief Engineer Profile" data-alt="A professional close-up portrait of a Chief Engineer in their late 40s, wearing a clean maritime uniform. The lighting is bright and industrial, reflecting a high-end corporate marine environment with soft blue and white tones. The background is a slightly blurred high-tech control room, maintaining the design's focus on operational clarity and professional trust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAC2BDXGKpbC-aMhzm089h7pS3DPvVDSbWyRaatKSvyGqmfkPgyDBcVL6VoJD_brnq2s2OVMTTZ1-wUBObzJVEKErPqgZ3zTeTG8DGhkvx8xWtzN1mJSAvDOvpgvRDWqUE_arKNhh8ZLINFAOSCdzrpOOzaWjRQL0sLQl0PeiXHHcSMDTH-Wvp0xNUvIZZPC8ICQHaJZxEEfQ06Mp2uuTs9i_eBkqJk3h8TO2OZCsD3-cX_fhUfuu_7Cb6v46jChUeI942L9yw-mibI"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="lg:ml-64 p-lg min-h-[calc(100vh-4rem)]">
+<!-- Breadcrumb & Actions -->
+<div class="flex justify-between items-center mb-lg">
+<div class="flex items-center gap-sm font-label-md text-label-md text-on-surface-variant">
+<a class="hover:text-primary" href="#">Ativos</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary" href="#">Sensores</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-semibold">Sensor de Pressão Keller</span>
+</div>
+<div class="flex gap-sm">
+<button class="flex items-center gap-xs px-md py-sm bg-surface-container border border-outline-variant rounded-xl font-label-lg text-label-lg hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+                    Editar Ativo
+                </button>
+<button class="flex items-center gap-xs px-md py-sm bg-primary text-on-primary rounded-xl font-label-lg text-label-lg hover:opacity-90 transition-opacity active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="qr_code_2">qr_code_2</span>
+                    Gerar Etiqueta
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-lg h-full">
+<!-- Left Column: Master/Info (4 columns) -->
+<section class="col-span-12 lg:col-span-4 space-y-lg">
+<!-- Main Identity Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-outline-variant/10 overflow-hidden">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A high-precision industrial pressure sensor by Keller, featuring a stainless steel body and professional-grade connectors. The sensor is photographed in a crisp, high-key studio setting with soft directional lighting that emphasizes its metallic texture and robust construction. The background is a pristine, minimalist light slate, aligning with the industrial precision and corporate modern aesthetic of the MarineMonitor system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsPlBiCiizT8kGziHm9HLzOH2ZCP6b-Ow_ZZhptAJCP4cnPWqshN0qFgZRzEnhcEJ3x22FR_nW3Q9X_Fz6s9ryg3Q28RIQnUkUVmq0tgErOGOGwlTvRactZuUp4vN-xP0pojuC38oBAqF4DXaRWCgrcf3FqW9VMUC6gOIlhY8qmU9tYo6kqdJ7lRHvUL6VIgycuoBw7ufcRaN2knRUzh6lj9qL9Kjj8wCSHYwqV15JNhNl90vO1GYrTzlRV4N0uYzmOQfN3grufzNq"/>
+<div class="absolute top-md left-md">
+<span class="bg-secondary/10 text-secondary border border-secondary/20 px-md py-xs rounded-full font-label-sm text-label-sm flex items-center gap-xs backdrop-blur-md">
+<span class="h-2 w-2 rounded-full bg-secondary"></span>
+                                Em Operação
+                            </span>
+</div>
+</div>
+<div class="p-lg space-y-md">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Sensor de Pressão Keller</h2>
+<p class="font-label-lg text-label-lg text-primary font-bold">SN: KLR-98234</p>
+</div>
+<div class="grid grid-cols-2 gap-md pt-md border-t border-outline-variant/30">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Marca</p>
+<p class="font-title-lg text-title-lg">Keller</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Modelo</p>
+<p class="font-title-lg text-title-lg">PA-21Y</p>
+</div>
+</div>
+<div class="pt-md border-t border-outline-variant/30 flex items-start gap-md">
+<div class="bg-primary/5 p-sm rounded-lg">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Localização</p>
+<p class="font-title-lg text-title-lg">Boia 03 - Setor Norte</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Bacia de Campos, RJ</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Technical Specs Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-outline-variant/10 p-lg">
+<h3 class="font-title-lg text-title-lg mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="description">description</span>
+                        Especificações Técnicas
+                    </h3>
+<ul class="space-y-sm">
+<li class="flex justify-between py-xs border-b border-outline-variant/20 font-body-md text-body-md">
+<span class="text-on-surface-variant">Faixa de Pressão</span>
+<span class="font-semibold">0...10 bar</span>
+</li>
+<li class="flex justify-between py-xs border-b border-outline-variant/20 font-body-md text-body-md">
+<span class="text-on-surface-variant">Sinal de Saída</span>
+<span class="font-semibold">4...20 mA</span>
+</li>
+<li class="flex justify-between py-xs border-b border-outline-variant/20 font-body-md text-body-md">
+<span class="text-on-surface-variant">Precisão</span>
+<span class="font-semibold">± 0,5 %FS</span>
+</li>
+<li class="flex justify-between py-xs font-body-md text-body-md">
+<span class="text-on-surface-variant">Proteção</span>
+<span class="font-semibold">IP67</span>
+</li>
+</ul>
+</div>
+</section>
+<!-- Right Column: Detail/History (8 columns) -->
+<section class="col-span-12 lg:col-span-8 flex flex-col gap-lg">
+<!-- Panel 1: Chronological Timeline Audit Log -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-outline-variant/10 p-lg flex flex-col flex-grow min-h-[400px]">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-headline-sm text-headline-sm flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="history">history</span>
+                            Histórico de Movimentação
+                        </h3>
+<button class="text-primary font-label-lg text-label-lg hover:underline">Ver Log Completo</button>
+</div>
+<div class="relative flex-grow">
+<!-- Timeline Line -->
+<div class="absolute left-6 top-0 bottom-0 w-px bg-outline-variant/50"></div>
+<div class="space-y-xl relative">
+<!-- Entry 1 -->
+<div class="flex items-start gap-lg pl-2">
+<div class="bg-primary text-on-primary h-8 w-8 rounded-full flex items-center justify-center relative z-10 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="install_desktop">install_desktop</span>
+</div>
+<div class="flex-grow bg-surface-container-low p-md rounded-xl">
+<div class="flex justify-between items-start mb-xs">
+<p class="font-title-lg text-title-lg">Instalação Realizada</p>
+<span class="font-label-sm text-label-sm text-on-surface-variant">14 Jan 2024, 10:30</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md">Sensor instalado na Boia 03 pelo Técnico Roberto Silva. Testes de conectividade concluídos com sucesso.</p>
+<div class="flex items-center gap-xs">
+<span class="bg-surface-container-highest px-sm py-xs rounded font-label-sm text-label-sm">Equipe Alpha</span>
+<span class="bg-surface-container-highest px-sm py-xs rounded font-label-sm text-label-sm">Relatório #TR-442</span>
+</div>
+</div>
+</div>
+<!-- Entry 2 -->
+<div class="flex items-start gap-lg pl-2">
+<div class="bg-tertiary text-on-tertiary h-8 w-8 rounded-full flex items-center justify-center relative z-10 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="build">build</span>
+</div>
+<div class="flex-grow bg-surface-container-low p-md rounded-xl">
+<div class="flex justify-between items-start mb-xs">
+<p class="font-title-lg text-title-lg">Manutenção Preventiva</p>
+<span class="font-label-sm text-label-sm text-on-surface-variant">12 Dez 2023, 08:15</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Limpeza de conectores e verificação de vedações. Equipamento apresentava leves sinais de oxidação superficial.</p>
+</div>
+</div>
+<!-- Entry 3 -->
+<div class="flex items-start gap-lg pl-2">
+<div class="bg-secondary text-on-secondary h-8 w-8 rounded-full flex items-center justify-center relative z-10 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="inventory_2">inventory_2</span>
+</div>
+<div class="flex-grow bg-surface-container-low p-md rounded-xl">
+<div class="flex justify-between items-start mb-xs">
+<p class="font-title-lg text-title-lg">Recebido no Inventário</p>
+<span class="font-label-sm text-label-sm text-on-surface-variant">05 Nov 2023, 15:44</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Item conferido e adicionado ao sistema REMOBS Core. Procedência: Compra Direta - Keller Brasil.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Panel 2: Photo Gallery -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-outline-variant/10 p-lg">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-headline-sm text-headline-sm flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="photo_library">photo_library</span>
+                            Galeria de Instalação
+                        </h3>
+<button class="bg-surface-container border border-outline-variant px-md py-sm rounded-xl font-label-lg text-label-lg hover:bg-surface-container-high transition-colors flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="add_a_photo">add_a_photo</span>
+                            Adicionar Foto
+                        </button>
+</div>
+<div class="grid grid-cols-3 gap-md">
+<div class="aspect-square rounded-lg overflow-hidden group relative cursor-pointer">
+<img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" data-alt="A wide-angle photograph of an industrial ocean buoy platform at sea. The lighting is bright daylight with high contrast between the deep blue water and the white structure of the buoy. The composition shows the context of the marine environment, maintaining the professional and reliable aesthetic of the REMOBS Core system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgFrxTdCNF-_g-LKMckOhatJdBXG9ndwQfrg_p0rIpGvG36fvH6Xk10MVD6CRNGxSEnRCMFSz3fUWesEjg7LeLtTy72Y3hKV1103MTSjAYk0nW3LuTST0caGutxqdRjZvpRsak95nzSEMTTHW2lp5efbENswr-tpu0ejmzOOiFJaEC_kpW8fgYYfEfx338txPQ-Q8E3Kf2jVC-s3tU637a_FbIbnZ4QI0yn5EAMG7kod-OMavlDx0mJ8atKRZMHHPYUCox-lpEHiS6"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[32px]" data-icon="zoom_in">zoom_in</span>
+</div>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden group relative cursor-pointer">
+<img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" data-alt="A macro photograph showing technical wiring and sensors installed inside a waterproof marine housing. The light is focused and technical, revealing clear details of the installation quality. The colors are dominated by industrial greys, blues, and professional metallic finishes, consistent with the corporate modern UI style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWQGEGrthlipvpav_YSYn056ijoXw0QBIDZgnCZ9Jzka_832IdkJXNmQ4--hD7uz9vuTnLWRMruk-LRWA1kIUkVsorxZB06oxBzhGN2XQ08oDlWQi3C242QAjZ6fhgC4kJmygOkRebCaBamvgNAVl8gikUhC9BkHM0508-3OWP3KoWydq4123RRS11g90hURKqV2Xwf9TwWPc6cNWnim6lA1BAYaE27ESZ2UCzHwtNo9tHGQvt4WlmsIV7LvwMdEW6zeJlcg4zbXBI"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[32px]" data-icon="zoom_in">zoom_in</span>
+</div>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden group relative cursor-pointer">
+<img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" data-alt="A high-tech digital monitor showing real-time data telemetry graphs from a maritime sensor. The scene is illuminated by the soft glow of the screen in a clean office environment. The image reinforces trust and control through sophisticated data visualization, matching the design's overall emotional response of absolute authority." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOct-s4BXVKvrkNmyZdmRmuXCgcGncZTyoRn3hBy9jHJ8BaIDW5JYzZt3ssc1X7dslF508A96Bv8NMAA6hkItbJX-jUUoWSEnso7Ew0BWozFClunE0mOvkumW9_QJNGsHN31-DeibBMzB4tlDShKDb4Y8oGvrOWjNXqJQpeQk-p-sjiu9JBRZ3CkuA0MR1PzViknob_31uKf9Mt5G5K5y2ePXypUOtTuF9LDKucDtC_z7Rb5dn-O0Cb-pzZVJ3HljObggUIx8Cf-Xb"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[32px]" data-icon="zoom_in">zoom_in</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Simple Hover & Scale Interactions -->
+<script>
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.97)';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = 'scale(1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

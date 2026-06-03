@@ -1,0 +1,5 @@
+BASE_PATH=C:\caminho\base\dos\projetos
+REMOBS_INVENTARIO_PATH=C:\caminho\base\dos\projetos\remobs-inventario
+REMOBS_PERMISSOES_PATH=C:\caminho\base\dos\projetos\remobs-permissoes
+REMOBS_USERS_PATH=C:\caminho\base\dos\projetos\remobs-users
+REMOBS_USER_FRONT_PATH=C:\caminho\base\dos\projetos\remobs-user-front

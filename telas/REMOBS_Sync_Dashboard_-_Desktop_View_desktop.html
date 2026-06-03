@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#6b38d4",
+                    "on-tertiary": "#ffffff",
+                    "on-background": "#191c1e",
+                    "inverse-surface": "#2d3133",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "on-primary-fixed-variant": "#5516be",
+                    "inverse-primary": "#d0bcff",
+                    "surface": "#f7f9fb",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "tertiary": "#825100",
+                    "surface-tint": "#6d3bd7",
+                    "secondary-fixed": "#6ffbbe",
+                    "secondary-container": "#6cf8bb",
+                    "on-primary": "#ffffff",
+                    "on-surface-variant": "#494454",
+                    "on-tertiary-container": "#fffbff",
+                    "primary-fixed-dim": "#d0bcff",
+                    "surface-bright": "#f7f9fb",
+                    "surface-container-highest": "#e0e3e5",
+                    "surface-dim": "#d8dadc",
+                    "background": "#f7f9fb",
+                    "error": "#ba1a1a",
+                    "on-primary-container": "#fffbff",
+                    "on-error": "#ffffff",
+                    "surface-container-low": "#f2f4f6",
+                    "tertiary-container": "#a36700",
+                    "surface-container": "#eceef0",
+                    "outline": "#7b7486",
+                    "on-secondary-container": "#00714d",
+                    "on-error-container": "#93000a",
+                    "secondary": "#006c49",
+                    "secondary-fixed-dim": "#4edea3",
+                    "outline-variant": "#cbc3d7",
+                    "surface-variant": "#e0e3e5",
+                    "primary-fixed": "#e9ddff",
+                    "on-tertiary-fixed": "#2a1700",
+                    "on-primary-fixed": "#23005c",
+                    "inverse-on-surface": "#eff1f3",
+                    "primary-container": "#8455ef",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#002113",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed-variant": "#005236",
+                    "on-surface": "#191c1e",
+                    "tertiary-fixed": "#ffddb8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "margin-desktop": "24px",
+                    "lg": "24px",
+                    "margin-mobile": "16px",
+                    "xs": "4px",
+                    "xl": "32px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "title-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .custom-shadow {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex min-h-screen">
+<!-- SideNavBar (Desktop Shell) -->
+<aside class="fixed h-full left-0 w-64 bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex flex-col p-md gap-sm z-50">
+<div class="flex items-center gap-md mb-xl px-md">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary" style="font-variation-settings: 'FILL' 1;">directions_boat</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-black text-primary dark:text-primary-fixed">REMOBS</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant">Maritime Monitor</p>
+</div>
+</div>
+<nav class="flex-grow space-y-2">
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant px-md py-sm hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-lg text-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant px-md py-sm hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">directions_boat</span>
+<span class="font-label-lg text-label-lg">Assets</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant px-md py-sm hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">sensors</span>
+<span class="font-label-lg text-label-lg">Telemetry</span>
+</a>
+<!-- Active State: History/Sync seems most appropriate for synchronization -->
+<a class="flex items-center gap-md bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-lg px-md py-sm active:translate-x-1 transition-transform duration-200 shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="font-label-lg text-label-lg">History</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant px-md py-sm hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-label-lg text-label-lg">Reports</span>
+</a>
+</nav>
+<div class="mt-auto pt-md border-t border-outline-variant space-y-2">
+<button class="w-full bg-secondary-container text-on-secondary-container py-md px-md rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+                Sync Status
+            </button>
+<a class="flex items-center gap-md text-on-surface-variant px-md py-sm hover:bg-surface-container-highest transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-lg text-label-lg">Help</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-md py-sm hover:bg-surface-container-highest transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-lg text-label-lg">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-64 flex-1 flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-on-background shadow-sm flex justify-between items-center w-full px-lg py-md h-16 sticky top-0 z-40">
+<div class="flex items-center gap-md">
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed">Sync Dashboard</h2>
+<div class="flex items-center bg-surface-container rounded-full px-md py-xs ml-md">
+<span class="material-symbols-outlined text-outline text-[18px]">cloud_off</span>
+<span class="ml-sm font-label-md text-label-md text-on-surface-variant">Offline Mode</span>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<div class="flex items-center gap-md">
+<button class="p-sm rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 duration-150">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-sm rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 duration-150">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="h-10 w-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-CvFs6bPM1BanZfQFyjkOZeR3ha2ZZcNAbyj5UNa-xkfGXN1bxcIlNxbXVvYlYuhK6sQMA_52JcuraPCK1bN55LGxnjf-d6XtKGFC1msQ14mty3-rsFxGDelfSWTE8rrn-ddncgsOxbsFgQ4wCtiuNc4yTqAmRiedE73zngZpASdnliA1BKUa87UHhAYHcd5oxpGQKzHjg0MvsSAke2oiCFknP1vMUmI4JZbH5dzYkw1BKCD00-uuw7kOtYU6g236d3MAdCTQIMPq"/>
+</div>
+</div>
+</header>
+<section class="p-lg grid grid-cols-12 gap-lg overflow-y-auto">
+<!-- Left Column: Pending Items -->
+<div class="col-span-12 lg:col-span-4 space-y-md">
+<div class="flex items-center justify-between mb-sm">
+<h3 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">pending_actions</span>
+                        Itens Pendentes
+                    </h3>
+<span class="bg-primary-container text-on-primary-container px-sm py-xs rounded-full font-label-sm text-label-sm">3 Total</span>
+</div>
+<!-- Checklist Card -->
+<div class="bg-surface-container-lowest custom-shadow rounded-xl p-md border border-outline-variant hover:border-primary transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-sm bg-primary/10 rounded-lg group-hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-white">fact_check</span>
+</div>
+<span class="font-label-sm text-label-sm px-xs py-1 rounded bg-tertiary-fixed text-on-tertiary-fixed">Medium Priority</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Checklist AXYS</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Inspeção técnica de rotina pendente para upload.</p>
+<div class="mt-md flex items-center text-outline text-[12px] gap-sm">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                        Salvo há 2 horas
+                    </div>
+</div>
+<!-- Foto Card -->
+<div class="bg-surface-container-lowest custom-shadow rounded-xl p-md border border-outline-variant hover:border-primary transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-sm bg-primary/10 rounded-lg group-hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-white">photo_camera</span>
+</div>
+<span class="font-label-sm text-label-sm px-xs py-1 rounded bg-secondary-fixed text-on-secondary-fixed">Low Priority</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Foto Anemômetro</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Captura visual de evidência para registro de manutenção.</p>
+<div class="mt-md flex items-center text-outline text-[12px] gap-sm">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                        Salvo há 45 min
+                    </div>
+</div>
+<!-- Silicone Card -->
+<div class="bg-surface-container-lowest custom-shadow rounded-xl p-md border border-outline-variant hover:border-primary transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-sm bg-primary/10 rounded-lg group-hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-white">inventory_2</span>
+</div>
+<span class="font-label-sm text-label-sm px-xs py-1 rounded bg-error-container text-on-error-container">Critical</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Saída Silicone</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Baixa de estoque efetuada localmente durante reparo.</p>
+<div class="mt-md flex items-center text-outline text-[12px] gap-sm">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                        Salvo há 15 min
+                    </div>
+</div>
+</div>
+<!-- Right Column: Conflict Pane -->
+<div class="col-span-12 lg:col-span-8">
+<div class="bg-surface-container-lowest custom-shadow rounded-xl border border-error/20 h-full flex flex-col overflow-hidden">
+<!-- Pane Header -->
+<div class="bg-error-container/20 p-lg border-b border-error/10">
+<div class="flex items-center gap-md text-error">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">report</span>
+<h3 class="font-headline-md text-headline-md">Conflitos de Sincronização</h3>
+</div>
+<p class="mt-xs text-on-surface-variant font-body-lg text-body-lg">Conflito Encontrado em Bateria Selada</p>
+</div>
+<!-- Comparison Grid -->
+<div class="flex-grow p-lg">
+<div class="grid grid-cols-2 gap-lg">
+<!-- Local Version -->
+<div class="p-lg rounded-xl bg-surface-container border-2 border-primary/20 relative">
+<span class="absolute -top-3 left-6 bg-primary text-white px-md py-xs rounded-full font-label-sm text-label-sm shadow-md">SUA VERSÃO</span>
+<div class="flex flex-col items-center justify-center py-xl">
+<span class="text-[64px] font-black text-primary">4</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-widest mt-sm">Quantidade Local</span>
+<div class="mt-lg w-full h-48 rounded-lg overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Close up photograph of a high-quality industrial sealed lead-acid battery showing terminal connections in a well-lit technical facility. The lighting is bright and industrial, emphasizing the texture of the durable plastic casing and metallic components. The color palette is composed of professional greys, whites, and deep purple highlights to match the REMOBS brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3Ybb9a9g3GMoVGfs8kfXMEBh0QSXFHZjpD49-wlt84xVz7Cc6xAXx8ooH18mt-zWAlVAI417fI6jYt6-XRimapiy0VqEJnKAgS32L-lfUFguDj4UyXMlwdomeP3Vfqz4XmBJ69Atr5UgkkyG8qKBGlhOzI3zh8gNXrJwDsxCu8GsazN4ZB58ek7sHtGxJLRec42e1o8zoMwo4k9FOO-tldbNKMB64VCgqzPhS6GrUo7BAy8EadjV6W1prUBVS2OY7RF4hRtJzJFTT"/>
+</div>
+<p class="mt-md font-body-md text-body-md text-center italic text-outline">Modificado por você em 12/10 às 14:30</p>
+</div>
+</div>
+<!-- Server Version -->
+<div class="p-lg rounded-xl bg-surface-container-low border border-outline-variant relative opacity-80 hover:opacity-100 transition-opacity">
+<span class="absolute -top-3 left-6 bg-outline text-white px-md py-xs rounded-full font-label-sm text-label-sm">VERSÃO DO SERVIDOR</span>
+<div class="flex flex-col items-center justify-center py-xl">
+<span class="text-[64px] font-black text-outline">2</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-widest mt-sm">Quantidade Atual</span>
+<div class="mt-lg w-full h-48 rounded-lg overflow-hidden border border-outline-variant grayscale">
+<img class="w-full h-full object-cover" data-alt="A systematic view of industrial batteries stored in a maritime warehouse shelf. The image features high-contrast technical lighting with soft shadows, creating a clean corporate modern aesthetic. Predominant colors are industrial steel and white, aligning with a professional data management interface for industrial maritime operations." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1WaoTD_yjU8wLNYpmLoWQZnizkAgjguJvQkoJSB6RPBlODgszgdsUiiGF-uZ8R9YIMuoYQ0feMDz_AD03EQAKBZxdWq2UwZX9VzCOHjrlK8TO4Z6nVILrG4mbn4xDEXp2OKgdpT5CpIL7frDfZiY1_hnjs6Z3FxViw-Evro350Prf1RHnPux-vnpVnkGbsS_B6MR_-uHX5zUGDmp-UQfQveE3A6GlMtx2h1ozPje1L74Ml-K9IHaGS3tKk_kxuZ3SQ8mE9QyBRBYq"/>
+</div>
+<p class="mt-md font-body-md text-body-md text-center italic text-outline">Última sincronização bem-sucedida ontem</p>
+</div>
+</div>
+</div>
+<!-- Info Alert -->
+<div class="mt-lg bg-surface-container rounded-lg p-md flex gap-md items-start">
+<span class="material-symbols-outlined text-primary">info</span>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                O sistema detectou que a quantidade de baterias seladas informada localmente (4) diverge da quantidade registrada no banco de dados central (2). Escolha uma das ações abaixo para prosseguir.
+                            </p>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="p-lg border-t border-outline-variant bg-surface-container-low flex items-center justify-end gap-md">
+<button class="px-lg py-md rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors active:scale-95">
+                            Descartar localmente
+                        </button>
+<button class="px-lg py-md rounded-xl font-label-lg text-label-lg border border-primary text-primary hover:bg-primary/5 transition-colors active:scale-95">
+                            Enviar para Revisão do Admin
+                        </button>
+<button class="px-lg py-md rounded-xl font-label-lg text-label-lg bg-primary text-white shadow-md hover:bg-primary-container transition-colors active:scale-95 flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">tune</span>
+                            Ajustar Solicitação
+                        </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Micro-interactions Script -->
+<script>
+        document.querySelectorAll('button, a, .group').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.98)';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = 'scale(1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

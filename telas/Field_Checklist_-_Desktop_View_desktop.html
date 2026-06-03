@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Field Checklist - Desktop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#7b7486",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary": "#825100",
+                        "surface-tint": "#6d3bd7",
+                        "primary-fixed-dim": "#d0bcff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "surface-container": "#eceef0",
+                        "surface-bright": "#f7f9fb",
+                        "secondary-fixed-dim": "#4edea3",
+                        "background": "#f7f9fb",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "tertiary-container": "#a36700",
+                        "primary": "#6b38d4",
+                        "tertiary-fixed": "#ffddb8",
+                        "secondary-container": "#6cf8bb",
+                        "secondary": "#006c49",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-high": "#e6e8ea",
+                        "primary-fixed": "#e9ddff",
+                        "inverse-surface": "#2d3133",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#494454",
+                        "on-secondary-container": "#00714d",
+                        "on-primary-fixed": "#23005c",
+                        "outline-variant": "#cbc3d7",
+                        "on-surface": "#191c1e",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-container": "#fffbff",
+                        "surface-container-highest": "#e0e3e5",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "primary-container": "#8455ef",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container-low": "#f2f4f6",
+                        "on-primary-fixed-variant": "#5516be",
+                        "on-primary-container": "#fffbff",
+                        "on-background": "#191c1e",
+                        "inverse-primary": "#d0bcff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#d8dadc",
+                        "on-secondary-fixed": "#002113",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "margin-mobile": "16px",
+                        "gutter": "16px",
+                        "sm": "8px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "margin-desktop": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "label-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "label-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #f7f9fb;
+            font-family: 'Inter', sans-serif;
+            color: #191c1e;
+        }
+        .raised-card {
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            border-radius: 12px;
+            transition: transform 0.2s ease;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-checkbox:checked {
+            background-color: #6b38d4;
+            border-color: #6b38d4;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- TopNavBar -->
+<nav class="bg-surface shadow-sm w-full h-16 flex justify-between items-center px-lg sticky top-0 z-50">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-bold text-primary">MarineMonitor</span>
+</div>
+<div class="hidden md:flex items-center gap-xl">
+<a class="text-primary font-bold border-b-2 border-primary py-2 font-label-lg text-label-lg" href="#">Dashboard</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-colors px-2 py-1 rounded font-label-lg text-label-lg" href="#">Assets</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-colors px-2 py-1 rounded font-label-lg text-label-lg" href="#">Telemetry</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-colors px-2 py-1 rounded font-label-lg text-label-lg" href="#">History</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-colors px-2 py-1 rounded font-label-lg text-label-lg" href="#">Reports</a>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<input class="bg-surface-container border-none rounded-full px-lg py-sm text-body-md focus:ring-2 focus:ring-primary w-64" placeholder="Search fleet..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant p-2 rounded-full hover:bg-surface-container-high transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant p-2 rounded-full hover:bg-surface-container-high transition-colors">settings</button>
+<img alt="Chief Engineer Profile" class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="A professional portrait of a senior marine engineer in a high-tech control room environment. The lighting is bright and clean, typical of a modern corporate office, with soft focus on industrial monitors in the background. She wears a professional navy uniform, conveying authority and technical expertise. The image is crisp, high-resolution, and perfectly centered with a shallow depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTnkyJQR0TpM1hsCaaMYVhqz8F_dtHOZ1XyiwfpC5KgoQydKD_Ic0snHB2FoaIF6dmJELRzvhHdylFxtc3ylmcWBX8vD7fbSZdtFgNTWCHNfWowZr1v3sFglO0a-qyccCDnjeKLGX4dilFwTWJQa1pDlI4yg4xlyA5aeF3AlETaMTe3jjDBzLm1yOru5726bHvLfO1WS-rtDj-FrU-HP-G6n8A_AvpWe2EopEA-XEAq3NyiNhs9gl8xGouO6dl7OWq9KIKy3gW_MFN"/>
+</div>
+</nav>
+<main class="max-w-[1440px] mx-auto px-margin-desktop py-xl">
+<!-- Header Section -->
+<header class="mb-xl flex justify-between items-end">
+<div>
+<nav class="flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm mb-base">
+<span>Assets</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span>Vessel A-422</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-primary font-bold">Field Checklist</span>
+</nav>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Field Checklist - Desktop</h1>
+<p class="text-on-surface-variant font-body-md text-body-md mt-xs">Routine maintenance and safety inspection for vessel hull and propulsion systems.</p>
+</div>
+<div class="flex gap-md">
+<button class="px-lg py-md border border-outline-variant text-primary font-label-lg text-label-lg rounded-xl hover:bg-surface-container transition-all flex items-center gap-sm">
+<span class="material-symbols-outlined">save</span> Save Draft
+                </button>
+<button class="px-xl py-md bg-primary text-on-primary font-label-lg text-label-lg rounded-xl hover:shadow-lg active:scale-95 transition-all flex items-center gap-sm">
+<span class="material-symbols-outlined">cloud_upload</span> Submit Inspection
+                </button>
+</div>
+</header>
+<!-- Main Checklist Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-lg items-start">
+<!-- Category 1: Propulsion System -->
+<section class="raised-card p-lg">
+<div class="flex items-center justify-between mb-md">
+<div class="flex items-center gap-md">
+<div class="bg-primary-container/10 p-sm rounded-lg text-primary">
+<span class="material-symbols-outlined">propane_tank</span>
+</div>
+<h2 class="font-title-lg text-title-lg">Propulsion &amp; Engine Room</h2>
+</div>
+<span class="px-sm py-xs bg-secondary-container/20 text-on-secondary-container font-label-sm text-label-sm rounded-full flex items-center gap-xs">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div> 3/5 Tasks
+                    </span>
+</div>
+<div class="space-y-md">
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors group">
+<input checked="" class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary custom-checkbox" type="checkbox"/>
+<div class="flex-1">
+<label class="block font-label-lg text-label-lg text-on-surface">Check lubricant levels in Main Engine A</label>
+<p class="text-on-surface-variant font-label-sm text-label-sm">Standard: Min 80% capacity</p>
+</div>
+</div>
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors">
+<input class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary custom-checkbox" type="checkbox"/>
+<div class="flex-1">
+<label class="block font-label-lg text-label-lg text-on-surface">Inspect fuel lines for leaks or corrosion</label>
+<textarea class="mt-sm w-full bg-surface-container-low border-none rounded-lg p-md text-body-md focus:ring-1 focus:ring-primary h-20 resize-none" placeholder="Note any findings..."></textarea>
+</div>
+</div>
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors">
+<input checked="" class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary custom-checkbox" type="checkbox"/>
+<div class="flex-1">
+<label class="block font-label-lg text-label-lg text-on-surface">Cooling system pump pressure test</label>
+<div class="mt-sm grid grid-cols-2 gap-md">
+<div class="bg-surface-container border border-outline-variant/30 rounded-lg p-md flex items-center justify-between">
+<span class="text-label-md font-label-md text-on-surface-variant">Pressure PSI</span>
+<span class="font-title-lg text-title-lg text-on-surface">142.5</span>
+</div>
+<div class="bg-surface-container border border-outline-variant/30 rounded-lg p-md flex items-center justify-between">
+<span class="text-label-md font-label-md text-on-surface-variant">Temp °C</span>
+<span class="font-title-lg text-title-lg text-on-surface">68.0</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Category 2: Safety & Emergency -->
+<section class="raised-card p-lg">
+<div class="flex items-center justify-between mb-md">
+<div class="flex items-center gap-md">
+<div class="bg-tertiary-fixed/30 p-sm rounded-lg text-tertiary">
+<span class="material-symbols-outlined">emergency_home</span>
+</div>
+<h2 class="font-title-lg text-title-lg">Safety &amp; Fire Suppression</h2>
+</div>
+<span class="px-sm py-xs bg-error-container/20 text-on-error-container font-label-sm text-label-sm rounded-full flex items-center gap-xs">
+<div class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></div> Urgent Required
+                    </span>
+</div>
+<div class="space-y-md">
+<div class="flex items-start gap-md p-md bg-surface-container-low rounded-lg">
+<input class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary custom-checkbox" type="checkbox"/>
+<div class="flex-1">
+<label class="block font-label-lg text-label-lg text-on-surface">Fire extinguisher pressure verification</label>
+<div class="mt-md flex gap-md overflow-x-auto pb-sm hide-scrollbar">
+<div class="relative w-32 h-32 flex-shrink-0 rounded-xl overflow-hidden border border-outline-variant/50">
+<img alt="Gauge Check" class="w-full h-full object-cover" data-alt="A macro close-up photograph of a fire extinguisher pressure gauge indicating a healthy green zone. The lighting is sharp and industrial, highlighting the metallic textures of the extinguisher neck. The background is a blurred engine room with clean white walls and industrial pipes, maintaining a high-end corporate marine aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMocy8gU5cY940f-N_-W1hoWDUyyG5248h9ZpaQ2rRuXdciK2j81qKITFhQfPyhhbt22omEua6elATtUaOvyLDZjxnNbop-xDGfwDhnUf4JBc9B0AEibmunMWKpdV-onBvE9r_odx6bIs-BD2guqJM1b8hUPWLnlh2MSV_4q-s7_nX5KGmx6jP2YOvFauUo8vQ7u1FB8x3IDmUoA7TAS36s3jsRmS5zwr2OEHpaL6LrEr7bBi8aMHizMJlVK5iHz4LIRdB24veVOpY"/>
+<button class="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1"><span class="material-symbols-outlined text-[16px]">close</span></button>
+</div>
+<div class="w-32 h-32 flex-shrink-0 rounded-xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center gap-xs text-on-surface-variant hover:bg-surface-container transition-colors cursor-pointer">
+<span class="material-symbols-outlined">add_a_photo</span>
+<span class="font-label-sm text-label-sm">Add Photo</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors">
+<input checked="" class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary custom-checkbox" type="checkbox"/>
+<div class="flex-1">
+<label class="block font-label-lg text-label-lg text-on-surface">Lifeboat deployment mechanism test</label>
+<input class="mt-sm w-full bg-surface-container border-none rounded-lg px-md py-sm text-body-md text-on-surface-variant" readonly="" type="text" value="All mechanisms functioning within spec."/>
+</div>
+</div>
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors">
+<input class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary custom-checkbox" type="checkbox"/>
+<div class="flex-1">
+<label class="block font-label-lg text-label-lg text-on-surface">Emergency lighting UPS battery check</label>
+<div class="mt-sm flex items-center gap-md">
+<input class="flex-1 accent-primary" type="range"/>
+<span class="font-label-lg text-label-lg">94%</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Category 3: Navigation & Comms -->
+<section class="raised-card p-lg">
+<div class="flex items-center justify-between mb-md">
+<div class="flex items-center gap-md">
+<div class="bg-secondary-container/20 p-sm rounded-lg text-secondary">
+<span class="material-symbols-outlined">radar</span>
+</div>
+<h2 class="font-title-lg text-title-lg">Navigation &amp; Comms</h2>
+</div>
+<span class="px-sm py-xs bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm rounded-full">
+                        0/3 Tasks
+                    </span>
+</div>
+<div class="space-y-md">
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors">
+<input class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary custom-checkbox" type="checkbox"/>
+<div class="flex-1">
+<label class="block font-label-lg text-label-lg text-on-surface">Radar antenna rotation &amp; signal check</label>
+</div>
+</div>
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors">
+<input class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary custom-checkbox" type="checkbox"/>
+<div class="flex-1">
+<label class="block font-label-lg text-label-lg text-on-surface">VHF radio signal strength test (Port/Starboard)</label>
+</div>
+</div>
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors">
+<input class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary custom-checkbox" type="checkbox"/>
+<div class="flex-1">
+<label class="block font-label-lg text-label-lg text-on-surface">AIS transponder data validation</label>
+</div>
+</div>
+</div>
+</section>
+<!-- Category 4: Hull & Deck -->
+<section class="raised-card p-lg">
+<div class="flex items-center justify-between mb-md">
+<div class="flex items-center gap-md">
+<div class="bg-surface-container-highest p-sm rounded-lg text-on-surface">
+<span class="material-symbols-outlined">anchor</span>
+</div>
+<h2 class="font-title-lg text-title-lg">Hull &amp; Deck Structural</h2>
+</div>
+<span class="px-sm py-xs bg-primary-container/10 text-on-primary-fixed-variant font-label-sm text-label-sm rounded-full">
+                        Pending Dive
+                    </span>
+</div>
+<div class="space-y-md">
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors">
+<input class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary custom-checkbox" type="checkbox"/>
+<div class="flex-1">
+<label class="block font-label-lg text-label-lg text-on-surface">Inspect hull for biofouling / damage</label>
+</div>
+</div>
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors">
+<input class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary custom-checkbox" type="checkbox"/>
+<div class="flex-1">
+<label class="block font-label-lg text-label-lg text-on-surface">Anchor windlass structural integrity</label>
+</div>
+</div>
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors">
+<div class="w-full bg-surface-container-low border-2 border-dashed border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center gap-sm text-on-surface-variant cursor-pointer hover:border-primary hover:bg-primary/5 transition-all">
+<span class="material-symbols-outlined text-4xl">upload_file</span>
+<div class="text-center">
+<p class="font-label-lg text-label-lg">Upload Structural Scan Data</p>
+<p class="font-label-sm text-label-sm">Supports PDF, PNG, JPG (Max 50MB)</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Actions -->
+<footer class="mt-xl pt-lg border-t border-outline-variant/30 flex justify-between items-center">
+<div class="flex items-center gap-md text-on-surface-variant font-label-md text-label-md">
+<span class="flex items-center gap-xs"><span class="material-symbols-outlined text-[18px]">update</span> Auto-saved 2 mins ago</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>Inspector: Sarah Jenkins</span>
+</div>
+<div class="flex gap-md">
+<button class="px-lg py-sm text-error font-label-lg text-label-lg hover:bg-error-container/10 rounded-xl transition-all">Clear Form</button>
+<button class="px-xl py-md bg-inverse-surface text-inverse-on-surface font-label-lg text-label-lg rounded-xl hover:shadow-lg transition-all">Export PDF</button>
+</div>
+</footer>
+</main>
+<!-- Micro-interaction Script -->
+<script>
+        // Checkbox count update logic
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const parentSection = this.closest('section');
+                const checkboxes = parentSection.querySelectorAll('input[type="checkbox"]');
+                const checked = parentSection.querySelectorAll('input[type="checkbox"]:checked');
+                const badge = parentSection.querySelector('.font-label-sm');
+                
+                if(badge) {
+                    badge.innerHTML = `<div class="w-1.5 h-1.5 rounded-full ${checked.length === checkboxes.length ? 'bg-secondary' : 'bg-primary'}"></div> ${checked.length}/${checkboxes.length} Tasks`;
+                }
+            });
+        });
+
+        // Mock interaction for photos
+        document.querySelectorAll('.material-symbols-outlined').forEach(icon => {
+            if(icon.innerText === 'add_a_photo') {
+                icon.parentElement.addEventListener('click', () => {
+                    alert('Camera/Gallery interface would open here.');
+                });
+            }
+        });
+    </script>
+</body></html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>REMOBS - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#004c6e",
+                        "surface-container-highest": "#2d3449",
+                        "on-tertiary": "#003824",
+                        "inverse-primary": "#6d3bd7",
+                        "tertiary-container": "#00a572",
+                        "on-primary": "#3c0091",
+                        "tertiary-fixed": "#6ffbbe",
+                        "surface-container-low": "#131b2e",
+                        "error-container": "#93000a",
+                        "inverse-on-surface": "#283044",
+                        "on-tertiary-container": "#00311f",
+                        "on-secondary": "#00344d",
+                        "inverse-surface": "#dae2fd",
+                        "outline": "#958ea0",
+                        "secondary": "#89ceff",
+                        "outline-variant": "#494454",
+                        "surface-tint": "#d0bcff",
+                        "secondary-fixed-dim": "#89ceff",
+                        "secondary-container": "#00a2e6",
+                        "on-secondary-fixed": "#001e2f",
+                        "on-error": "#690005",
+                        "background": "#0b1326",
+                        "on-primary-fixed": "#23005c",
+                        "on-secondary-container": "#00344e",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "surface-dim": "#0b1326",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "primary-container": "#a078ff",
+                        "on-surface-variant": "#cbc3d7",
+                        "secondary-fixed": "#c9e6ff",
+                        "surface-variant": "#2d3449",
+                        "surface-container-high": "#222a3d",
+                        "on-primary-fixed-variant": "#5516be",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-container": "#171f33",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-lowest": "#060e20",
+                        "surface": "#0b1326",
+                        "on-background": "#dae2fd",
+                        "primary-fixed": "#e9ddff",
+                        "primary": "#d0bcff",
+                        "on-primary-container": "#340080",
+                        "error": "#ffb4ab",
+                        "surface-bright": "#31394d",
+                        "on-surface": "#dae2fd",
+                        "tertiary": "#4edea3",
+                        "primary-fixed-dim": "#d0bcff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "24px",
+                        "lg": "48px",
+                        "gutter": "24px",
+                        "xs": "8px",
+                        "xl": "64px",
+                        "sm": "16px",
+                        "margin-mobile": "16px",
+                        "base": "4px",
+                        "margin-desktop": "32px"
+                    },
+                    "fontFamily": {
+                        "code-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "code-md": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .brand-gradient {
+            background: linear-gradient(135deg, #0b1326 0%, #1e293b 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-gradient::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            top: -25%;
+            left: -25%;
+            z-index: 0;
+        }
+
+        .input-focus-effect:focus-within {
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-md overflow-hidden selection:bg-primary/30 selection:text-primary">
+<main class="flex min-h-screen w-full">
+<!-- Left Side: Brand Identity -->
+<section class="hidden lg:flex flex-1 brand-gradient items-center justify-center p-xl relative">
+<div class="z-10 flex flex-col items-center text-center">
+<div class="mb-sm animate-pulse">
+<img alt="REMOBS Logo" class="w-48 h-auto object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLvaUKM6WmdWsrkjd_Fu8iJ0SB9I-For9cljY5o2-uGzdbG4LHeBSS3PQwmQI74CXj8L7NIoivCHLjmCs_8-CTlWuSuXVtz-gXSBI6tZJZDVEjBHPYRnHzverpo9eMhi9XDLvyt2EzIrR61nsivG7QAhsGKCbe7ecL8NP9DlAa_pMlSzaroFgDTZ1ezDQQf8ZvY0oAgccyOEqXzhPYpZj1sQ0_cftOqbUN4KCrDjqU7zOpVQZrVyUb8nAhKf"/>
+</div>
+<div class="mt-md space-y-base">
+<h2 class="font-headline-lg text-headline-lg text-primary">Gestão Inteligente de Operações</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md mx-auto opacity-80">
+                        Otimize seu inventário e acompanhe remessas globais com precisão tecnológica e clareza absoluta.
+                    </p>
+</div>
+</div>
+<!-- Abstract Background Decoration -->
+<div class="absolute inset-0 opacity-20 pointer-events-none">
+<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-secondary/10 rounded-full blur-[80px]"></div>
+</div>
+</section>
+<!-- Right Side: Login Form -->
+<section class="flex-1 flex items-center justify-center bg-background p-margin-mobile md:p-margin-desktop">
+<div class="w-full max-w-[440px] space-y-md animate-fade-in">
+<!-- Mobile Logo (Visible only on small screens) -->
+<div class="lg:hidden flex justify-center mb-md">
+<img alt="REMOBS Logo" class="h-12 w-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLvaUKM6WmdWsrkjd_Fu8iJ0SB9I-For9cljY5o2-uGzdbG4LHeBSS3PQwmQI74CXj8L7NIoivCHLjmCs_8-CTlWuSuXVtz-gXSBI6tZJZDVEjBHPYRnHzverpo9eMhi9XDLvyt2EzIrR61nsivG7QAhsGKCbe7ecL8NP9DlAa_pMlSzaroFgDTZ1ezDQQf8ZvY0oAgccyOEqXzhPYpZj1sQ0_cftOqbUN4KCrDjqU7zOpVQZrVyUb8nAhKf"/>
+</div>
+<div class="text-left space-y-base">
+<h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background">Bem-vindo ao REMOBS</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Insira suas credenciais para acessar o painel administrativo.</p>
+</div>
+<form class="space-y-sm" onsubmit="event.preventDefault();">
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-on-surface-variant" for="email">Email</label>
+<div class="relative group input-focus-effect rounded-lg">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
+<input class="w-full bg-surface-container-low border-outline-variant focus:border-primary text-on-surface rounded-lg py-3 pl-12 pr-4 transition-all outline-none font-body-md" id="email" placeholder="nome@remobs.com" required="" type="email"/>
+</div>
+</div>
+<div class="space-y-xs">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface-variant" for="password">Senha</label>
+<a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors" href="#">Esqueceu a senha?</a>
+</div>
+<div class="relative group input-focus-effect rounded-lg">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
+<input class="w-full bg-surface-container-low border-outline-variant focus:border-primary text-on-surface rounded-lg py-3 pl-12 pr-12 transition-all outline-none font-body-md" id="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-center space-x-xs pt-base">
+<input class="w-4 h-4 rounded border-outline-variant bg-surface-container-low text-primary focus:ring-primary/20" id="remember" type="checkbox"/>
+<label class="font-body-md text-body-md text-on-surface-variant select-none" for="remember">Manter conectado neste dispositivo</label>
+</div>
+<button class="w-full bg-primary-container hover:bg-primary text-on-primary-container hover:text-on-primary font-headline-sm py-4 rounded-lg shadow-lg shadow-primary/10 transition-all duration-200 active:scale-[0.98] mt-sm flex items-center justify-center gap-xs" type="submit">
+                        Entrar
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</form>
+<div class="relative py-sm">
+<div class="absolute inset-0 flex items-center"><div class="w-full border-t border-outline-variant"></div></div>
+<div class="relative flex justify-center text-xs uppercase"><span class="bg-background px-4 text-outline font-label-md">Ou continue com</span></div>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<button class="flex items-center justify-center gap-xs bg-surface-container border border-outline-variant hover:bg-surface-variant text-on-surface font-label-md py-3 rounded-lg transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">key</span> SSO
+                    </button>
+<button class="flex items-center justify-center gap-xs bg-surface-container border border-outline-variant hover:bg-surface-variant text-on-surface font-label-md py-3 rounded-lg transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">domain</span> Google
+                    </button>
+</div>
+<p class="text-center font-body-md text-body-md text-on-surface-variant pt-md">
+                    Não tem uma conta? 
+                    <a class="text-primary font-bold hover:underline decoration-2 underline-offset-4" href="#">Cadastre-se</a>
+</p>
+<!-- Footer branding on mobile -->
+<footer class="lg:hidden text-center pt-xl text-outline font-label-md">
+                    © 2024 REMOBS Logistics Systems.
+                </footer>
+</div>
+</section>
+</main>
+<script>
+        // Simple micro-interaction for password visibility toggle
+        document.querySelectorAll('button[type="button"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const input = this.parentElement.querySelector('input');
+                const icon = this.querySelector('.material-symbols-outlined');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.textContent = 'visibility_off';
+                } else {
+                    input.type = 'password';
+                    icon.textContent = 'visibility';
+                }
+            });
+        });
+
+        // Add a subtle parallax effect on desktop background decoration
+        document.addEventListener('mousemove', (e) => {
+            const blobs = document.querySelectorAll('.blur-[120px], .blur-[80px]');
+            const x = (e.clientX / window.innerWidth) * 20;
+            const y = (e.clientY / window.innerHeight) * 20;
+            
+            blobs.forEach(blob => {
+                blob.style.transform = `translate(${x}px, ${y}px)`;
+            });
+        });
+    </script>
+</body></html>

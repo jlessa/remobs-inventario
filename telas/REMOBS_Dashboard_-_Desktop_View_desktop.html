@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarineMonitor - Painel de Controle</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        .status-dot {
+            height: 8px;
+            width: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-bright": "#f7f9fb",
+                      "secondary": "#006c49",
+                      "tertiary-container": "#a36700",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "inverse-primary": "#d0bcff",
+                      "on-primary-fixed": "#23005c",
+                      "inverse-surface": "#2d3133",
+                      "surface-container": "#eceef0",
+                      "secondary-container": "#6cf8bb",
+                      "outline": "#7b7486",
+                      "error-container": "#ffdad6",
+                      "primary-container": "#8455ef",
+                      "on-secondary-fixed-variant": "#005236",
+                      "on-secondary-container": "#00714d",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "inverse-on-surface": "#eff1f3",
+                      "secondary-fixed-dim": "#4edea3",
+                      "primary": "#6b38d4",
+                      "background": "#f7f9fb",
+                      "outline-variant": "#cbc3d7",
+                      "on-secondary-fixed": "#002113",
+                      "surface-variant": "#e0e3e5",
+                      "primary-fixed-dim": "#d0bcff",
+                      "surface-dim": "#d8dadc",
+                      "on-secondary": "#ffffff",
+                      "on-background": "#191c1e",
+                      "on-surface-variant": "#494454",
+                      "surface-tint": "#6d3bd7",
+                      "surface-container-low": "#f2f4f6",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed": "#ffddb8",
+                      "surface-container-high": "#e6e8ea",
+                      "surface": "#f7f9fb",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-container": "#fffbff",
+                      "on-error": "#ffffff",
+                      "tertiary": "#825100",
+                      "secondary-fixed": "#6ffbbe",
+                      "on-primary-fixed-variant": "#5516be",
+                      "primary-fixed": "#e9ddff",
+                      "on-error-container": "#93000a",
+                      "error": "#ba1a1a",
+                      "on-tertiary-container": "#fffbff",
+                      "surface-container-highest": "#e0e3e5",
+                      "on-surface": "#191c1e"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "sm": "8px",
+                      "margin-mobile": "16px",
+                      "lg": "24px",
+                      "xl": "32px",
+                      "md": "16px",
+                      "margin-desktop": "24px",
+                      "gutter": "16px",
+                      "base": "4px",
+                      "xs": "4px"
+              },
+              "fontFamily": {
+                      "headline-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "label-lg": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                      "label-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full z-40 hidden lg:flex flex-col py-md w-64 bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant/20">
+<div class="px-lg mb-xl">
+<h1 class="font-headline-sm text-headline-sm font-black text-primary">MarineMonitor</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Fleet Control</p>
+<p class="font-label-sm text-label-sm text-outline">Vessel &amp; Buoy Ops</p>
+</div>
+<nav class="flex-1 px-sm space-y-1">
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-primary dark:text-inverse-primary font-bold border-r-4 border-primary bg-primary-container/10 transition-transform active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-lg text-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="sailing">sailing</span>
+<span class="font-label-lg text-label-lg">Assets</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+<span class="font-label-lg text-label-lg">Telemetry</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label-lg text-label-lg">History</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-label-lg text-label-lg">Reports</span>
+</a>
+</nav>
+<div class="px-lg mt-auto pt-lg">
+<button class="w-full bg-primary text-on-primary py-sm rounded-xl font-label-lg text-label-lg shadow-md hover:brightness-110 active:scale-95 transition-all">
+                Export Fleet Data
+            </button>
+</div>
+</aside>
+<div class="lg:pl-64 min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface shadow-sm sticky top-0 z-50 w-full h-16 flex justify-between items-center px-lg">
+<div class="flex items-center gap-md">
+<span class="lg:hidden material-symbols-outlined text-primary" data-icon="menu">menu</span>
+<h2 class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary hidden md:block">Operational View</h2>
+</div>
+<div class="flex items-center gap-lg">
+<div class="hidden md:flex bg-surface-container px-md py-xs rounded-full items-center gap-sm">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-48" placeholder="Search assets..." type="text"/>
+</div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-sm rounded-full transition-colors" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-sm rounded-full transition-colors" data-icon="settings">settings</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-sm rounded-full transition-colors" data-icon="help">help</button>
+<div class="h-10 w-10 rounded-full bg-primary-fixed overflow-hidden border border-outline-variant">
+<img alt="Profile" data-alt="A professional headshot of a marine engineer wearing a navy blue uniform. The background is a brightly lit, modern industrial control room with soft blue and white bokeh lights. The lighting is crisp and clear, conveying authority and technical expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDZquPAN5rGudIVtTYifchzPrFK9QI-aF8Wr8E8cTrKnT20duoDOKtVzF9e8oXP7YxpHwGeaVEptU18uBHdiT7Ts2fOIPz-FJkdzdpQbZKBPmqtA27WdTxi8p2-9xTMTQctmsKjLIoZ3ErcAL7SfA9t-0O77uZ9icPwmvrokqdd6_u8KrivVUasruK1Fvo0fvD1QUtxuUK0DQXUmglu3JJoTbd5fwRuDStxnG9OScZAj4Dg37z2jOxefdnG1tfvtz2AskFAkR8eUm9"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 p-lg max-w-7xl mx-auto w-full">
+<!-- Hero Section / Operational Image -->
+<section class="mb-xl relative rounded-xl overflow-hidden h-[300px] shadow-sm">
+<img alt="Operational Background" class="w-full h-full object-cover" data-alt="A wide-angle panoramic view of a large commercial harbor at dawn. Dozens of vessels and automated buoys are visible in the deep blue water, illuminated by a soft, rising sun. The atmosphere is calm and professional, with high-tech data overlays subtly implied by the clean, industrial horizon and cool morning light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_0ziVQr1meVc79PSIiaWNIC0C-5IAB0GORsAg8lpxplDXs3jQYy_RrxhQXDOVnvcoMA4zgIRdzKyq5ADfGbYfj2H1Y-Ss2a3mheGhNiYIGQu3DQ1xJ7-UXT0AMO7vXkvLjxi2FsoFBLYeiKUAmvvKK4HsjKL0tyDtB9v5LpcDIKjOLQawyCSVnvxa3Pet6oyTNtcFLvkUT5MErsKXUcz252WX8YckcWH_IveUol-m6EejgM1UQXDUkWpcOo611c3_UjAerRceMTS3"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-xl">
+<div class="text-white">
+<h3 class="font-headline-lg text-headline-lg">Status da Frota em Tempo Real</h3>
+<p class="font-body-lg text-body-lg opacity-90">Monitoramento centralizado de ativos marítimos e telemetria de superfície.</p>
+</div>
+</div>
+</section>
+<!-- Status Cards Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg mb-xl">
+<!-- Operations -->
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.04)] flex flex-col gap-sm border-l-4 border-secondary">
+<div class="flex justify-between items-start">
+<span class="font-label-lg text-label-lg text-on-surface-variant">Operações</span>
+<span class="material-symbols-outlined text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="mt-xs">
+<p class="font-headline-md text-headline-md">142</p>
+<div class="flex items-center gap-xs mt-xs">
+<span class="status-dot bg-secondary"></span>
+<span class="font-label-sm text-label-sm text-secondary">Ativos em conformidade</span>
+</div>
+</div>
+</div>
+<!-- Damaged -->
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.04)] flex flex-col gap-sm border-l-4 border-error">
+<div class="flex justify-between items-start">
+<span class="font-label-lg text-label-lg text-on-surface-variant">Avariados</span>
+<span class="material-symbols-outlined text-error" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="mt-xs">
+<p class="font-headline-md text-headline-md">08</p>
+<div class="flex items-center gap-xs mt-xs">
+<span class="status-dot bg-error"></span>
+<span class="font-label-sm text-label-sm text-error">Manutenção urgente</span>
+</div>
+</div>
+</div>
+<!-- Pending -->
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.04)] flex flex-col gap-sm border-l-4 border-tertiary">
+<div class="flex justify-between items-start">
+<span class="font-label-lg text-label-lg text-on-surface-variant">Pendentes</span>
+<span class="material-symbols-outlined text-tertiary" data-icon="schedule" style="font-variation-settings: 'FILL' 1;">schedule</span>
+</div>
+<div class="mt-xs">
+<p class="font-headline-md text-headline-md">24</p>
+<div class="flex items-center gap-xs mt-xs">
+<span class="status-dot bg-tertiary"></span>
+<span class="font-label-sm text-label-sm text-tertiary">Aguardando revisão</span>
+</div>
+</div>
+</div>
+<!-- Stock -->
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.04)] flex flex-col gap-sm border-l-4 border-primary">
+<div class="flex justify-between items-start">
+<span class="font-label-lg text-label-lg text-on-surface-variant">Estoque</span>
+<span class="material-symbols-outlined text-primary" data-icon="inventory_2" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+</div>
+<div class="mt-xs">
+<p class="font-headline-md text-headline-md">512</p>
+<div class="flex items-center gap-xs mt-xs">
+<span class="status-dot bg-primary"></span>
+<span class="font-label-sm text-label-sm text-primary">Componentes críticos</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Action Panels -->
+<section class="mb-xl">
+<h4 class="font-title-lg text-title-lg mb-lg flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="bolt">bolt</span>
+                    Ações Rápidas
+                </h4>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<!-- Request Exit -->
+<button class="flex flex-col items-center justify-center p-xl bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.04)] hover:shadow-lg transition-all border border-outline-variant/10 group">
+<div class="h-16 w-16 rounded-full bg-secondary-container/20 flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-secondary text-[32px]" data-icon="logout">logout</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Solicitar Saída</span>
+<span class="font-label-sm text-label-sm text-outline mt-xs text-center">Registrar partida de embarcação</span>
+</button>
+<!-- Fill Checklist -->
+<button class="flex flex-col items-center justify-center p-xl bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.04)] hover:shadow-lg transition-all border border-outline-variant/10 group">
+<div class="h-16 w-16 rounded-full bg-primary-container/10 flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="fact_check">fact_check</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Preencher Checklist</span>
+<span class="font-label-sm text-label-sm text-outline mt-xs text-center">Vistoria técnica de manutenção</span>
+</button>
+<!-- Sync Offline -->
+<button class="flex flex-col items-center justify-center p-xl bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.04)] hover:shadow-lg transition-all border border-outline-variant/10 group">
+<div class="h-16 w-16 rounded-full bg-tertiary-fixed/20 flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-tertiary text-[32px]" data-icon="sync">sync</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Sincronizar Offline</span>
+<span class="font-label-sm text-label-sm text-outline mt-xs text-center">Atualizar dados locais do sistema</span>
+</button>
+</div>
+</section>
+<!-- Bottom Section: Recent Activity / Asset Map -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<div class="lg:col-span-8 bg-surface-container-lowest p-lg rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-center mb-lg">
+<h4 class="font-title-lg text-title-lg">Mapa de Ativos</h4>
+<span class="font-label-md text-label-md text-primary cursor-pointer hover:underline">Ver mapa completo</span>
+</div>
+<div class="h-[400px] rounded-lg bg-surface-container overflow-hidden relative">
+<img alt="Map View" class="w-full h-full object-cover opacity-50 grayscale hover:grayscale-0 transition-all duration-700" data-alt="A stylized satellite map view of a major shipping port area. The map shows dark blue water contrasted against light slate-grey industrial zones. Bright violet and teal dots represent active vessel locations, creating a high-end data visualization aesthetic. The lighting is crisp, emphasizing topographical detail and marine traffic patterns." data-location="Port of Santos" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOpJOJu63m32BshHeeyLQ8A21xl-UZnXgw2ul33TF_G4R0PzDET1WNTWbIMJWrrun504MZ215mlKXktwgyo6RpAT6mOteb73L5KWWfpegkjo3_i_xvVtkrc9m54PGrI9_nYAgaY6rwPuUG6mEVpVyisOO_POUsR57wTra314yUbM1QaI1FzKdDlH2jHl_0y16G1sdLZf4mCgpde2mkDYSJil6XfwjGtCSA6W26bWWUF089u7XXlmrdpDMdmPk6767mgpol95LvqsFp"/>
+<!-- Simulated Pings -->
+<div class="absolute top-1/4 left-1/3 h-4 w-4 bg-primary rounded-full animate-ping"></div>
+<div class="absolute top-1/4 left-1/3 h-4 w-4 bg-primary rounded-full shadow-lg"></div>
+<div class="absolute bottom-1/2 right-1/4 h-4 w-4 bg-secondary rounded-full animate-ping"></div>
+<div class="absolute bottom-1/2 right-1/4 h-4 w-4 bg-secondary rounded-full shadow-lg"></div>
+</div>
+</div>
+<div class="lg:col-span-4 bg-surface-container-lowest p-lg rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.04)]">
+<h4 class="font-title-lg text-title-lg mb-lg">Atividade Recente</h4>
+<div class="space-y-lg">
+<div class="flex gap-md">
+<div class="h-10 w-10 shrink-0 bg-secondary-container/20 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="directions_boat">directions_boat</span>
+</div>
+<div>
+<p class="font-label-lg text-label-lg font-bold">Vessel-84 Partiu</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Autorização concedida por Eng. Silva</p>
+<p class="font-label-sm text-label-sm text-outline mt-xs">Há 12 min</p>
+</div>
+</div>
+<div class="flex gap-md">
+<div class="h-10 w-10 shrink-0 bg-error-container/20 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-sm" data-icon="priority_high">priority_high</span>
+</div>
+<div>
+<p class="font-label-lg text-label-lg font-bold">Alerta de Telemetria</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Bóia-12 reportando falha de sensor</p>
+<p class="font-label-sm text-label-sm text-outline mt-xs">Há 45 min</p>
+</div>
+</div>
+<div class="flex gap-md">
+<div class="h-10 w-10 shrink-0 bg-primary-container/10 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="task">task</span>
+</div>
+<div>
+<p class="font-label-lg text-label-lg font-bold">Manutenção Finalizada</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Checklist Vessel-12 concluído com sucesso</p>
+<p class="font-label-sm text-label-sm text-outline mt-xs">Há 2 horas</p>
+</div>
+</div>
+<div class="flex gap-md">
+<div class="h-10 w-10 shrink-0 bg-surface-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="cloud_sync">cloud_sync</span>
+</div>
+<div>
+<p class="font-label-lg text-label-lg font-bold">Sincronização Total</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Base de dados atualizada para o servidor</p>
+<p class="font-label-sm text-label-sm text-outline mt-xs">Há 4 horas</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Floating Atmosphere Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add subtle interaction sounds or state changes if needed
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Simple tactile feedback simulation
+                    btn.classList.add('scale-95');
+                    setTimeout(() => btn.classList.remove('scale-95'), 100);
+                });
+            });
+        });
+    </script>
+</body></html>
