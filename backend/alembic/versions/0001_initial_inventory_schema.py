@@ -1,0 +1,302 @@
+from __future__ import annotations
+
+from alembic import op
+import sqlalchemy as sa
+
+
+revision = "0001_initial_inventory_schema"
+down_revision = None
+branch_labels = None
+depends_on = None
+
+SCHEMA: str | None = None
+
+
+def foreign_key(table: str, column: str = "id") -> str:
+    if SCHEMA:
+        return f"{SCHEMA}.{table}.{column}"
+    return f"{table}.{column}"
+
+
+def upgrade() -> None:
+    op.create_table(
+        "inventory_categories",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("name", sa.String(length=160), nullable=False),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("name"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "locations",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("name", sa.String(length=160), nullable=False),
+        sa.Column("location_type", sa.String(length=64), nullable=False),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("name"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "inventory_items",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("item_type", sa.String(length=40), nullable=False),
+        sa.Column("category_id", sa.Uuid(), nullable=True),
+        sa.Column("name", sa.String(length=240), nullable=False),
+        sa.Column("brand", sa.String(length=160), nullable=True),
+        sa.Column("model", sa.String(length=160), nullable=True),
+        sa.Column("serial_number", sa.String(length=160), nullable=True),
+        sa.Column("patrimony_number", sa.String(length=160), nullable=True),
+        sa.Column("invoice_number", sa.String(length=160), nullable=True),
+        sa.Column("description", sa.Text(), nullable=True),
+        sa.Column("condition_status", sa.String(length=64), nullable=False),
+        sa.Column("current_location_id", sa.Uuid(), nullable=True),
+        sa.Column("unit", sa.String(length=32), nullable=False),
+        sa.Column("minimum_stock_national", sa.Integer(), nullable=False),
+        sa.Column("minimum_stock_import", sa.Integer(), nullable=False),
+        sa.Column("minimum_stock_maintenance", sa.Integer(), nullable=False),
+        sa.Column("ideal_stock", sa.Integer(), nullable=False),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("row_version", sa.Integer(), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
+        sa.ForeignKeyConstraint(["category_id"], [foreign_key("inventory_categories")]),
+        sa.ForeignKeyConstraint(["current_location_id"], [foreign_key("locations")]),
+        sa.PrimaryKeyConstraint("id"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "stock_balances",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("item_id", sa.Uuid(), nullable=False),
+        sa.Column("location_id", sa.Uuid(), nullable=False),
+        sa.Column("quantity", sa.Integer(), nullable=False),
+        sa.Column("reserved_quantity", sa.Integer(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.ForeignKeyConstraint(["item_id"], [foreign_key("inventory_items")]),
+        sa.ForeignKeyConstraint(["location_id"], [foreign_key("locations")]),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("item_id", "location_id", name="uq_stock_balances_item_location"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "stock_movements",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("item_id", sa.Uuid(), nullable=False),
+        sa.Column("movement_type", sa.String(length=64), nullable=False),
+        sa.Column("from_location_id", sa.Uuid(), nullable=True),
+        sa.Column("to_location_id", sa.Uuid(), nullable=True),
+        sa.Column("quantity", sa.Integer(), nullable=False),
+        sa.Column("requested_by_id", sa.Integer(), nullable=False),
+        sa.Column("requested_by_username", sa.String(length=160), nullable=False),
+        sa.Column("approved_by_id", sa.Integer(), nullable=True),
+        sa.Column("approved_by_username", sa.String(length=160), nullable=True),
+        sa.Column("status", sa.String(length=64), nullable=False),
+        sa.Column("reason", sa.Text(), nullable=False),
+        sa.Column("decision_reason", sa.Text(), nullable=True),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("approved_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("completed_at", sa.DateTime(timezone=True), nullable=True),
+        sa.ForeignKeyConstraint(["item_id"], [foreign_key("inventory_items")]),
+        sa.ForeignKeyConstraint(["from_location_id"], [foreign_key("locations")]),
+        sa.ForeignKeyConstraint(["to_location_id"], [foreign_key("locations")]),
+        sa.PrimaryKeyConstraint("id"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "audit_logs",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("occurred_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("actor_user_id", sa.Integer(), nullable=True),
+        sa.Column("actor_username", sa.String(length=160), nullable=True),
+        sa.Column("actor_roles", sa.JSON(), nullable=False),
+        sa.Column("action", sa.String(length=128), nullable=False),
+        sa.Column("entity_type", sa.String(length=128), nullable=False),
+        sa.Column("entity_id", sa.String(length=80), nullable=True),
+        sa.Column("entity_label_snapshot", sa.String(length=240), nullable=True),
+        sa.Column("before_data", sa.JSON(), nullable=True),
+        sa.Column("after_data", sa.JSON(), nullable=True),
+        sa.Column("diff", sa.JSON(), nullable=True),
+        sa.Column("reason", sa.Text(), nullable=True),
+        sa.Column("source", sa.String(length=64), nullable=False),
+        sa.Column("status", sa.String(length=32), nullable=False),
+        sa.Column("metadata", sa.JSON(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "alerts",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("alert_type", sa.String(length=80), nullable=False),
+        sa.Column("severity", sa.String(length=32), nullable=False),
+        sa.Column("entity_type", sa.String(length=80), nullable=False),
+        sa.Column("entity_id", sa.String(length=80), nullable=False),
+        sa.Column("title", sa.String(length=240), nullable=False),
+        sa.Column("message", sa.Text(), nullable=False),
+        sa.Column("status", sa.String(length=32), nullable=False),
+        sa.Column("assigned_to", sa.Integer(), nullable=True),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("resolved_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("metadata", sa.JSON(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "files",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("original_name", sa.String(length=240), nullable=False),
+        sa.Column("storage_key", sa.String(length=500), nullable=False),
+        sa.Column("mime_type", sa.String(length=120), nullable=False),
+        sa.Column("size_bytes", sa.Integer(), nullable=False),
+        sa.Column("uploaded_by", sa.Integer(), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("storage_key"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "entity_files",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("file_id", sa.Uuid(), nullable=False),
+        sa.Column("entity_type", sa.String(length=80), nullable=False),
+        sa.Column("entity_id", sa.String(length=80), nullable=False),
+        sa.Column("file_role", sa.String(length=80), nullable=False),
+        sa.Column("notes", sa.Text(), nullable=True),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.ForeignKeyConstraint(["file_id"], [foreign_key("files")]),
+        sa.PrimaryKeyConstraint("id"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "platforms",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("name", sa.String(length=180), nullable=False),
+        sa.Column("platform_type", sa.String(length=80), nullable=False),
+        sa.Column("manufacturer", sa.String(length=160), nullable=True),
+        sa.Column("model", sa.String(length=160), nullable=True),
+        sa.Column("operational_status", sa.String(length=80), nullable=False),
+        sa.Column("current_location_id", sa.Uuid(), nullable=True),
+        sa.Column("description", sa.Text(), nullable=True),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
+        sa.ForeignKeyConstraint(["current_location_id"], [foreign_key("locations")]),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("name"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "hulls",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("platform_id", sa.Uuid(), nullable=True),
+        sa.Column("code", sa.String(length=120), nullable=False),
+        sa.Column("model", sa.String(length=160), nullable=True),
+        sa.Column("status", sa.String(length=80), nullable=False),
+        sa.Column("notes", sa.Text(), nullable=True),
+        sa.ForeignKeyConstraint(["platform_id"], [foreign_key("platforms")]),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("code"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "platform_systems",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("platform_id", sa.Uuid(), nullable=False),
+        sa.Column("name", sa.String(length=120), nullable=False),
+        sa.Column("status", sa.String(length=80), nullable=False),
+        sa.Column("notes", sa.Text(), nullable=True),
+        sa.ForeignKeyConstraint(["platform_id"], [foreign_key("platforms")]),
+        sa.PrimaryKeyConstraint("id"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "system_components",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("platform_system_id", sa.Uuid(), nullable=False),
+        sa.Column("inventory_item_id", sa.Uuid(), nullable=False),
+        sa.Column("installed_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("removed_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("status", sa.String(length=80), nullable=False),
+        sa.Column("notes", sa.Text(), nullable=True),
+        sa.ForeignKeyConstraint(["platform_system_id"], [foreign_key("platform_systems")]),
+        sa.ForeignKeyConstraint(["inventory_item_id"], [foreign_key("inventory_items")]),
+        sa.PrimaryKeyConstraint("id"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "sensors",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("sensor_type", sa.String(length=80), nullable=False),
+        sa.Column("family", sa.String(length=120), nullable=False),
+        sa.Column("brand", sa.String(length=160), nullable=True),
+        sa.Column("model", sa.String(length=160), nullable=True),
+        sa.Column("serial_number", sa.String(length=160), nullable=True),
+        sa.Column("patrimony_number", sa.String(length=160), nullable=True),
+        sa.Column("operational_status", sa.String(length=80), nullable=False),
+        sa.Column("calibration_due_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("notes", sa.Text(), nullable=True),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
+        sa.PrimaryKeyConstraint("id"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "sensor_installations",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("sensor_id", sa.Uuid(), nullable=False),
+        sa.Column("platform_id", sa.Uuid(), nullable=False),
+        sa.Column("installed_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("removed_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("installed_by", sa.Integer(), nullable=True),
+        sa.Column("removed_by", sa.Integer(), nullable=True),
+        sa.Column("status", sa.String(length=80), nullable=False),
+        sa.Column("notes", sa.Text(), nullable=True),
+        sa.ForeignKeyConstraint(["sensor_id"], [foreign_key("sensors")]),
+        sa.ForeignKeyConstraint(["platform_id"], [foreign_key("platforms")]),
+        sa.PrimaryKeyConstraint("id"),
+        schema=SCHEMA,
+    )
+    op.create_table(
+        "sync_actions",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("client_action_id", sa.String(length=160), nullable=False),
+        sa.Column("action_type", sa.String(length=120), nullable=False),
+        sa.Column("entity_type", sa.String(length=80), nullable=False),
+        sa.Column("entity_id", sa.String(length=80), nullable=True),
+        sa.Column("payload", sa.JSON(), nullable=False),
+        sa.Column("user_id", sa.Integer(), nullable=False),
+        sa.Column("username", sa.String(length=160), nullable=False),
+        sa.Column("status", sa.String(length=60), nullable=False),
+        sa.Column("error_message", sa.Text(), nullable=True),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+        schema=SCHEMA,
+    )
+
+
+def downgrade() -> None:
+    for table_name in [
+        "sync_actions",
+        "sensor_installations",
+        "sensors",
+        "system_components",
+        "platform_systems",
+        "hulls",
+        "platforms",
+        "entity_files",
+        "files",
+        "alerts",
+        "audit_logs",
+        "stock_movements",
+        "stock_balances",
+        "inventory_items",
+        "locations",
+        "inventory_categories",
+    ]:
+        op.drop_table(table_name, schema=SCHEMA)

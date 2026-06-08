@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.sqlite
+.env
+.env.*
+tests/
+README.md
+pyproject.toml
