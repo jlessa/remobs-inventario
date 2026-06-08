@@ -308,7 +308,7 @@ Estoque atual: 2
 
 [Ajustar solicitação]
 [Descartar]
-[Enviar para Admin]
+[Enviar para revisão]
 ```
 
 ## Regras
@@ -321,24 +321,7 @@ Estoque atual: 2
 
 ---
 
-# 12. Fluxo: consulta de log
-
-## Ator
-
-Admin ou perfil autorizado.
-
-## Passos
-
-1. Usuário acessa **Menu > Logs**;
-2. Aplica filtros;
-3. Abre card de log;
-4. Consulta antes/depois;
-5. Exporta, se autorizado;
-6. Exportação gera novo log.
-
----
-
-# 13. Critérios globais de aceite dos fluxos
+# 12. Critérios globais de aceite dos fluxos
 
 - Fluxos funcionam em celular;
 - Usuário recebe feedback após cada ação;

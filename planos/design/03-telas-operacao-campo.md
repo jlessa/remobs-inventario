@@ -167,7 +167,6 @@ Prioridades:
 - Documentos;
 - Fotos;
 - Histórico;
-- Logs, se autorizado.
 
 ### Regras
 

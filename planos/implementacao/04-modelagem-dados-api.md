@@ -372,8 +372,6 @@ Vínculo genérico entre arquivo e entidade.
 POST   /auth/login
 POST   /auth/logout
 POST   /auth/refresh
-POST   /auth/forgot-password
-POST   /auth/reset-password
 GET    /auth/me
 ```
 

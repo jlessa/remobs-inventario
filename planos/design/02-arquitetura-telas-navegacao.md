@@ -76,12 +76,8 @@ Acesso a módulos secundários:
 
 - Plataformas;
 - Sensores;
-- Documentos;
-- Relatórios;
-- Usuários;
-- Permissões;
-- Logs;
-- Configurações;
+- Checklists;
+- Sincronização;
 - Sair.
 
 Itens devem aparecer conforme permissão.
@@ -94,8 +90,6 @@ Itens devem aparecer conforme permissão.
 
 ```text
 /login
-/forgot-password
-/reset-password
 ```
 
 ## 3.2 Rotas autenticadas
@@ -122,18 +116,9 @@ Itens devem aparecer conforme permissão.
 /app/menu
 ```
 
-## 3.3 Rotas administrativas
+## 3.3 Rotas fora do escopo
 
-```text
-/app/admin/users
-/app/admin/users/:id
-/app/admin/roles
-/app/admin/permissions
-/app/admin/catalogs
-/app/admin/audit-logs
-/app/admin/audit-logs/:id
-/app/admin/reports
-```
+Este sistema não possui telas administrativas nem rotas públicas de recuperação de senha. Usuários, papéis, permissões e recuperação de senha ficam sob responsabilidade dos projetos próprios do ecossistema REMOBS.
 
 ---
 
@@ -329,5 +314,5 @@ Exemplos:
 - Usuário acessa inventário em até dois toques após login;
 - Fluxo de solicitar saída é acessível pela aba Operação;
 - Alertas críticos aparecem na tela inicial;
-- Telas administrativas são acessíveis somente por usuários autorizados;
+- O menu não exibe telas administrativas;
 - Desktop não compromete o design mobile-first.

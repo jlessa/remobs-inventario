@@ -202,8 +202,7 @@ Padrão:
 
 - Drawer fixo;
 - Tabelas com colunas completas;
-- Painéis lado a lado;
-- Logs com visualização antes/depois.
+- Painéis lado a lado.
 
 ---
 
@@ -223,10 +222,7 @@ Dentro de **Menu**:
 - Sensores;
 - Checklists;
 - Documentos;
-- Relatórios;
-- Usuários, quando autorizado;
-- Logs, quando autorizado;
-- Configurações;
+- Sincronização;
 - Sair.
 
 ---
