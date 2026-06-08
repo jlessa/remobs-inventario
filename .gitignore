@@ -2,6 +2,12 @@
 node_modules/
 jspm_packages/
 
+# Python artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.sqlite
+
 # Build outputs
 dist/
 tmp/
@@ -38,3 +44,4 @@ desktop.ini
 .env.development
 .env.test
 .env.production
+!frontend/.env.production
