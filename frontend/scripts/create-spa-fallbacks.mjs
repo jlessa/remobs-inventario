@@ -1,0 +1,29 @@
+import { copyFile, mkdir } from "node:fs/promises";
+import { resolve } from "node:path";
+
+const distDir = resolve("dist");
+const indexFile = resolve(distDir, "index.html");
+
+const routes = [
+  "login",
+  "app",
+  "app/home",
+  "app/inventory",
+  "app/inventory/new",
+  "app/movements",
+  "app/movements/new",
+  "app/alerts",
+  "app/platforms",
+  "app/sensors",
+  "app/sync",
+  "app/menu",
+  "app/admin/audit-logs",
+];
+
+await copyFile(indexFile, resolve(distDir, "404.html"));
+
+for (const route of routes) {
+  const routeDir = resolve(distDir, route);
+  await mkdir(routeDir, { recursive: true });
+  await copyFile(indexFile, resolve(routeDir, "index.html"));
+}

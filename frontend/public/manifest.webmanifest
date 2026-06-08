@@ -1,0 +1,15 @@
+{
+  "name": "REMOBS Inventário",
+  "short_name": "Inventário",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "/remobs-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
