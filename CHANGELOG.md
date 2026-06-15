@@ -11,6 +11,9 @@
 ### Corrigido
 - Correção do acesso direto em produção às rotas `/app/platforms/new/`, `/app/sensors/new/`, `/app/checklists/` e `/app/checklists/new/` no AWS Amplify.
 
+### Publicado
+- Publicação manual do frontend atualizado no AWS Amplify de produção, branch `prod`, com o job `18`, usando o profile AWS `aws-remobs`.
+
 ### Analisado
 - Análise das planilhas em `docs/` para identificar oportunidades de evolução do sistema de inventário, incluindo importação assistida de itens, estações, pendências, checklists de campo, ferramentas e catálogos auxiliares.
 
