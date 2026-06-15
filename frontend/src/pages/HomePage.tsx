@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
-import type { AlertItem, InventoryItem, Movement, Platform, Sensor, SyncStatus } from "../types";
+import type { AlertItem, Checklist, InventoryItem, Movement, Platform, Sensor, SyncStatus } from "../types";
 
 interface DashboardState {
   items: InventoryItem[];
@@ -22,6 +22,7 @@ interface DashboardState {
   alerts: AlertItem[];
   platforms: Platform[];
   sensors: Sensor[];
+  checklists: Checklist[];
   sync: SyncStatus | null;
 }
 
@@ -31,6 +32,7 @@ const initialState: DashboardState = {
   alerts: [],
   platforms: [],
   sensors: [],
+  checklists: [],
   sync: null,
 };
 
@@ -46,15 +48,17 @@ export default function HomePage() {
       inventoryService.listAlerts(),
       inventoryService.listPlatforms(),
       inventoryService.listSensors(),
+      inventoryService.listChecklists().catch(() => ({ items: [], total: 0 })),
       inventoryService.getSyncStatus(),
     ])
-      .then(([items, movements, alerts, platforms, sensors, sync]) =>
+      .then(([items, movements, alerts, platforms, sensors, checklists, sync]) =>
         setData({
           items: items.items,
           movements: movements.items,
           alerts: alerts.items,
           platforms: platforms.items,
           sensors: sensors.items,
+          checklists: checklists.items,
           sync,
         }),
       )
@@ -71,6 +75,7 @@ export default function HomePage() {
       ["manutencao", "em_manutencao", "offline"].includes(platform.operational_status),
     );
     const brokenSensors = data.sensors.filter((sensor) => ["avariado", "inconsistencia"].includes(sensor.operational_status));
+    const submittedChecklists = data.checklists.filter((checklist) => checklist.status === "submitted");
 
     return {
       criticalStock,
@@ -78,6 +83,7 @@ export default function HomePage() {
       platformsInOperation,
       platformsInMaintenance,
       brokenSensors,
+      submittedChecklists,
     };
   }, [data]);
 
@@ -88,6 +94,8 @@ export default function HomePage() {
     ["Plataformas em operação", summary.platformsInOperation.length, "platform"],
     ["Plataformas em manutenção", summary.platformsInMaintenance.length, "platform"],
     ["Sensores com alerta", summary.brokenSensors.length, "sensor"],
+    ["Checklists registrados", data.checklists.length, "checklist"],
+    ["Checklists enviados", summary.submittedChecklists.length, "checklist"],
     ["Pendências offline", data.sync?.pending_actions ?? 0, "sync"],
     ["Conflitos offline", data.sync?.conflict_actions ?? 0, "sync"],
   ];

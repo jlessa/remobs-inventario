@@ -11,6 +11,7 @@
 ### Corrigido
 - Correção do acesso direto em produção às rotas `/app/platforms/new/`, `/app/sensors/new/`, `/app/checklists/` e `/app/checklists/new/` no AWS Amplify.
 - Correção do cache do PWA para forçar troca de versão do service worker e limpar caches antigos após novo deploy.
+- Correção do dashboard operacional para consultar checklists e exibir indicadores de checklists registrados e enviados.
 
 ### Publicado
 - Publicação manual do frontend atualizado no AWS Amplify de produção, branch `prod`, com o job `18`, usando o profile AWS `aws-remobs`.
