@@ -9,6 +9,7 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { checklistAnswerGroups, formatChecklistValue, getKnownChecklistAnswerKeys } from "../checklists/fieldChecklist";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
 import type { Checklist } from "../types";
@@ -46,6 +47,14 @@ export default function ChecklistDetailPage() {
   if (!checklist) return <Alert severity="info">Carregando checklist.</Alert>;
 
   const progress = Math.round((checklist.current_step / checklist.total_steps) * 100);
+  const knownAnswerKeys = getKnownChecklistAnswerKeys();
+  const groupedAnswers = checklistAnswerGroups
+    .map((group) => ({
+      ...group,
+      fields: group.fields.filter((field) => Object.prototype.hasOwnProperty.call(checklist.answers, field.key)),
+    }))
+    .filter((group) => group.fields.length > 0);
+  const extraAnswers = Object.entries(checklist.answers).filter(([key]) => !knownAnswerKeys.has(key));
 
   return (
     <Stack spacing={2}>
@@ -72,14 +81,34 @@ export default function ChecklistDetailPage() {
 
       <Card>
         <CardContent>
-          <Stack spacing={1}>
+          <Stack spacing={2}>
             <Typography variant="h6">Respostas</Typography>
-            {Object.entries(checklist.answers).map(([key, value]) => (
-              <Stack key={key} direction="row" justifyContent="space-between" gap={1}>
-                <Typography color="text.secondary">{key.replaceAll(".", " / ")}</Typography>
-                <Typography fontWeight={700}>{String(value)}</Typography>
+            {groupedAnswers.map((group) => (
+              <Stack key={group.title} spacing={1}>
+                <Typography variant="subtitle1" fontWeight={700}>
+                  {group.title}
+                </Typography>
+                {group.fields.map((field) => (
+                  <Stack key={field.key} direction={{ xs: "column", sm: "row" }} justifyContent="space-between" gap={1}>
+                    <Typography color="text.secondary">{field.label}</Typography>
+                    <Typography fontWeight={700}>{formatChecklistValue(checklist.answers[field.key])}</Typography>
+                  </Stack>
+                ))}
               </Stack>
             ))}
+            {extraAnswers.length > 0 && (
+              <Stack spacing={1}>
+                <Typography variant="subtitle1" fontWeight={700}>
+                  Outras respostas
+                </Typography>
+                {extraAnswers.map(([key, value]) => (
+                  <Stack key={key} direction={{ xs: "column", sm: "row" }} justifyContent="space-between" gap={1}>
+                    <Typography color="text.secondary">{key.replaceAll(".", " / ")}</Typography>
+                    <Typography fontWeight={700}>{formatChecklistValue(value)}</Typography>
+                  </Stack>
+                ))}
+              </Stack>
+            )}
             {Object.keys(checklist.answers).length === 0 && <Alert severity="info">Nenhuma resposta registrada.</Alert>}
           </Stack>
         </CardContent>

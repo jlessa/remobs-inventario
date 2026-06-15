@@ -63,6 +63,27 @@ export interface SyncConflictDecisionPayload {
   reason: string;
 }
 
+export interface PlatformCreatePayload {
+  name: string;
+  platform_type: string;
+  manufacturer?: string;
+  model?: string;
+  operational_status?: string;
+  description?: string;
+}
+
+export interface SensorCreatePayload {
+  sensor_type: string;
+  family: string;
+  brand?: string;
+  model?: string;
+  serial_number?: string;
+  patrimony_number?: string;
+  operational_status?: string;
+  calibration_due_at?: string;
+  notes?: string;
+}
+
 export interface SensorUpdatePayload {
   sensor_type?: string;
   family?: string;
@@ -137,6 +158,11 @@ export const inventoryService = {
     return response.data;
   },
 
+  async createPlatform(payload: PlatformCreatePayload): Promise<Platform> {
+    const response = await inventoryApi.post<Platform>("/platforms", payload);
+    return response.data;
+  },
+
   async listSensors(): Promise<ApiList<Sensor>> {
     const response = await inventoryApi.get<ApiList<Sensor>>("/sensors");
     return response.data;
@@ -144,6 +170,11 @@ export const inventoryService = {
 
   async getSensor(id: string): Promise<SensorDetail> {
     const response = await inventoryApi.get<SensorDetail>(`/sensors/${id}`);
+    return response.data;
+  },
+
+  async createSensor(payload: SensorCreatePayload): Promise<Sensor> {
+    const response = await inventoryApi.post<Sensor>("/sensors", payload);
     return response.data;
   },
 

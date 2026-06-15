@@ -25,6 +25,32 @@ describe("cliente de inventário", () => {
     expect(patch).toHaveBeenCalledWith("/sensors/sensor-1", { operational_status: "inconsistencia", reason: "Falha em campo." });
   });
 
+  it("cadastra plataformas e sensores nos endpoints operacionais", async () => {
+    const post = vi.spyOn(inventoryApi, "post").mockResolvedValue({ data: { id: "id-teste" } });
+
+    await inventoryService.createPlatform({
+      name: "Boia 01",
+      platform_type: "boia",
+      operational_status: "disponivel",
+    });
+    await inventoryService.createSensor({
+      sensor_type: "ondas",
+      family: "Ondógrafo",
+      operational_status: "nao_instalado",
+    });
+
+    expect(post).toHaveBeenNthCalledWith(1, "/platforms", {
+      name: "Boia 01",
+      platform_type: "boia",
+      operational_status: "disponivel",
+    });
+    expect(post).toHaveBeenNthCalledWith(2, "/sensors", {
+      sensor_type: "ondas",
+      family: "Ondógrafo",
+      operational_status: "nao_instalado",
+    });
+  });
+
   it("envia checklists e resolve conflitos offline", async () => {
     const post = vi.spyOn(inventoryApi, "post").mockResolvedValue({ data: { id: "id-teste", status: "ok" } });
     const patch = vi.spyOn(inventoryApi, "patch").mockResolvedValue({ data: { id: "id-teste" } });

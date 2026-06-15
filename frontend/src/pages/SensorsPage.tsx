@@ -1,7 +1,10 @@
+import AddIcon from "@mui/icons-material/Add";
 import Alert from "@mui/material/Alert";
+import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardContent from "@mui/material/CardContent";
+import Fab from "@mui/material/Fab";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
@@ -9,12 +12,14 @@ import { useNavigate } from "react-router-dom";
 
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
+import { useAuth } from "../state/AuthContext";
 import type { Sensor } from "../types";
 
 export default function SensorsPage() {
   const [items, setItems] = useState<Sensor[]>([]);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
+  const { hasPermission } = useAuth();
 
   useEffect(() => {
     inventoryService
@@ -25,7 +30,14 @@ export default function SensorsPage() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h5">Sensores</Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="h5">Sensores</Typography>
+        {hasPermission("sensor:update") && (
+          <Button startIcon={<AddIcon />} variant="contained" onClick={() => navigate("/app/sensors/new")} sx={{ display: { xs: "none", sm: "inline-flex" } }}>
+            Novo sensor
+          </Button>
+        )}
+      </Stack>
       {error && <Alert severity="error">Erro ao carregar sensores.</Alert>}
       {items.length === 0 && !error && <Alert severity="info">Nenhum sensor cadastrado.</Alert>}
       {items.map((item) => (
@@ -46,6 +58,16 @@ export default function SensorsPage() {
           </CardActionArea>
         </Card>
       ))}
+      {hasPermission("sensor:update") && (
+        <Fab
+          aria-label="Cadastrar sensor"
+          color="primary"
+          onClick={() => navigate("/app/sensors/new")}
+          sx={{ display: { xs: "flex", sm: "none" }, position: "fixed", bottom: 80, right: 16 }}
+        >
+          <AddIcon />
+        </Fab>
+      )}
     </Stack>
   );
 }
