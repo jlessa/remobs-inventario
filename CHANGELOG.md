@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## [2026-06-15]
+
+### Adicionado
+- Checklist de campo detalhado no frontend, com seções para operação, condições ambientais, equipe, embarcações, fotografias obrigatórias, inspeção técnica, problemas, solução e pós-campo.
+- Exibição agrupada das respostas do checklist na tela de detalhe, com rótulos legíveis e valores booleanos apresentados como `Sim` ou `Não`.
+- Teste automatizado para validar o preenchimento do checklist de campo detalhado e o payload enviado ao serviço de checklists.
+
+### Analisado
+- Análise das planilhas em `docs/` para identificar oportunidades de evolução do sistema de inventário, incluindo importação assistida de itens, estações, pendências, checklists de campo, ferramentas e catálogos auxiliares.
+
+### Observado
+- Foram registradas lacunas de saneamento nos dados das planilhas, incluindo quantidades ausentes no paiol, baixa cobertura de condição e movimentação no inventário de laboratório, duplicidades de série/TAG, contatos pouco estruturados e fórmulas de pendências que retornam erro quando lidas como valor calculado.
+
+## [2026-06-09]
+
+### Adicionado
+- Formulários no frontend para cadastrar plataformas e sensores, com envio para os endpoints operacionais existentes.
+- Botões de ação nas páginas de plataformas e sensores para usuários com permissões `platform:update` e `sensor:update`.
+- Testes automatizados para validar a presença das ações de cadastro e o uso dos endpoints `POST /platforms` e `POST /sensors`.
+
+### Corrigido
+- Correção da ausência do fluxo de cadastro de plataformas e sensores no frontend.
+
+### Publicado
+- Publicação manual do frontend atualizado no AWS Amplify de produção, branch `prod`, usando o perfil AWS `aws-remobs`.
+
 ## [2026-06-08]
 
 ### Adicionado
