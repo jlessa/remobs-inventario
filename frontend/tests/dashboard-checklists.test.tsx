@@ -7,6 +7,7 @@ import { inventoryService } from "../src/services/inventoryService";
 
 vi.mock("../src/services/inventoryService", () => ({
   inventoryService: {
+    getDashboardSummary: vi.fn(),
     listItems: vi.fn(),
     listMovements: vi.fn(),
     listAlerts: vi.fn(),
@@ -29,7 +30,21 @@ describe("dashboard operacional", () => {
     vi.restoreAllMocks();
   });
 
-  it("consulta checklists e exibe indicadores de registros e envios", async () => {
+  it("consulta o resumo agregado e exibe indicadores operacionais", async () => {
+    vi.mocked(inventoryService.getDashboardSummary).mockResolvedValue({
+      items_registered: 729,
+      critical_stock: 0,
+      pending_requests: 0,
+      platforms_in_operation: 90,
+      platforms_in_maintenance: 13,
+      sensors_with_alert: 18,
+      checklists_registered: 12,
+      checklists_submitted: 7,
+      offline_pending: 0,
+      offline_conflicts: 0,
+      critical_alerts: [],
+      critical_stock_items: [],
+    });
     vi.mocked(inventoryService.listItems).mockResolvedValue({ items: [], total: 0 });
     vi.mocked(inventoryService.listMovements).mockResolvedValue({ items: [], total: 0 });
     vi.mocked(inventoryService.listAlerts).mockResolvedValue({ items: [], total: 0 });
@@ -54,8 +69,13 @@ describe("dashboard operacional", () => {
       </MemoryRouter>,
     );
 
-    await waitFor(() => expect(inventoryService.listChecklists).toHaveBeenCalledTimes(1));
-    expectMetric("Checklists registrados", "2");
-    expectMetric("Checklists enviados", "1");
+    await waitFor(() => expect(inventoryService.getDashboardSummary).toHaveBeenCalledTimes(1));
+    expect(inventoryService.listItems).not.toHaveBeenCalled();
+    expectMetric("Itens cadastrados", "729");
+    expectMetric("Plataformas em operação", "90");
+    expectMetric("Plataformas em manutenção", "13");
+    expectMetric("Sensores com alerta", "18");
+    expectMetric("Checklists registrados", "12");
+    expectMetric("Checklists enviados", "7");
   });
 });

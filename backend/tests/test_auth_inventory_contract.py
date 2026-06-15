@@ -10,6 +10,7 @@ from typing import Any
 import jwt
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import func, select
 
 
 TEST_SECRET = "segredo-de-teste-remobs-com-tamanho-seguro"
@@ -33,6 +34,9 @@ _configure_test_environment()
 from app.core.database import Base, engine  # noqa: E402
 from app.core.database import AsyncSessionLocal  # noqa: E402
 from app.main import create_app  # noqa: E402
+from app.models.alert import Alert  # noqa: E402
+from app.models.checklist import FieldChecklist  # noqa: E402
+from app.models.inventory import InventoryCategory, InventoryItem, Location, StockBalance, StockMovement  # noqa: E402
 from app.models.platform import Hull, Platform, PlatformSystem  # noqa: E402
 from app.models.sensor import Sensor, SensorInstallation  # noqa: E402
 from app.models.sync import SyncAction  # noqa: E402
@@ -388,3 +392,214 @@ def test_sync_conflict_resolution_updates_action_status(client: TestClient) -> N
 
     assert resolve_response.status_code == 200
     assert resolve_response.json()["status"] == "discarded"
+
+
+def test_dashboard_summary_returns_aggregated_operational_counts(client: TestClient) -> None:
+    user_id = 7
+
+    async def seed_and_count() -> dict[str, int]:
+        async with AsyncSessionLocal() as session:
+            suffix = str(uuid.uuid4())
+            category = InventoryCategory(name=f"Categoria dashboard {suffix}")
+            location = Location(name=f"Local dashboard {suffix}")
+            session.add_all([category, location])
+            await session.flush()
+
+            critical_item = InventoryItem(
+                item_type="consumable",
+                category_id=category.id,
+                name=f"Item crítico dashboard {suffix}",
+                current_location_id=location.id,
+                minimum_stock_national=5,
+            )
+            healthy_item = InventoryItem(
+                item_type="consumable",
+                category_id=category.id,
+                name=f"Item saudável dashboard {suffix}",
+                current_location_id=location.id,
+                minimum_stock_national=1,
+            )
+            platform_operation = Platform(
+                name=f"Plataforma em operação {suffix}",
+                platform_type="boia_fixa",
+                operational_status="em_operacao",
+            )
+            platform_maintenance = Platform(
+                name=f"Plataforma em manutenção {suffix}",
+                platform_type="boia_fixa",
+                operational_status="em_manutencao",
+            )
+            broken_sensor = Sensor(
+                sensor_type="meteorologico",
+                family=f"Sensor com alerta {suffix}",
+                operational_status="avariado",
+            )
+            submitted_checklist = FieldChecklist(
+                title=f"Checklist enviado {suffix}",
+                template_name="Operacional",
+                status="submitted",
+                submitted_by_id=user_id,
+                submitted_by_username="operacao",
+            )
+            draft_checklist = FieldChecklist(
+                title=f"Checklist rascunho {suffix}",
+                template_name="Operacional",
+                status="draft",
+                submitted_by_id=user_id,
+                submitted_by_username="operacao",
+            )
+            session.add_all(
+                [
+                    critical_item,
+                    healthy_item,
+                    platform_operation,
+                    platform_maintenance,
+                    broken_sensor,
+                    submitted_checklist,
+                    draft_checklist,
+                ]
+            )
+            await session.flush()
+            session.add_all(
+                [
+                    StockBalance(item_id=critical_item.id, location_id=location.id, quantity=2),
+                    StockBalance(item_id=healthy_item.id, location_id=location.id, quantity=3),
+                    StockMovement(
+                        item_id=critical_item.id,
+                        quantity=1,
+                        requested_by_id=user_id,
+                        requested_by_username="operacao",
+                        status="pending",
+                        reason="Solicitação pendente de teste.",
+                    ),
+                    SyncAction(
+                        client_action_id=f"pendente-{suffix}",
+                        action_type="movement_request",
+                        entity_type="stock_movement",
+                        payload={},
+                        user_id=user_id,
+                        username="operacao",
+                        status="pending",
+                    ),
+                    SyncAction(
+                        client_action_id=f"conflito-{suffix}",
+                        action_type="movement_request",
+                        entity_type="stock_movement",
+                        payload={},
+                        user_id=user_id,
+                        username="operacao",
+                        status="conflict",
+                    ),
+                    Alert(
+                        alert_type="estoque_minimo",
+                        severity="critical",
+                        entity_type="inventory_item",
+                        entity_id=str(critical_item.id),
+                        title=f"Alerta crítico dashboard {suffix}",
+                        message="Estoque abaixo do mínimo.",
+                        status="open",
+                    ),
+                ]
+            )
+            await session.commit()
+
+            stock_totals = (
+                select(
+                    StockBalance.item_id.label("item_id"),
+                    func.coalesce(func.sum(StockBalance.quantity), 0).label("stock_total"),
+                )
+                .group_by(StockBalance.item_id)
+                .subquery()
+            )
+
+            return {
+                "items_registered": int(
+                    await session.scalar(
+                        select(func.count())
+                        .select_from(InventoryItem)
+                        .where(InventoryItem.deleted_at.is_(None), InventoryItem.is_active.is_(True))
+                    )
+                    or 0
+                ),
+                "critical_stock": int(
+                    await session.scalar(
+                        select(func.count())
+                        .select_from(InventoryItem)
+                        .outerjoin(stock_totals, stock_totals.c.item_id == InventoryItem.id)
+                        .where(
+                            InventoryItem.deleted_at.is_(None),
+                            InventoryItem.is_active.is_(True),
+                            InventoryItem.minimum_stock_national > 0,
+                            func.coalesce(stock_totals.c.stock_total, 0) < InventoryItem.minimum_stock_national,
+                        )
+                    )
+                    or 0
+                ),
+                "pending_requests": int(
+                    await session.scalar(select(func.count()).select_from(StockMovement).where(StockMovement.status == "pending"))
+                    or 0
+                ),
+                "platforms_in_operation": int(
+                    await session.scalar(
+                        select(func.count())
+                        .select_from(Platform)
+                        .where(Platform.deleted_at.is_(None), Platform.operational_status == "em_operacao")
+                    )
+                    or 0
+                ),
+                "platforms_in_maintenance": int(
+                    await session.scalar(
+                        select(func.count())
+                        .select_from(Platform)
+                        .where(
+                            Platform.deleted_at.is_(None),
+                            Platform.operational_status.in_(["manutencao", "em_manutencao", "offline"]),
+                        )
+                    )
+                    or 0
+                ),
+                "sensors_with_alert": int(
+                    await session.scalar(
+                        select(func.count())
+                        .select_from(Sensor)
+                        .where(Sensor.deleted_at.is_(None), Sensor.operational_status.in_(["avariado", "inconsistencia"]))
+                    )
+                    or 0
+                ),
+                "checklists_registered": int(
+                    await session.scalar(select(func.count()).select_from(FieldChecklist)) or 0
+                ),
+                "checklists_submitted": int(
+                    await session.scalar(
+                        select(func.count()).select_from(FieldChecklist).where(FieldChecklist.status == "submitted")
+                    )
+                    or 0
+                ),
+                "offline_pending": int(
+                    await session.scalar(
+                        select(func.count())
+                        .select_from(SyncAction)
+                        .where(SyncAction.user_id == user_id, SyncAction.status == "pending")
+                    )
+                    or 0
+                ),
+                "offline_conflicts": int(
+                    await session.scalar(
+                        select(func.count())
+                        .select_from(SyncAction)
+                        .where(SyncAction.user_id == user_id, SyncAction.status == "conflict")
+                    )
+                    or 0
+                ),
+            }
+
+    expected = run_async(seed_and_count())
+
+    response = client.get("/dashboard/summary", headers=auth_headers(["*"], user_id=user_id))
+
+    assert response.status_code == 200
+    payload = response.json()
+    for key, value in expected.items():
+        assert payload[key] == value
+    assert payload["critical_stock_items"][0]["stock_total"] < payload["critical_stock_items"][0]["minimum_stock_national"]
+    assert payload["critical_alerts"][0]["severity"] == "critical"

@@ -181,6 +181,29 @@ export interface SyncStatus {
   server_time: string;
 }
 
+export interface DashboardCriticalStockItem {
+  id: string;
+  name: string;
+  unit: string;
+  stock_total: number;
+  minimum_stock_national: number;
+}
+
+export interface DashboardSummary {
+  items_registered: number;
+  critical_stock: number;
+  pending_requests: number;
+  platforms_in_operation: number;
+  platforms_in_maintenance: number;
+  sensors_with_alert: number;
+  checklists_registered: number;
+  checklists_submitted: number;
+  offline_pending: number;
+  offline_conflicts: number;
+  critical_alerts: AlertItem[];
+  critical_stock_items: DashboardCriticalStockItem[];
+}
+
 export interface SyncConflict {
   id: string;
   client_action_id: string;

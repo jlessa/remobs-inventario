@@ -4,6 +4,7 @@ import type {
   ApiList,
   AuditLog,
   Checklist,
+  DashboardSummary,
   InventoryItem,
   ItemHistory,
   Movement,
@@ -98,6 +99,11 @@ export interface SensorUpdatePayload {
 }
 
 export const inventoryService = {
+  async getDashboardSummary(): Promise<DashboardSummary> {
+    const response = await inventoryApi.get<DashboardSummary>("/dashboard/summary");
+    return response.data;
+  },
+
   async listItems(): Promise<ApiList<InventoryItem>> {
     const response = await inventoryApi.get<ApiList<InventoryItem>>("/inventory/items");
     return response.data;

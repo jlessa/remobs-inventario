@@ -9,95 +9,54 @@ import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
-import type { AlertItem, Checklist, InventoryItem, Movement, Platform, Sensor, SyncStatus } from "../types";
+import type { DashboardSummary } from "../types";
 
-interface DashboardState {
-  items: InventoryItem[];
-  movements: Movement[];
-  alerts: AlertItem[];
-  platforms: Platform[];
-  sensors: Sensor[];
-  checklists: Checklist[];
-  sync: SyncStatus | null;
-}
-
-const initialState: DashboardState = {
-  items: [],
-  movements: [],
-  alerts: [],
-  platforms: [],
-  sensors: [],
-  checklists: [],
-  sync: null,
+const initialSummary: DashboardSummary = {
+  items_registered: 0,
+  critical_stock: 0,
+  pending_requests: 0,
+  platforms_in_operation: 0,
+  platforms_in_maintenance: 0,
+  sensors_with_alert: 0,
+  checklists_registered: 0,
+  checklists_submitted: 0,
+  offline_pending: 0,
+  offline_conflicts: 0,
+  critical_alerts: [],
+  critical_stock_items: [],
 };
 
 export default function HomePage() {
-  const [data, setData] = useState<DashboardState>(initialState);
+  const [summary, setSummary] = useState<DashboardSummary>(initialSummary);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    Promise.all([
-      inventoryService.listItems(),
-      inventoryService.listMovements(),
-      inventoryService.listAlerts(),
-      inventoryService.listPlatforms(),
-      inventoryService.listSensors(),
-      inventoryService.listChecklists().catch(() => ({ items: [], total: 0 })),
-      inventoryService.getSyncStatus(),
-    ])
-      .then(([items, movements, alerts, platforms, sensors, checklists, sync]) =>
-        setData({
-          items: items.items,
-          movements: movements.items,
-          alerts: alerts.items,
-          platforms: platforms.items,
-          sensors: sensors.items,
-          checklists: checklists.items,
-          sync,
-        }),
-      )
+    inventoryService
+      .getDashboardSummary()
+      .then((dashboardSummary) => {
+        setSummary(dashboardSummary);
+        setError(false);
+      })
       .catch(() => setError(true));
   }, []);
 
-  const summary = useMemo(() => {
-    const criticalStock = data.items.filter(
-      (item) => item.minimum_stock_national > 0 && item.stock_total < item.minimum_stock_national,
-    );
-    const pendingMovements = data.movements.filter((movement) => movement.status === "pending");
-    const platformsInOperation = data.platforms.filter((platform) => platform.operational_status === "em_operacao");
-    const platformsInMaintenance = data.platforms.filter((platform) =>
-      ["manutencao", "em_manutencao", "offline"].includes(platform.operational_status),
-    );
-    const brokenSensors = data.sensors.filter((sensor) => ["avariado", "inconsistencia"].includes(sensor.operational_status));
-    const submittedChecklists = data.checklists.filter((checklist) => checklist.status === "submitted");
-
-    return {
-      criticalStock,
-      pendingMovements,
-      platformsInOperation,
-      platformsInMaintenance,
-      brokenSensors,
-      submittedChecklists,
-    };
-  }, [data]);
-
   const cards = [
-    ["Itens cadastrados", data.items.length, "inventory"],
-    ["Estoque crítico", summary.criticalStock.length, "warning"],
-    ["Solicitações pendentes", summary.pendingMovements.length, "movement"],
-    ["Plataformas em operação", summary.platformsInOperation.length, "platform"],
-    ["Plataformas em manutenção", summary.platformsInMaintenance.length, "platform"],
-    ["Sensores com alerta", summary.brokenSensors.length, "sensor"],
-    ["Checklists registrados", data.checklists.length, "checklist"],
-    ["Checklists enviados", summary.submittedChecklists.length, "checklist"],
-    ["Pendências offline", data.sync?.pending_actions ?? 0, "sync"],
-    ["Conflitos offline", data.sync?.conflict_actions ?? 0, "sync"],
+    ["Itens cadastrados", summary.items_registered, "inventory"],
+    ["Estoque crítico", summary.critical_stock, "warning"],
+    ["Solicitações pendentes", summary.pending_requests, "movement"],
+    ["Plataformas em operação", summary.platforms_in_operation, "platform"],
+    ["Plataformas em manutenção", summary.platforms_in_maintenance, "platform"],
+    ["Sensores com alerta", summary.sensors_with_alert, "sensor"],
+    ["Checklists registrados", summary.checklists_registered, "checklist"],
+    ["Checklists enviados", summary.checklists_submitted, "checklist"],
+    ["Pendências offline", summary.offline_pending, "sync"],
+    ["Conflitos offline", summary.offline_conflicts, "sync"],
   ];
 
   return (
@@ -135,8 +94,8 @@ export default function HomePage() {
             <CardContent>
               <Stack spacing={1.5}>
                 <Typography variant="h6">Alertas críticos</Typography>
-                {data.alerts.length === 0 && <Alert severity="success">Nenhum alerta ativo.</Alert>}
-                {data.alerts.slice(0, 4).map((alert) => (
+                {summary.critical_alerts.length === 0 && <Alert severity="success">Nenhum alerta ativo.</Alert>}
+                {summary.critical_alerts.map((alert) => (
                   <Stack key={alert.id} direction="row" justifyContent="space-between" gap={1}>
                     <Typography>{alert.title}</Typography>
                     <StatusChip status={alert.severity} />
@@ -151,8 +110,8 @@ export default function HomePage() {
             <CardContent>
               <Stack spacing={1.5}>
                 <Typography variant="h6">Estoque crítico</Typography>
-                {summary.criticalStock.length === 0 && <Alert severity="success">Sem item abaixo do mínimo nacional.</Alert>}
-                {summary.criticalStock.slice(0, 4).map((item) => (
+                {summary.critical_stock_items.length === 0 && <Alert severity="success">Sem item abaixo do mínimo nacional.</Alert>}
+                {summary.critical_stock_items.map((item) => (
                   <Stack key={item.id} direction="row" justifyContent="space-between" gap={1}>
                     <Stack>
                       <Typography>{item.name}</Typography>
