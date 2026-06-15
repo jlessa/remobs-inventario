@@ -6,6 +6,10 @@
 - Checklist de campo detalhado no frontend, com seções para operação, condições ambientais, equipe, embarcações, fotografias obrigatórias, inspeção técnica, problemas, solução e pós-campo.
 - Exibição agrupada das respostas do checklist na tela de detalhe, com rótulos legíveis e valores booleanos apresentados como `Sim` ou `Não`.
 - Teste automatizado para validar o preenchimento do checklist de campo detalhado e o payload enviado ao serviço de checklists.
+- Fallbacks estáticos do SPA para as rotas diretas de cadastro de plataformas, cadastro de sensores, lista de checklists e novo checklist.
+
+### Corrigido
+- Correção do acesso direto em produção às rotas `/app/platforms/new/`, `/app/sensors/new/`, `/app/checklists/` e `/app/checklists/new/` no AWS Amplify.
 
 ### Analisado
 - Análise das planilhas em `docs/` para identificar oportunidades de evolução do sistema de inventário, incluindo importação assistida de itens, estações, pendências, checklists de campo, ferramentas e catálogos auxiliares.
