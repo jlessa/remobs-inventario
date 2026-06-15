@@ -71,3 +71,15 @@ Validações executadas:
 - `https://inventario.remobs.com.br/app/checklists/new/`: HTTP `200`.
 - `https://api-inventario.remobs.com.br/healthz`: HTTP `200`.
 - O bundle publicado `assets/index-ZTJ89eMu.js` contém os textos `Nova plataforma`, `Novo sensor`, `Ficha de Campo V2` e `Novo checklist de campo`.
+
+## Ajuste posterior de cache
+
+Após o deploy, o usuário informou que não encontrava as alterações no ambiente de produção. A verificação confirmou que o HTML e o bundle publicados continham as alterações, mas o PWA ainda usava o cache `remobs-inventario-v1` no service worker, o que poderia manter respostas antigas no navegador do usuário.
+
+Foi implementada a troca para `remobs-inventario-v2`, com `self.skipWaiting()` na instalação e `self.clients.claim()` na ativação, para acelerar a substituição do service worker e remover caches antigos.
+
+Validações adicionais executadas:
+
+- `npm test -- service-worker-cache.test.ts --run`: 1 teste aprovado.
+- `npm test -- --run`: 8 arquivos de teste e 17 testes aprovados.
+- `npm run build`: build concluído com sucesso e `frontend/dist/sw.js` gerado com `remobs-inventario-v2`.
