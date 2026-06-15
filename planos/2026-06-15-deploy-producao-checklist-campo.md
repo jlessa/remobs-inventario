@@ -83,3 +83,9 @@ Validações adicionais executadas:
 - `npm test -- service-worker-cache.test.ts --run`: 1 teste aprovado.
 - `npm test -- --run`: 8 arquivos de teste e 17 testes aprovados.
 - `npm run build`: build concluído com sucesso e `frontend/dist/sw.js` gerado com `remobs-inventario-v2`.
+- Job `19` do Amplify: etapas `DEPLOY` e `VERIFY` concluídas com `SUCCEED`.
+- `https://inventario.remobs.com.br/login/`: HTTP `200` após republicação.
+- `https://inventario.remobs.com.br/app/platforms/new/`: HTTP `200` após republicação.
+- `https://inventario.remobs.com.br/app/sensors/new/`: HTTP `200` após republicação.
+- `https://inventario.remobs.com.br/app/checklists/new/`: HTTP `200` após republicação.
+- `https://inventario.remobs.com.br/sw.js`: publicado com `remobs-inventario-v2`, `skipWaiting` e `clients.claim`.
