@@ -19,6 +19,7 @@
 - Republicação manual da correção de cache do PWA no AWS Amplify de produção, branch `prod`, com o job `19`, usando o profile AWS `aws-remobs`.
 - Publicação manual da correção do dashboard de checklists no AWS Amplify de produção, branch `prod`, com o job `20`, usando o profile AWS `aws-remobs`.
 - Carga em produção dos dados possíveis das planilhas, adicionando 728 itens de inventário, 113 plataformas, 218 sensores e 12 checklists.
+- Integração da branch de trabalho na `main` e validação read-only das contagens do dashboard em produção.
 
 ### Analisado
 - Análise das planilhas em `docs/` para identificar oportunidades de evolução do sistema de inventário, incluindo importação assistida de itens, estações, pendências, checklists de campo, ferramentas e catálogos auxiliares.

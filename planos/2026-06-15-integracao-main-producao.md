@@ -35,4 +35,32 @@ Mesclar a branch `codex/implementacao-inicial-remobs-inventario` na `main`, publ
 
 ## Resultado
 
-Em andamento.
+Concluído.
+
+A branch `codex/implementacao-inicial-remobs-inventario` foi mesclada na `main` sem conflitos e enviada para `origin/main`.
+
+Verificações locais executadas após o merge:
+
+- `npm test -- --run` no frontend: 9 arquivos de teste e 18 testes aprovados.
+- `npm run build` no frontend: build concluído com sucesso.
+- `python -m pytest` no backend: 11 testes aprovados.
+- `python -m py_compile` nos scripts de carga das planilhas: concluído com sucesso.
+
+Validação pública de produção:
+
+- `https://inventario.remobs.com.br/login/`: HTTP 200.
+- `https://inventario.remobs.com.br/app/home/`: HTTP 200.
+- Bundle publicado contém `Checklists registrados` e `listChecklists`.
+
+Validação read-only no banco de produção via task avulsa do ECS:
+
+- Itens cadastrados: 729.
+- Estoque crítico: 0.
+- Solicitações pendentes: 0.
+- Plataformas em operação: 90.
+- Plataformas em manutenção: 13.
+- Sensores com alerta: 18.
+- Checklists registrados: 12.
+- Checklists enviados: 7.
+- Pendências offline: 0.
+- Conflitos offline: 0.
