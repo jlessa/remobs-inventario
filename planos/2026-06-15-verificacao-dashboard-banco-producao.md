@@ -34,7 +34,7 @@ Identificar se a divergência vem do frontend, da API ou dos dados persistidos n
 
 ## Resultado
 
-Em andamento.
+Concluído.
 
 Foi identificada uma falha objetiva no frontend: o dashboard carregava itens, movimentações, alertas, plataformas, sensores e sincronização, mas não chamava o endpoint `/checklists`. Por isso, checklists nunca apareceriam nos indicadores do dashboard, mesmo que existissem no banco.
 
@@ -51,6 +51,16 @@ Validações locais executadas:
 - `npm test -- dashboard-checklists.test.tsx --run`: 1 teste aprovado.
 - `npm test -- --run`: 9 arquivos de teste e 18 testes aprovados.
 - `npm run build`: build concluído com sucesso, gerando o bundle `assets/index-CnNCno9r.js`.
+
+Validações de produção após o deploy:
+
+- AWS Amplify app `d1oidnxd2f4saq`, branch `prod`, job `20`: `SUCCEED`.
+- Passos do job `20`: `DEPLOY` e `VERIFY` concluídos com sucesso.
+- `https://inventario.remobs.com.br/login/?v=20`: HTTP 200.
+- `https://inventario.remobs.com.br/app/home/?v=20`: HTTP 200.
+- HTML de produção apontando para `/assets/index-CnNCno9r.js`.
+- Bundle publicado contém `Checklists registrados`, `Checklists enviados` e a chamada `listChecklists`.
+- `sw.js` publicado contém `remobs-inventario-v2`, `skipWaiting` e `clients.claim`.
 
 Verificação read-only executada no banco de produção a partir da task ativa do ECS:
 

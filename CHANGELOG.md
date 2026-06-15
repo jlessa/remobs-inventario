@@ -16,6 +16,7 @@
 ### Publicado
 - Publicação manual do frontend atualizado no AWS Amplify de produção, branch `prod`, com o job `18`, usando o profile AWS `aws-remobs`.
 - Republicação manual da correção de cache do PWA no AWS Amplify de produção, branch `prod`, com o job `19`, usando o profile AWS `aws-remobs`.
+- Publicação manual da correção do dashboard de checklists no AWS Amplify de produção, branch `prod`, com o job `20`, usando o profile AWS `aws-remobs`.
 
 ### Analisado
 - Análise das planilhas em `docs/` para identificar oportunidades de evolução do sistema de inventário, incluindo importação assistida de itens, estações, pendências, checklists de campo, ferramentas e catálogos auxiliares.
