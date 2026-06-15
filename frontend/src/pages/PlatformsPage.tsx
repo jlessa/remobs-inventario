@@ -1,7 +1,10 @@
+import AddIcon from "@mui/icons-material/Add";
 import Alert from "@mui/material/Alert";
+import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardContent from "@mui/material/CardContent";
+import Fab from "@mui/material/Fab";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
@@ -9,12 +12,14 @@ import { useNavigate } from "react-router-dom";
 
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
+import { useAuth } from "../state/AuthContext";
 import type { Platform } from "../types";
 
 export default function PlatformsPage() {
   const [items, setItems] = useState<Platform[]>([]);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
+  const { hasPermission } = useAuth();
 
   useEffect(() => {
     inventoryService
@@ -25,7 +30,14 @@ export default function PlatformsPage() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h5">Plataformas</Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="h5">Plataformas</Typography>
+        {hasPermission("platform:update") && (
+          <Button startIcon={<AddIcon />} variant="contained" onClick={() => navigate("/app/platforms/new")} sx={{ display: { xs: "none", sm: "inline-flex" } }}>
+            Nova plataforma
+          </Button>
+        )}
+      </Stack>
       {error && <Alert severity="error">Erro ao carregar plataformas.</Alert>}
       {items.length === 0 && !error && <Alert severity="info">Nenhuma plataforma cadastrada.</Alert>}
       {items.map((item) => (
@@ -44,6 +56,16 @@ export default function PlatformsPage() {
           </CardActionArea>
         </Card>
       ))}
+      {hasPermission("platform:update") && (
+        <Fab
+          aria-label="Cadastrar plataforma"
+          color="primary"
+          onClick={() => navigate("/app/platforms/new")}
+          sx={{ display: { xs: "flex", sm: "none" }, position: "fixed", bottom: 80, right: 16 }}
+        >
+          <AddIcon />
+        </Fab>
+      )}
     </Stack>
   );
 }

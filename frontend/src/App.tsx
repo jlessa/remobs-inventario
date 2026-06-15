@@ -17,8 +17,10 @@ import MenuPage from "./pages/MenuPage";
 import MovementRequestPage from "./pages/MovementRequestPage";
 import MovementsPage from "./pages/MovementsPage";
 import PlatformDetailPage from "./pages/PlatformDetailPage";
+import PlatformFormPage from "./pages/PlatformFormPage";
 import PlatformsPage from "./pages/PlatformsPage";
 import SensorDetailPage from "./pages/SensorDetailPage";
+import SensorFormPage from "./pages/SensorFormPage";
 import SensorsPage from "./pages/SensorsPage";
 import SyncPage from "./pages/SyncPage";
 import { useAuth } from "./state/AuthContext";
@@ -48,8 +50,10 @@ export default function App() {
           <Route path="movements/new" element={<MovementRequestPage />} />
           <Route path="alerts" element={<AlertsPage />} />
           <Route path="platforms" element={<PlatformsPage />} />
+          <Route path="platforms/new" element={<PlatformFormPage />} />
           <Route path="platforms/:id" element={<PlatformDetailPage />} />
           <Route path="sensors" element={<SensorsPage />} />
+          <Route path="sensors/new" element={<SensorFormPage />} />
           <Route path="sensors/:id" element={<SensorDetailPage />} />
           <Route path="checklists" element={<ChecklistListPage />} />
           <Route path="checklists/new" element={<ChecklistFormPage />} />
