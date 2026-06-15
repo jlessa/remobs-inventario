@@ -7,6 +7,7 @@
 - Exibição agrupada das respostas do checklist na tela de detalhe, com rótulos legíveis e valores booleanos apresentados como `Sim` ou `Não`.
 - Teste automatizado para validar o preenchimento do checklist de campo detalhado e o payload enviado ao serviço de checklists.
 - Fallbacks estáticos do SPA para as rotas diretas de cadastro de plataformas, cadastro de sensores, lista de checklists e novo checklist.
+- Scripts operacionais para gerar e executar carga idempotente dos dados das planilhas em produção.
 
 ### Corrigido
 - Correção do acesso direto em produção às rotas `/app/platforms/new/`, `/app/sensors/new/`, `/app/checklists/` e `/app/checklists/new/` no AWS Amplify.
@@ -17,6 +18,7 @@
 - Publicação manual do frontend atualizado no AWS Amplify de produção, branch `prod`, com o job `18`, usando o profile AWS `aws-remobs`.
 - Republicação manual da correção de cache do PWA no AWS Amplify de produção, branch `prod`, com o job `19`, usando o profile AWS `aws-remobs`.
 - Publicação manual da correção do dashboard de checklists no AWS Amplify de produção, branch `prod`, com o job `20`, usando o profile AWS `aws-remobs`.
+- Carga em produção dos dados possíveis das planilhas, adicionando 728 itens de inventário, 113 plataformas, 218 sensores e 12 checklists.
 
 ### Analisado
 - Análise das planilhas em `docs/` para identificar oportunidades de evolução do sistema de inventário, incluindo importação assistida de itens, estações, pendências, checklists de campo, ferramentas e catálogos auxiliares.
