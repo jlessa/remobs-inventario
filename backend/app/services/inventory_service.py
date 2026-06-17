@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import uuid
+from collections import defaultdict
 from datetime import datetime, timezone
 from typing import Any
 
@@ -126,6 +127,87 @@ async def serialize_item(session: AsyncSession, item: InventoryItem) -> dict[str
         "created_at": item.created_at,
         "updated_at": item.updated_at,
     }
+
+
+async def serialize_items_bulk(session: AsyncSession, items: list[InventoryItem]) -> list[dict[str, Any]]:
+    """Serializa vários itens com poucas consultas, evitando N+1 por item.
+
+    Carrega categorias, locais atuais e saldos em lote (consultas fixas
+    independentes da quantidade de itens), o que mantém a listagem rápida
+    mesmo com volume alto em bancos remotos como o RDS.
+    """
+    if not items:
+        return []
+
+    item_ids = [item.id for item in items]
+    category_ids = {item.category_id for item in items if item.category_id}
+    location_ids = {item.current_location_id for item in items if item.current_location_id}
+
+    categories: dict[uuid.UUID, InventoryCategory] = {}
+    if category_ids:
+        rows = (await session.execute(select(InventoryCategory).where(InventoryCategory.id.in_(category_ids)))).scalars().all()
+        categories = {category.id: category for category in rows}
+
+    current_locations: dict[uuid.UUID, Location] = {}
+    if location_ids:
+        rows = (await session.execute(select(Location).where(Location.id.in_(location_ids)))).scalars().all()
+        current_locations = {location.id: location for location in rows}
+
+    balances_by_item: dict[uuid.UUID, list[dict[str, Any]]] = defaultdict(list)
+    balance_rows = (
+        await session.execute(
+            select(StockBalance, Location)
+            .join(Location, Location.id == StockBalance.location_id)
+            .where(StockBalance.item_id.in_(item_ids))
+            .order_by(Location.name)
+        )
+    ).all()
+    for balance, location in balance_rows:
+        balances_by_item[balance.item_id].append(
+            {
+                "id": balance.id,
+                "location_id": location.id,
+                "location_name": location.name,
+                "quantity": balance.quantity,
+                "reserved_quantity": balance.reserved_quantity,
+            }
+        )
+
+    serialized: list[dict[str, Any]] = []
+    for item in items:
+        category = categories.get(item.category_id) if item.category_id else None
+        current_location = current_locations.get(item.current_location_id) if item.current_location_id else None
+        balances = balances_by_item.get(item.id, [])
+        serialized.append(
+            {
+                "id": item.id,
+                "item_type": item.item_type,
+                "name": item.name,
+                "brand": item.brand,
+                "model": item.model,
+                "serial_number": item.serial_number,
+                "patrimony_number": item.patrimony_number,
+                "invoice_number": item.invoice_number,
+                "description": item.description,
+                "condition_status": item.condition_status,
+                "category_id": item.category_id,
+                "category_name": category.name if category else None,
+                "current_location_id": item.current_location_id,
+                "current_location_name": current_location.name if current_location else None,
+                "unit": item.unit,
+                "minimum_stock_national": item.minimum_stock_national,
+                "minimum_stock_import": item.minimum_stock_import,
+                "minimum_stock_maintenance": item.minimum_stock_maintenance,
+                "ideal_stock": item.ideal_stock,
+                "is_active": item.is_active,
+                "row_version": item.row_version,
+                "stock_total": sum(balance["quantity"] for balance in balances),
+                "balances": balances,
+                "created_at": item.created_at,
+                "updated_at": item.updated_at,
+            }
+        )
+    return serialized
 
 
 async def serialize_movement(session: AsyncSession, movement: StockMovement) -> dict[str, Any]:

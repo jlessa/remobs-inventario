@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [2026-06-17]
+
+### Corrigido
+- Correção da listagem de inventário (`GET /inventory/items`), que excedia o tempo limite em produção após a carga das planilhas. A serialização passou a carregar categorias, locais e saldos em lote (`serialize_items_bulk`), eliminando o padrão N+1 que gerava milhares de consultas sequenciais ao RDS para 728 itens.
+
+### Adicionado
+- Script `backend/scripts/check_production_readonly.py` para validação somente leitura da produção, autenticando e contando os registros por endpoint sem registrar token ou credenciais.
+
+### Publicado
+- Publicação do backend corrigido em produção: imagem `prod-2026-06-17-listagem` no ECR, revisão `remobs-inventario-backend:5` (a partir da `:4`, preservando variáveis e SSL do RDS) e atualização do serviço ECS `remobs-inventario-backend` no cluster `remobs-inventario-cluster`, com o profile AWS `aws-remobs` na região `sa-east-1`.
+- Republicação do frontend no AWS Amplify de produção, branch `prod`, usando o profile AWS `aws-remobs`.
+
+### Validado
+- Em produção, `GET /inventory/items` voltou a responder (729 itens em regime estável de cerca de 1 segundo, ante o timeout anterior superior a 60 segundos), com os demais endpoints mantendo resposta 200.
+
 ## [2026-06-15]
 
 ### Adicionado

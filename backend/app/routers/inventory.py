@@ -29,6 +29,7 @@ from app.services.inventory_service import (
     get_or_create_category,
     get_or_create_location,
     serialize_item,
+    serialize_items_bulk,
     serialize_movement,
 )
 
@@ -49,7 +50,7 @@ async def list_items(
         stmt = stmt.where(InventoryItem.item_type == item_type)
 
     items = (await session.execute(stmt)).scalars().all()
-    return {"items": [await serialize_item(session, item) for item in items], "total": len(items)}
+    return {"items": await serialize_items_bulk(session, items), "total": len(items)}
 
 
 @router.post("", response_model=InventoryItemRead, status_code=status.HTTP_201_CREATED)
