@@ -3,6 +3,7 @@ import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import CircularProgress from "@mui/material/CircularProgress";
 import LinearProgress from "@mui/material/LinearProgress";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -10,6 +11,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { checklistAnswerGroups, formatChecklistValue, getKnownChecklistAnswerKeys } from "../checklists/fieldChecklist";
+import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
 import type { Checklist } from "../types";
@@ -44,7 +46,7 @@ export default function ChecklistDetailPage() {
   }
 
   if (error && !checklist) return <Alert severity="error">Erro ao carregar checklist.</Alert>;
-  if (!checklist) return <Alert severity="info">Carregando checklist.</Alert>;
+  if (!checklist) return <LoadingState message="Carregando checklist..." />;
 
   const progress = Math.round((checklist.current_step / checklist.total_steps) * 100);
   const knownAnswerKeys = getKnownChecklistAnswerKeys();
@@ -115,8 +117,13 @@ export default function ChecklistDetailPage() {
       </Card>
 
       {checklist.status !== "submitted" && (
-        <Button variant="contained" onClick={submit} disabled={submitting}>
-          Enviar checklist
+        <Button
+          variant="contained"
+          onClick={submit}
+          disabled={submitting}
+          startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : undefined}
+        >
+          {submitting ? "Enviando..." : "Enviar checklist"}
         </Button>
       )}
     </Stack>

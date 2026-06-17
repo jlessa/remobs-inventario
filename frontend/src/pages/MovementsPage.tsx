@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
 import { useAuth } from "../state/AuthContext";
@@ -15,6 +16,7 @@ import type { Movement } from "../types";
 export default function MovementsPage() {
   const [items, setItems] = useState<Movement[]>([]);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { hasPermission } = useAuth();
 
@@ -22,7 +24,8 @@ export default function MovementsPage() {
     inventoryService
       .listMovements()
       .then((data) => setItems(data.items))
-      .catch(() => setError(true));
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }
 
   useEffect(load, []);
@@ -44,7 +47,9 @@ export default function MovementsPage() {
           </Button>
         )}
       </Stack>
+      {loading && <LoadingState message="Carregando movimentações..." />}
       {error && <Alert severity="error">Erro ao carregar movimentações.</Alert>}
+      {!loading && items.length === 0 && !error && <Alert severity="info">Nenhuma movimentação registrada.</Alert>}
       {items.map((movement) => (
         <Card key={movement.id}>
           <CardContent>

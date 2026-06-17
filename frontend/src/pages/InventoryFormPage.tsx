@@ -2,6 +2,7 @@ import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import CircularProgress from "@mui/material/CircularProgress";
 import Grid from "@mui/material/Grid";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
@@ -143,8 +144,13 @@ export default function InventoryFormPage() {
             </Grid>
           </Grid>
 
-          <Button type="submit" variant="contained" disabled={submitting}>
-            Salvar item
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={submitting}
+            startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : undefined}
+          >
+            {submitting ? "Salvando..." : "Salvar item"}
           </Button>
         </Stack>
       </CardContent>

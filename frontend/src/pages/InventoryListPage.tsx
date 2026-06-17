@@ -15,6 +15,7 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
 import { useAuth } from "../state/AuthContext";
@@ -25,6 +26,7 @@ type Filter = "todos" | "critico" | "consumable" | "permanent_component" | "avar
 export default function InventoryListPage() {
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("todos");
   const navigate = useNavigate();
@@ -34,7 +36,8 @@ export default function InventoryListPage() {
     inventoryService
       .listItems()
       .then((data) => setItems(data.items))
-      .catch(() => setError(true));
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }, []);
 
   const filtered = useMemo(() => {
@@ -84,8 +87,9 @@ export default function InventoryListPage() {
           <Chip key={value} label={label} color={filter === value ? "primary" : "default"} onClick={() => setFilter(value)} />
         ))}
       </Stack>
+      {loading && <LoadingState message="Carregando inventário..." />}
       {error && <Alert severity="error">Erro ao carregar inventário.</Alert>}
-      {filtered.length === 0 && !error && <Alert severity="info">Nenhum item encontrado.</Alert>}
+      {!loading && filtered.length === 0 && !error && <Alert severity="info">Nenhum item encontrado.</Alert>}
       <Stack spacing={1.5}>
         {filtered.map((item) => {
           const isCritical = item.minimum_stock_national > 0 && item.stock_total < item.minimum_stock_national;

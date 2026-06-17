@@ -10,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
 import { useAuth } from "../state/AuthContext";
@@ -18,6 +19,7 @@ import type { Sensor } from "../types";
 export default function SensorsPage() {
   const [items, setItems] = useState<Sensor[]>([]);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { hasPermission } = useAuth();
 
@@ -25,7 +27,8 @@ export default function SensorsPage() {
     inventoryService
       .listSensors()
       .then((data) => setItems(data.items))
-      .catch(() => setError(true));
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -38,8 +41,9 @@ export default function SensorsPage() {
           </Button>
         )}
       </Stack>
+      {loading && <LoadingState message="Carregando sensores..." />}
       {error && <Alert severity="error">Erro ao carregar sensores.</Alert>}
-      {items.length === 0 && !error && <Alert severity="info">Nenhum sensor cadastrado.</Alert>}
+      {!loading && items.length === 0 && !error && <Alert severity="info">Nenhum sensor cadastrado.</Alert>}
       {items.map((item) => (
         <Card key={item.id}>
           <CardActionArea onClick={() => navigate(`/app/sensors/${item.id}`)}>

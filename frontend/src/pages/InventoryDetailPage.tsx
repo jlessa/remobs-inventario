@@ -13,6 +13,7 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
 import type { InventoryItem, ItemHistory } from "../types";
@@ -35,7 +36,7 @@ export default function InventoryDetailPage() {
   }, [id]);
 
   if (error) return <Alert severity="error">Erro ao carregar item.</Alert>;
-  if (!item) return <Alert severity="info">Carregando item.</Alert>;
+  if (!item) return <LoadingState message="Carregando item..." />;
 
   return (
     <Stack spacing={2}>

@@ -12,6 +12,7 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
 import type { SensorDetail } from "../types";
@@ -32,7 +33,7 @@ export default function SensorDetailPage() {
   }, [id]);
 
   if (error) return <Alert severity="error">Erro ao carregar sensor.</Alert>;
-  if (!sensor) return <Alert severity="info">Carregando sensor.</Alert>;
+  if (!sensor) return <LoadingState message="Carregando sensor..." />;
 
   const calibrationText = sensor.calibration_due_at
     ? new Date(sensor.calibration_due_at).toLocaleDateString("pt-BR")

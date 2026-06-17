@@ -10,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
 import { useAuth } from "../state/AuthContext";
@@ -18,6 +19,7 @@ import type { Platform } from "../types";
 export default function PlatformsPage() {
   const [items, setItems] = useState<Platform[]>([]);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { hasPermission } = useAuth();
 
@@ -25,7 +27,8 @@ export default function PlatformsPage() {
     inventoryService
       .listPlatforms()
       .then((data) => setItems(data.items))
-      .catch(() => setError(true));
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -38,8 +41,9 @@ export default function PlatformsPage() {
           </Button>
         )}
       </Stack>
+      {loading && <LoadingState message="Carregando plataformas..." />}
       {error && <Alert severity="error">Erro ao carregar plataformas.</Alert>}
-      {items.length === 0 && !error && <Alert severity="info">Nenhuma plataforma cadastrada.</Alert>}
+      {!loading && items.length === 0 && !error && <Alert severity="info">Nenhuma plataforma cadastrada.</Alert>}
       {items.map((item) => (
         <Card key={item.id}>
           <CardActionArea onClick={() => navigate(`/app/platforms/${item.id}`)}>

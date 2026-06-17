@@ -14,6 +14,7 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
 import type { PlatformDetail } from "../types";
@@ -33,7 +34,7 @@ export default function PlatformDetailPage() {
   }, [id]);
 
   if (error) return <Alert severity="error">Erro ao carregar plataforma.</Alert>;
-  if (!platform) return <Alert severity="info">Carregando plataforma.</Alert>;
+  if (!platform) return <LoadingState message="Carregando plataforma..." />;
 
   return (
     <Stack spacing={2}>

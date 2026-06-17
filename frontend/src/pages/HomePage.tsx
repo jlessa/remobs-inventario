@@ -12,6 +12,7 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
 import type { DashboardSummary } from "../types";
@@ -34,6 +35,7 @@ const initialSummary: DashboardSummary = {
 export default function HomePage() {
   const [summary, setSummary] = useState<DashboardSummary>(initialSummary);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,7 +45,8 @@ export default function HomePage() {
         setSummary(dashboardSummary);
         setError(false);
       })
-      .catch(() => setError(true));
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }, []);
 
   const cards = [
@@ -75,6 +78,10 @@ export default function HomePage() {
         </Button>
       </Stack>
 
+      {loading ? (
+        <LoadingState message="Carregando indicadores..." />
+      ) : (
+        <>
       <Grid container spacing={2}>
         {cards.map(([label, value]) => (
           <Grid key={label} size={{ xs: 12, sm: 6, md: 3 }}>
@@ -127,6 +134,8 @@ export default function HomePage() {
           </Card>
         </Grid>
       </Grid>
+        </>
+      )}
     </Stack>
   );
 }

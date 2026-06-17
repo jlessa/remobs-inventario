@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Checkbox from "@mui/material/Checkbox";
+import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import LinearProgress from "@mui/material/LinearProgress";
@@ -197,6 +198,7 @@ export default function ChecklistFormPage() {
   const [draft, setDraft] = useState<ChecklistDraft>(() => mergeDraft(localStorage.getItem(draftKey)));
   const [error, setError] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const progress = useMemo(() => Math.round((draft.current_step / draft.total_steps) * 100), [draft.current_step, draft.total_steps]);
 
   useEffect(() => {
@@ -243,10 +245,13 @@ export default function ChecklistFormPage() {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    setSubmitting(true);
     try {
       await save(true);
     } catch {
       setError(true);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -539,8 +544,13 @@ export default function ChecklistFormPage() {
             >
               Salvar rascunho
             </Button>
-            <Button type="submit" variant="contained">
-              Enviar checklist
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={submitting}
+              startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : undefined}
+            >
+              {submitting ? "Enviando..." : "Enviar checklist"}
             </Button>
           </Stack>
         </Stack>

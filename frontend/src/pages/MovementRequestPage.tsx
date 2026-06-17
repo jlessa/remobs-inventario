@@ -16,6 +16,7 @@ import Typography from "@mui/material/Typography";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import LoadingState from "../components/LoadingState";
 import { inventoryService } from "../services/inventoryService";
 import type { InventoryItem, StockBalance } from "../types";
 
@@ -48,6 +49,7 @@ export default function MovementRequestPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState(false);
+  const [loadingItems, setLoadingItems] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const stateItemId = (location.state as { itemId?: string } | null)?.itemId;
@@ -62,7 +64,9 @@ export default function MovementRequestPage() {
         itemId: preferredItem?.id || "",
         fromLocationId: current.fromLocationId || preferredItem?.balances[0]?.location_id || "",
       }));
-    });
+    })
+      .catch(() => undefined)
+      .finally(() => setLoadingItems(false));
   }, [draft.itemId, stateItemId]);
 
   useEffect(() => {
@@ -111,6 +115,8 @@ export default function MovementRequestPage() {
     event.preventDefault();
     if (!validationError) setConfirmOpen(true);
   }
+
+  if (loadingItems) return <LoadingState message="Carregando itens..." />;
 
   return (
     <>

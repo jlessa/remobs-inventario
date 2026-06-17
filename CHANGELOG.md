@@ -7,10 +7,16 @@
 
 ### Adicionado
 - Script `backend/scripts/check_production_readonly.py` para validação somente leitura da produção, autenticando e contando os registros por endpoint sem registrar token ou credenciais.
+- Componente `LoadingState` e feedback visual de carregamento em todas as telas que buscam dados (inventário, plataformas, sensores, operação, alertas, checklists, dashboard, sincronização, solicitação de saída e telas de detalhe), com spinner centralizado, mensagem e layout responsivo para telas pequenas.
+- Indicador de progresso nos botões de envio dos formulários de item, sensor, plataforma e checklist, evitando envios duplicados durante a gravação.
+
+### Corrigido
+- Correção dos estados vazios das listas, que apareciam momentaneamente ("Nenhum item encontrado") enquanto os dados ainda estavam sendo carregados. Agora só são exibidos após o término do carregamento.
 
 ### Publicado
 - Publicação do backend corrigido em produção: imagem `prod-2026-06-17-listagem` no ECR, revisão `remobs-inventario-backend:5` (a partir da `:4`, preservando variáveis e SSL do RDS) e atualização do serviço ECS `remobs-inventario-backend` no cluster `remobs-inventario-cluster`, com o profile AWS `aws-remobs` na região `sa-east-1`.
 - Republicação do frontend no AWS Amplify de produção, branch `prod`, usando o profile AWS `aws-remobs`.
+- Publicação do frontend com o feedback de carregamento no AWS Amplify de produção, branch `prod`, usando o profile AWS `aws-remobs`.
 
 ### Validado
 - Em produção, `GET /inventory/items` voltou a responder (729 itens em regime estável de cerca de 1 segundo, ante o timeout anterior superior a 60 segundos), com os demais endpoints mantendo resposta 200.

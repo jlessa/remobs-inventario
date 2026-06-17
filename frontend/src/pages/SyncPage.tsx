@@ -7,6 +7,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 
+import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
 import type { SyncConflict, SyncStatus } from "../types";
@@ -16,6 +17,7 @@ export default function SyncPage() {
   const [conflicts, setConflicts] = useState<SyncConflict[]>([]);
   const [error, setError] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   function load() {
     setError(false);
@@ -27,7 +29,8 @@ export default function SyncPage() {
         setStatus(syncStatus);
         setConflicts(conflictList.items);
       })
-      .catch(() => setError(true));
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }
 
   useEffect(load, []);
@@ -57,6 +60,9 @@ export default function SyncPage() {
       </Stack>
       {error && <Alert severity="warning">Não foi possível consultar o estado de sincronização.</Alert>}
       {message && <Alert severity="success">{message}</Alert>}
+      {loading && <LoadingState message="Carregando sincronização..." />}
+      {!loading && (
+        <>
       <Card>
         <CardContent>
           <Stack spacing={1.5}>
@@ -104,6 +110,8 @@ export default function SyncPage() {
           </Card>
         ))}
       </Stack>
+        </>
+      )}
     </Stack>
   );
 }
