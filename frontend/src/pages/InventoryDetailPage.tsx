@@ -1,15 +1,20 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import CloseIcon from "@mui/icons-material/Close";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DownloadIcon from "@mui/icons-material/Download";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import PhotoOutlinedIcon from "@mui/icons-material/PhotoOutlined";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
@@ -53,6 +58,7 @@ export default function InventoryDetailPage() {
   const [error, setError] = useState(false);
   const [uploadingRole, setUploadingRole] = useState<EntityFileRole | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [viewingFile, setViewingFile] = useState<EntityFile | null>(null);
 
   const canUpdate = hasPermission("inventory:item:update");
 
@@ -86,7 +92,7 @@ export default function InventoryDetailPage() {
           objectUrls.push(url);
           next[file.id] = url;
         } catch {
-          // Pré-visualização opcional; download manual continua disponível.
+          // Pré-visualização opcional; falha silenciosa até nova tentativa.
         }
       }
       if (!cancelled) {
@@ -255,7 +261,23 @@ export default function InventoryDetailPage() {
                               component="img"
                               src={previews[file.id]}
                               alt={file.original_name}
-                              sx={{ width: "100%", height: 140, objectFit: "cover", borderRadius: 1 }}
+                              role="button"
+                              tabIndex={0}
+                              aria-label={`Visualizar ${file.original_name}`}
+                              onClick={() => setViewingFile(file)}
+                              onKeyDown={(event) => {
+                                if (event.key === "Enter" || event.key === " ") {
+                                  event.preventDefault();
+                                  setViewingFile(file);
+                                }
+                              }}
+                              sx={{
+                                width: "100%",
+                                height: 140,
+                                objectFit: "cover",
+                                borderRadius: 1,
+                                cursor: "pointer",
+                              }}
                             />
                           ) : (
                             <Box
@@ -278,9 +300,20 @@ export default function InventoryDetailPage() {
                             {file.file_role} • {formatBytes(file.size_bytes)} • {new Date(file.created_at).toLocaleString("pt-BR")}
                           </Typography>
                           <Stack direction="row" spacing={0.5} justifyContent="flex-end">
-                            <IconButton aria-label={`Baixar ${file.original_name}`} onClick={() => handleDownload(file)} size="small">
-                              <DownloadIcon fontSize="small" />
-                            </IconButton>
+                            {isImageMime(file.mime_type) ? (
+                              <IconButton
+                                aria-label={`Visualizar ${file.original_name}`}
+                                onClick={() => setViewingFile(file)}
+                                size="small"
+                                disabled={!previews[file.id]}
+                              >
+                                <VisibilityOutlinedIcon fontSize="small" />
+                              </IconButton>
+                            ) : (
+                              <IconButton aria-label={`Baixar ${file.original_name}`} onClick={() => handleDownload(file)} size="small">
+                                <DownloadIcon fontSize="small" />
+                              </IconButton>
+                            )}
                             {canUpdate && (
                               <IconButton
                                 aria-label={`Remover ${file.original_name}`}
@@ -365,6 +398,31 @@ export default function InventoryDetailPage() {
           </Stack>
         </CardContent>
       </Card>
+
+      <Dialog open={Boolean(viewingFile)} onClose={() => setViewingFile(null)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ pr: 6 }}>
+          {viewingFile?.original_name || "Visualizar imagem"}
+          <IconButton
+            aria-label="Fechar visualização"
+            onClick={() => setViewingFile(null)}
+            sx={{ position: "absolute", right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          {viewingFile && previews[viewingFile.id] ? (
+            <Box
+              component="img"
+              src={previews[viewingFile.id]}
+              alt={viewingFile.original_name}
+              sx={{ width: "100%", maxHeight: "70vh", objectFit: "contain", display: "block", mx: "auto" }}
+            />
+          ) : (
+            <Alert severity="info">Pré-visualização indisponível.</Alert>
+          )}
+        </DialogContent>
+      </Dialog>
     </Stack>
   );
 }

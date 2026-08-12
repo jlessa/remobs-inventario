@@ -156,4 +156,89 @@ describe("anexos no detalhe do inventário", () => {
 
     expect(await screen.findByText("Não foi possível enviar a foto.")).toBeTruthy();
   });
+
+  it("abre visualização de imagem sem botão de download", async () => {
+    vi.spyOn(inventoryService, "getItem").mockResolvedValue(item);
+    vi.spyOn(inventoryService, "getItemHistory").mockResolvedValue({ movements: [], audit_logs: [] });
+    vi.spyOn(inventoryService, "listItemFiles").mockResolvedValue({
+      items: [
+        {
+          id: "file-1",
+          file_id: "meta-1",
+          entity_type: "inventory_item",
+          entity_id: "item-1",
+          file_role: "foto",
+          notes: null,
+          original_name: "bateria.jpg",
+          mime_type: "image/jpeg",
+          size_bytes: 2048,
+          uploaded_by: 1,
+          created_at: "2026-08-06T12:00:00Z",
+          download_path: "/inventory/items/item-1/files/file-1/content",
+        },
+      ],
+      total: 1,
+    });
+    vi.spyOn(inventoryService, "downloadItemFile").mockResolvedValue(new Blob(["fake-image"], { type: "image/jpeg" }));
+
+    renderWithProviders(
+      <MemoryRouter initialEntries={["/app/inventory/item-1"]}>
+        <Routes>
+          <Route path="/app/inventory/:id" element={<InventoryDetailPage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByText("bateria.jpg")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /baixar bateria\.jpg/i })).toBeNull();
+
+    const viewButtons = await screen.findAllByRole("button", { name: /visualizar bateria\.jpg/i });
+    fireEvent.click(viewButtons[0]);
+
+    expect(await screen.findByRole("dialog")).toBeTruthy();
+    expect(screen.getByRole("button", { name: /fechar visualização/i })).toBeTruthy();
+  });
+
+  it("mantém download para documentos", async () => {
+    vi.spyOn(inventoryService, "getItem").mockResolvedValue(item);
+    vi.spyOn(inventoryService, "getItemHistory").mockResolvedValue({ movements: [], audit_logs: [] });
+    vi.spyOn(inventoryService, "listItemFiles").mockResolvedValue({
+      items: [
+        {
+          id: "file-doc",
+          file_id: "meta-doc",
+          entity_type: "inventory_item",
+          entity_id: "item-1",
+          file_role: "documento",
+          notes: null,
+          original_name: "manual.pdf",
+          mime_type: "application/pdf",
+          size_bytes: 4096,
+          uploaded_by: 1,
+          created_at: "2026-08-06T12:00:00Z",
+          download_path: "/inventory/items/item-1/files/file-doc/content",
+        },
+      ],
+      total: 1,
+    });
+    const downloadSpy = vi
+      .spyOn(inventoryService, "downloadItemFile")
+      .mockResolvedValue(new Blob(["pdf"], { type: "application/pdf" }));
+
+    renderWithProviders(
+      <MemoryRouter initialEntries={["/app/inventory/item-1"]}>
+        <Routes>
+          <Route path="/app/inventory/:id" element={<InventoryDetailPage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByText("manual.pdf")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /baixar manual\.pdf/i }));
+
+    await waitFor(() => {
+      expect(downloadSpy).toHaveBeenCalledWith("item-1", "file-doc");
+    });
+    expect(await screen.findByText("Download iniciado.")).toBeTruthy();
+  });
 });

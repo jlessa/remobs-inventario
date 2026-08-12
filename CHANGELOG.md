@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## [2026-08-12]
+
+### Corrigido
+- No detalhe do item, fotos anexadas passam a abrir em Dialog para visualização (clique na miniatura ou botão Visualizar), sem forçar download.
+- Botão Baixar permanece apenas para documentos (não-imagem).
+- Plano: `planos/2026-08-12-visualizar-imagem-item-sem-download.md`.
+
 ## [2026-08-06]
 
 ### Corrigido
