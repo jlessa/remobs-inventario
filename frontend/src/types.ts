@@ -87,6 +87,14 @@ export interface Platform {
   description?: string | null;
 }
 
+export interface InventoryLocation {
+  id: string;
+  name: string;
+  location_type: string;
+  is_active: boolean;
+  created_at: string;
+}
+
 export interface Sensor {
   id: string;
   sensor_type: string;

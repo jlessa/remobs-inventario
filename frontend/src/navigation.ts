@@ -3,6 +3,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import ChecklistIcon from "@mui/icons-material/FactCheck";
 import HubIcon from "@mui/icons-material/Hub";
 import InventoryIcon from "@mui/icons-material/Inventory2";
+import PlaceIcon from "@mui/icons-material/Place";
 import SensorsIcon from "@mui/icons-material/Sensors";
 import SyncIcon from "@mui/icons-material/Sync";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
@@ -21,6 +22,7 @@ export const navigationItems: NavigationItem[] = [
   { label: "Inventário", path: "/app/inventory", icon: InventoryIcon, permissions: ["inventory:item:read"], bottom: true },
   { label: "Operação", path: "/app/movements", icon: AssignmentTurnedInIcon, permissions: ["inventory:movement:request"], bottom: true },
   { label: "Alertas", path: "/app/alerts", icon: WarningAmberIcon, permissions: ["inventory:item:read"], bottom: true },
+  { label: "Locais", path: "/app/locations", icon: PlaceIcon, permissions: ["location:read"], bottom: false },
   { label: "Plataformas", path: "/app/platforms", icon: HubIcon, permissions: ["platform:read"], bottom: false },
   { label: "Sensores", path: "/app/sensors", icon: SensorsIcon, permissions: ["sensor:read"], bottom: false },
   { label: "Checklists", path: "/app/checklists", icon: ChecklistIcon, permissions: ["checklist:read", "checklist:submit"], bottom: false },

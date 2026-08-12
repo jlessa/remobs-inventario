@@ -18,6 +18,8 @@ const colorByStatus: Record<string, "success" | "warning" | "error" | "default" 
   discarded: "error",
   disponivel: "default",
   nao_instalado: "default",
+  ativo: "success",
+  inativo: "default",
 };
 
 export default function StatusChip({ status }: { status: string }) {

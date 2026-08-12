@@ -12,6 +12,8 @@ import HomePage from "./pages/HomePage";
 import InventoryDetailPage from "./pages/InventoryDetailPage";
 import InventoryFormPage from "./pages/InventoryFormPage";
 import InventoryListPage from "./pages/InventoryListPage";
+import LocationFormPage from "./pages/LocationFormPage";
+import LocationsPage from "./pages/LocationsPage";
 import LoginPage from "./pages/LoginPage";
 import MenuPage from "./pages/MenuPage";
 import MovementRequestPage from "./pages/MovementRequestPage";
@@ -50,6 +52,9 @@ export default function App() {
           <Route path="movements" element={<MovementsPage />} />
           <Route path="movements/new" element={<MovementRequestPage />} />
           <Route path="alerts" element={<AlertsPage />} />
+          <Route path="locations" element={<LocationsPage />} />
+          <Route path="locations/new" element={<LocationFormPage />} />
+          <Route path="locations/:id/edit" element={<LocationFormPage />} />
           <Route path="platforms" element={<PlatformsPage />} />
           <Route path="platforms/new" element={<PlatformFormPage />} />
           <Route path="platforms/:id/edit" element={<PlatformFormPage />} />

@@ -68,6 +68,75 @@ function useFieldSuggestions(field: SuggestionField, value: string) {
   return { options, loading };
 }
 
+function LocationFieldInput({
+  label,
+  value,
+  onChange,
+  required,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  required?: boolean;
+}) {
+  const [options, setOptions] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    inventoryService
+      .listLocations({ q: value.trim() || undefined, activeOnly: true })
+      .then((data) => {
+        if (!cancelled) setOptions(data.items.map((item) => item.name));
+      })
+      .catch(() => {
+        if (!cancelled) setOptions([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [value]);
+
+  return (
+    <Autocomplete
+      freeSolo
+      fullWidth
+      options={options}
+      filterOptions={(current) => current}
+      inputValue={value}
+      onInputChange={(_event, next, reason) => {
+        if (reason === "input" || reason === "clear" || reason === "reset") {
+          onChange(next);
+        }
+      }}
+      onChange={(_event, next) => {
+        onChange(typeof next === "string" ? next : next ?? "");
+      }}
+      loading={loading}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={label}
+          required={required}
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {loading ? <CircularProgress color="inherit" size={16} /> : null}
+                {params.InputProps.endAdornment}
+              </>
+            ),
+          }}
+        />
+      )}
+    />
+  );
+}
+
 function SuggestionFieldInput({
   field,
   label,
@@ -314,8 +383,7 @@ export default function InventoryFormPage() {
               </TextField>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <SuggestionFieldInput
-                field="location_name"
+              <LocationFieldInput
                 label="Local"
                 value={form.location_name}
                 onChange={(value) => update("location_name", value)}

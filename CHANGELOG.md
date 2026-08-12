@@ -9,6 +9,12 @@
 - Solicitar saída pré-preenche **Origem** com o local atual do item (`current_location_id`) quando houver saldo disponível nesse local; ao vir do detalhe, não reutiliza origem de outro item no rascunho.
 - Plano: `planos/2026-08-12-preencher-origem-saida-local-item.md`.
 
+### Adicionado
+- CRUD de Locais (`/locations`) com listagem, cadastro, edição e inativação (`is_active=false`), auditoria e permissões `location:read|create|update|delete`.
+- Menu **Locais** no frontend; autocomplete de destino (e origem por saldos) na solicitação de saída, enviando `to_location_id` quando o local existir.
+- Campo **Local** no cadastro de itens passa a sugerir a partir da lista de Locais.
+- Plano: `planos/2026-08-12-crud-locais-autocomplete-saida.md`.
+
 ## [2026-08-06]
 
 ### Corrigido

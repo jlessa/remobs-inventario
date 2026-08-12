@@ -1,5 +1,6 @@
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import Autocomplete from "@mui/material/Autocomplete";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
@@ -19,7 +20,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import LoadingState from "../components/LoadingState";
 import { inventoryService } from "../services/inventoryService";
 import { useSnackbar } from "../state/SnackbarContext";
-import type { InventoryItem, StockBalance } from "../types";
+import type { InventoryItem, InventoryLocation, StockBalance } from "../types";
 
 const draftKey = "remobs_movement_request_draft";
 
@@ -28,6 +29,7 @@ interface DraftState {
   fromLocationId: string;
   quantity: string;
   destination: string;
+  toLocationId: string;
   reason: string;
   evidenceNote: string;
 }
@@ -37,6 +39,7 @@ const defaultDraft: DraftState = {
   fromLocationId: "",
   quantity: "1",
   destination: "Campo",
+  toLocationId: "",
   reason: "Uso em operação de campo.",
   evidenceNote: "",
 };
@@ -64,6 +67,7 @@ export function resolveOriginLocationId(item: InventoryItem | undefined | null):
 
 export default function MovementRequestPage() {
   const [items, setItems] = useState<InventoryItem[]>([]);
+  const [locations, setLocations] = useState<InventoryLocation[]>([]);
   const [draft, setDraft] = useState<DraftState>(() => {
     const saved = localStorage.getItem(draftKey);
     return saved ? { ...defaultDraft, ...JSON.parse(saved) } : defaultDraft;
@@ -76,27 +80,34 @@ export default function MovementRequestPage() {
   const stateItemId = (location.state as { itemId?: string } | null)?.itemId;
 
   useEffect(() => {
-    inventoryService.listItems().then((data) => {
-      setItems(data.items);
-      const preferredItemId = stateItemId || draft.itemId || data.items[0]?.id || "";
-      const preferredItem = data.items.find((item) => item.id === preferredItemId) || data.items[0];
-      setDraft((current) => {
-        const itemChanged = Boolean(stateItemId) || current.itemId !== (preferredItem?.id || "");
-        const nextItemId = preferredItem?.id || "";
-        const nextOrigin =
-          itemChanged || !current.fromLocationId
-            ? resolveOriginLocationId(preferredItem)
-            : current.fromLocationId;
-        return {
-          ...current,
-          itemId: nextItemId,
-          fromLocationId: nextOrigin,
-        };
-      });
-    })
+    Promise.all([inventoryService.listItems(), inventoryService.listLocations({ activeOnly: true })])
+      .then(([itemsData, locationsData]) => {
+        setItems(itemsData.items);
+        setLocations(locationsData.items);
+        const preferredItemId = stateItemId || draft.itemId || itemsData.items[0]?.id || "";
+        const preferredItem = itemsData.items.find((item) => item.id === preferredItemId) || itemsData.items[0];
+        setDraft((current) => {
+          const itemChanged = Boolean(stateItemId) || current.itemId !== (preferredItem?.id || "");
+          const nextItemId = preferredItem?.id || "";
+          const nextOrigin =
+            itemChanged || !current.fromLocationId
+              ? resolveOriginLocationId(preferredItem)
+              : current.fromLocationId;
+          const matchedDestination =
+            locationsData.items.find(
+              (entry) => entry.name.toLowerCase() === (current.destination || "").trim().toLowerCase(),
+            ) || null;
+          return {
+            ...current,
+            itemId: nextItemId,
+            fromLocationId: nextOrigin,
+            toLocationId: matchedDestination?.id || current.toLocationId || "",
+            destination: matchedDestination?.name || current.destination,
+          };
+        });
+      })
       .catch(() => undefined)
       .finally(() => setLoadingItems(false));
-    // Intencionalmente não depende de draft.itemId para evitar loop de recarga.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateItemId]);
 
@@ -109,6 +120,18 @@ export default function MovementRequestPage() {
     () => selected?.balances.find((balance) => balance.location_id === draft.fromLocationId),
     [draft.fromLocationId, selected],
   );
+  const originOptions = useMemo(() => selected?.balances ?? [], [selected]);
+  const selectedOrigin = useMemo(
+    () => originOptions.find((balance) => balance.location_id === draft.fromLocationId) || null,
+    [draft.fromLocationId, originOptions],
+  );
+  const selectedDestination = useMemo(() => {
+    if (draft.toLocationId) {
+      return locations.find((entry) => entry.id === draft.toLocationId) || null;
+    }
+    return locations.find((entry) => entry.name.toLowerCase() === draft.destination.trim().toLowerCase()) || null;
+  }, [draft.destination, draft.toLocationId, locations]);
+
   const quantity = Number(draft.quantity);
   const available = selectedBalance ? availableQty(selectedBalance) : 0;
   const validationError =
@@ -116,6 +139,7 @@ export default function MovementRequestPage() {
     !selectedBalance ? "Selecione uma origem." :
     quantity <= 0 ? "Informe quantidade maior que zero." :
     quantity > available ? "Quantidade maior que o estoque disponível." :
+    draft.destination.trim().length < 1 ? "Informe o destino." :
     draft.reason.trim().length < 3 ? "Informe o motivo da saída." :
     null;
 
@@ -130,7 +154,9 @@ export default function MovementRequestPage() {
         item_id: selected.id,
         quantity,
         from_location_id: selectedBalance.location_id,
-        to_location_name: draft.destination,
+        ...(draft.toLocationId
+          ? { to_location_id: draft.toLocationId }
+          : { to_location_name: draft.destination.trim() }),
         reason: [draft.reason, draft.evidenceNote && `Evidência: ${draft.evidenceNote}`].filter(Boolean).join("\n"),
       });
       localStorage.removeItem(draftKey);
@@ -175,13 +201,14 @@ export default function MovementRequestPage() {
                 </MenuItem>
               ))}
             </TextField>
-            <TextField select label="Origem" value={draft.fromLocationId} onChange={(event) => update("fromLocationId", event.target.value)} required>
-              {selected?.balances.map((balance) => (
-                <MenuItem key={balance.id} value={balance.location_id}>
-                  {balance.location_name} ({availableQty(balance)} disponível)
-                </MenuItem>
-              ))}
-            </TextField>
+            <Autocomplete
+              options={originOptions}
+              value={selectedOrigin}
+              getOptionLabel={(option) => `${option.location_name} (${availableQty(option)} disponível)`}
+              isOptionEqualToValue={(option, value) => option.location_id === value.location_id}
+              onChange={(_event, value) => update("fromLocationId", value?.location_id || "")}
+              renderInput={(params) => <TextField {...params} label="Origem" required />}
+            />
             <Stack direction="row" spacing={1} alignItems="center">
               <IconButton onClick={() => update("quantity", String(Math.max(1, quantity - 1)))}>
                 <RemoveIcon />
@@ -191,7 +218,40 @@ export default function MovementRequestPage() {
                 <AddIcon />
               </IconButton>
             </Stack>
-            <TextField label="Destino" value={draft.destination} onChange={(event) => update("destination", event.target.value)} required />
+            <Autocomplete
+              freeSolo
+              options={locations}
+              value={selectedDestination}
+              inputValue={draft.destination}
+              getOptionLabel={(option) => (typeof option === "string" ? option : option.name)}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              onChange={(_event, value) => {
+                if (typeof value === "string") {
+                  setDraft((current) => ({ ...current, destination: value, toLocationId: "" }));
+                  return;
+                }
+                if (value) {
+                  setDraft((current) => ({
+                    ...current,
+                    destination: value.name,
+                    toLocationId: value.id,
+                  }));
+                  return;
+                }
+                setDraft((current) => ({ ...current, destination: "", toLocationId: "" }));
+              }}
+              onInputChange={(_event, value, reason) => {
+                if (reason === "input" || reason === "clear") {
+                  const match = locations.find((entry) => entry.name.toLowerCase() === value.trim().toLowerCase());
+                  setDraft((current) => ({
+                    ...current,
+                    destination: value,
+                    toLocationId: match?.id || "",
+                  }));
+                }
+              }}
+              renderInput={(params) => <TextField {...params} label="Destino" required />}
+            />
             <TextField label="Justificativa" value={draft.reason} onChange={(event) => update("reason", event.target.value)} multiline minRows={2} required />
             <TextField label="Evidência ou foto registrada" value={draft.evidenceNote} onChange={(event) => update("evidenceNote", event.target.value)} multiline minRows={2} />
             <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>

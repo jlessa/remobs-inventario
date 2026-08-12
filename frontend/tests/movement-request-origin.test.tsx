@@ -97,6 +97,25 @@ describe("MovementRequestPage origem", () => {
       }),
     );
     vi.spyOn(inventoryService, "listItems").mockResolvedValue({ items: [itemEstoque], total: 1 });
+    vi.spyOn(inventoryService, "listLocations").mockResolvedValue({
+      items: [
+        {
+          id: "loc-campo",
+          name: "Campo",
+          location_type: "campo",
+          is_active: true,
+          created_at: "2026-01-01T00:00:00Z",
+        },
+        {
+          id: "loc-estoque",
+          name: "Estoque",
+          location_type: "estoque",
+          is_active: true,
+          created_at: "2026-01-01T00:00:00Z",
+        },
+      ],
+      total: 2,
+    });
 
     renderWithProviders(
       <MemoryRouter initialEntries={[{ pathname: "/app/movements/new", state: { itemId: "item-1" } }]}>
@@ -107,8 +126,10 @@ describe("MovementRequestPage origem", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("combobox", { name: /^Origem/i }).textContent).toMatch(/Campo/);
+      const origin = screen.getByRole("combobox", { name: /^Origem/i }) as HTMLInputElement;
+      expect(origin.value).toMatch(/Campo/);
     });
-    expect(screen.getByRole("combobox", { name: /^Origem/i }).textContent).not.toMatch(/Estoque/);
+    const origin = screen.getByRole("combobox", { name: /^Origem/i }) as HTMLInputElement;
+    expect(origin.value).not.toMatch(/Estoque/);
   });
 });

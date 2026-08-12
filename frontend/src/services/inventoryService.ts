@@ -10,6 +10,7 @@ import type {
   InventoryItem,
   ItemHistory,
   Movement,
+  InventoryLocation,
   Platform,
   PlatformDetail,
   Sensor,
@@ -43,7 +44,8 @@ export interface MovementRequestPayload {
   item_id: string;
   quantity: number;
   from_location_id: string;
-  to_location_name: string;
+  to_location_id?: string;
+  to_location_name?: string;
   reason: string;
 }
 
@@ -82,6 +84,18 @@ export interface PlatformUpdatePayload {
   model?: string | null;
   operational_status?: string;
   description?: string | null;
+  reason?: string | null;
+}
+
+export interface LocationCreatePayload {
+  name: string;
+  location_type?: string;
+}
+
+export interface LocationUpdatePayload {
+  name?: string;
+  location_type?: string;
+  is_active?: boolean;
   reason?: string | null;
 }
 
@@ -272,6 +286,38 @@ export const inventoryService = {
 
   async deletePlatform(id: string, reason: string): Promise<{ status: string }> {
     const response = await inventoryApi.delete<{ status: string }>(`/platforms/${id}`, {
+      data: { reason },
+    });
+    return response.data;
+  },
+
+  async listLocations(options?: { q?: string; activeOnly?: boolean }): Promise<ApiList<InventoryLocation>> {
+    const response = await inventoryApi.get<ApiList<InventoryLocation>>("/locations", {
+      params: {
+        q: options?.q || undefined,
+        active_only: options?.activeOnly ?? true,
+      },
+    });
+    return response.data;
+  },
+
+  async getLocation(id: string): Promise<InventoryLocation> {
+    const response = await inventoryApi.get<InventoryLocation>(`/locations/${id}`);
+    return response.data;
+  },
+
+  async createLocation(payload: LocationCreatePayload): Promise<InventoryLocation> {
+    const response = await inventoryApi.post<InventoryLocation>("/locations", payload);
+    return response.data;
+  },
+
+  async updateLocation(id: string, payload: LocationUpdatePayload): Promise<InventoryLocation> {
+    const response = await inventoryApi.patch<InventoryLocation>(`/locations/${id}`, payload);
+    return response.data;
+  },
+
+  async deleteLocation(id: string, reason: string): Promise<{ status: string }> {
+    const response = await inventoryApi.delete<{ status: string }>(`/locations/${id}`, {
       data: { reason },
     });
     return response.data;

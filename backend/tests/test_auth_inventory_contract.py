@@ -983,3 +983,71 @@ def test_checklist_list_accepts_read_or_submit_permission(client: TestClient) ->
 
     denied = client.get("/checklists", headers=auth_headers(["inventory:item:read"]))
     assert denied.status_code == 403
+
+
+def test_locations_crud_and_autocomplete_permissions(client: TestClient) -> None:
+    headers = auth_headers(
+        [
+            "location:read",
+            "location:create",
+            "location:update",
+            "location:delete",
+            "audit:log:read",
+        ]
+    )
+
+    create_response = client.post(
+        "/locations",
+        headers=headers,
+        json={"name": "Galpão A", "location_type": "estoque"},
+    )
+    assert create_response.status_code == 201
+    location = create_response.json()
+    assert location["name"] == "Galpão A"
+    assert location["is_active"] is True
+    location_id = location["id"]
+
+    list_response = client.get("/locations", headers=headers, params={"q": "Gal"})
+    assert list_response.status_code == 200
+    assert list_response.json()["total"] >= 1
+    assert any(item["id"] == location_id for item in list_response.json()["items"])
+
+    # Operador de saída também pode listar locais para autocomplete.
+    movement_list = client.get(
+        "/locations",
+        headers=auth_headers(["inventory:movement:request"]),
+        params={"active_only": True},
+    )
+    assert movement_list.status_code == 200
+
+    update_response = client.patch(
+        f"/locations/{location_id}",
+        headers=headers,
+        json={"name": "Galpão A1", "reason": "Renomear local."},
+    )
+    assert update_response.status_code == 200
+    assert update_response.json()["name"] == "Galpão A1"
+
+    conflict = client.post(
+        "/locations",
+        headers=headers,
+        json={"name": "galpão a1", "location_type": "estoque"},
+    )
+    assert conflict.status_code == 409
+
+    delete_response = client.request(
+        "DELETE",
+        f"/locations/{location_id}",
+        headers=headers,
+        json={"reason": "Inativar local de teste."},
+    )
+    assert delete_response.status_code == 200
+    assert delete_response.json() == {"status": "ok"}
+
+    active_only = client.get("/locations", headers=headers, params={"active_only": True})
+    assert active_only.status_code == 200
+    assert all(item["id"] != location_id for item in active_only.json()["items"])
+
+    including_inactive = client.get("/locations", headers=headers, params={"active_only": False})
+    assert including_inactive.status_code == 200
+    assert any(item["id"] == location_id and item["is_active"] is False for item in including_inactive.json()["items"])
