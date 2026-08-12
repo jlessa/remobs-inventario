@@ -25,6 +25,10 @@ class PlatformUpdate(BaseModel):
     reason: str | None = None
 
 
+class PlatformDeleteRequest(BaseModel):
+    reason: str = Field(min_length=3)
+
+
 class PlatformRead(BaseModel):
     id: uuid.UUID
     name: str

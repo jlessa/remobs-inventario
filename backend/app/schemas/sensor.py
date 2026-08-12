@@ -31,6 +31,10 @@ class SensorUpdate(BaseModel):
     reason: str | None = None
 
 
+class SensorDeleteRequest(BaseModel):
+    reason: str = Field(min_length=3)
+
+
 class SensorRead(BaseModel):
     id: uuid.UUID
     sensor_type: str

@@ -32,6 +32,8 @@ export interface InventoryItem {
   current_location_name: string | null;
   unit: string;
   minimum_stock_national: number;
+  minimum_stock_import?: number;
+  minimum_stock_maintenance?: number;
   ideal_stock: number;
   row_version: number;
   stock_total: number;
@@ -173,6 +175,23 @@ export interface ItemHistory {
     action: string;
     reason: string | null;
   }>;
+}
+
+export type EntityFileRole = "foto" | "documento";
+
+export interface EntityFile {
+  id: string;
+  file_id: string;
+  entity_type: string;
+  entity_id: string;
+  file_role: EntityFileRole | string;
+  notes: string | null;
+  original_name: string;
+  mime_type: string;
+  size_bytes: number;
+  uploaded_by: number;
+  created_at: string;
+  download_path: string;
 }
 
 export interface SyncStatus {

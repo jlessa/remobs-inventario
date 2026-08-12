@@ -8,15 +8,28 @@ import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { FormEvent, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
+import LoadingState from "../components/LoadingState";
 import { inventoryService } from "../services/inventoryService";
+import { useSnackbar } from "../state/SnackbarContext";
+
+function toDateInputValue(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toISOString().slice(0, 10);
+}
 
 export default function SensorFormPage() {
+  const { id } = useParams();
+  const isEdit = Boolean(id);
   const navigate = useNavigate();
-  const [error, setError] = useState(false);
+  const { showSuccess, showError } = useSnackbar();
   const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(isEdit);
+  const [loadError, setLoadError] = useState(false);
   const [form, setForm] = useState({
     sensor_type: "meteorologico",
     family: "",
@@ -27,7 +40,41 @@ export default function SensorFormPage() {
     operational_status: "nao_instalado",
     calibration_due_at: "",
     notes: "",
+    reason: "Atualização cadastral.",
   });
+
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    setLoading(true);
+    setLoadError(false);
+    inventoryService
+      .getSensor(id)
+      .then((sensor) => {
+        if (cancelled) return;
+        setForm({
+          sensor_type: sensor.sensor_type,
+          family: sensor.family,
+          brand: sensor.brand || "",
+          model: sensor.model || "",
+          serial_number: sensor.serial_number || "",
+          patrimony_number: sensor.patrimony_number || "",
+          operational_status: sensor.operational_status,
+          calibration_due_at: toDateInputValue(sensor.calibration_due_at),
+          notes: sensor.notes || "",
+          reason: "Atualização cadastral.",
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setLoadError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
   function update(field: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -36,33 +83,52 @@ export default function SensorFormPage() {
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setSubmitting(true);
-    setError(false);
     try {
-      const sensor = await inventoryService.createSensor({
-        sensor_type: form.sensor_type,
-        family: form.family,
-        brand: form.brand || undefined,
-        model: form.model || undefined,
-        serial_number: form.serial_number || undefined,
-        patrimony_number: form.patrimony_number || undefined,
-        operational_status: form.operational_status,
-        calibration_due_at: form.calibration_due_at ? new Date(`${form.calibration_due_at}T00:00:00`).toISOString() : undefined,
-        notes: form.notes || undefined,
-      });
-      navigate(`/app/sensors/${sensor.id}`);
+      if (isEdit && id) {
+        const sensor = await inventoryService.updateSensor(id, {
+          sensor_type: form.sensor_type,
+          family: form.family,
+          brand: form.brand || null,
+          model: form.model || null,
+          serial_number: form.serial_number || null,
+          patrimony_number: form.patrimony_number || null,
+          operational_status: form.operational_status,
+          calibration_due_at: form.calibration_due_at ? new Date(`${form.calibration_due_at}T00:00:00`).toISOString() : null,
+          notes: form.notes || null,
+          reason: form.reason,
+        });
+        showSuccess("Sensor atualizado com sucesso.");
+        navigate(`/app/sensors/${sensor.id}`);
+      } else {
+        const sensor = await inventoryService.createSensor({
+          sensor_type: form.sensor_type,
+          family: form.family,
+          brand: form.brand || undefined,
+          model: form.model || undefined,
+          serial_number: form.serial_number || undefined,
+          patrimony_number: form.patrimony_number || undefined,
+          operational_status: form.operational_status,
+          calibration_due_at: form.calibration_due_at ? new Date(`${form.calibration_due_at}T00:00:00`).toISOString() : undefined,
+          notes: form.notes || undefined,
+        });
+        showSuccess("Sensor cadastrado com sucesso.");
+        navigate(`/app/sensors/${sensor.id}`);
+      }
     } catch {
-      setError(true);
+      showError(isEdit ? "Não foi possível atualizar o sensor." : "Não foi possível salvar o sensor.");
     } finally {
       setSubmitting(false);
     }
   }
 
+  if (loading) return <LoadingState message="Carregando sensor..." />;
+  if (loadError) return <Alert severity="error">Erro ao carregar sensor para edição.</Alert>;
+
   return (
     <Card>
       <CardContent>
         <Stack component="form" spacing={2.5} onSubmit={handleSubmit}>
-          <Typography variant="h5">Novo sensor</Typography>
-          {error && <Alert severity="error">Não foi possível salvar o sensor.</Alert>}
+          <Typography variant="h5">{isEdit ? "Editar sensor" : "Novo sensor"}</Typography>
 
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -94,6 +160,7 @@ export default function SensorFormPage() {
                 <MenuItem value="operacional">Operacional</MenuItem>
                 <MenuItem value="manutencao">Em manutenção</MenuItem>
                 <MenuItem value="inconsistencia">Inconsistência</MenuItem>
+                <MenuItem value="avariado">Avariado</MenuItem>
               </TextField>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -109,6 +176,11 @@ export default function SensorFormPage() {
             <Grid size={{ xs: 12 }}>
               <TextField fullWidth label="Observações" value={form.notes} onChange={(event) => update("notes", event.target.value)} multiline minRows={3} />
             </Grid>
+            {isEdit && (
+              <Grid size={{ xs: 12 }}>
+                <TextField fullWidth label="Justificativa" value={form.reason} onChange={(event) => update("reason", event.target.value)} required multiline minRows={2} />
+              </Grid>
+            )}
           </Grid>
 
           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
@@ -118,9 +190,9 @@ export default function SensorFormPage() {
               disabled={submitting}
               startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : undefined}
             >
-              {submitting ? "Salvando..." : "Salvar sensor"}
+              {submitting ? "Salvando..." : isEdit ? "Salvar alterações" : "Salvar sensor"}
             </Button>
-            <Button variant="outlined" onClick={() => navigate("/app/sensors")}>
+            <Button variant="outlined" onClick={() => navigate(isEdit && id ? `/app/sensors/${id}` : "/app/sensors")}>
               Cancelar
             </Button>
           </Stack>

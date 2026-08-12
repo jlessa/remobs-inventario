@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import uuid
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, status
 from sqlalchemy import select
@@ -8,11 +9,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_async_session
 from app.core.errors import AppError
-from app.core.permissions import require_permissions
+from app.core.permissions import require_any_permission, require_permissions
 from app.core.security import AuthUser
 from app.models.platform import Platform
 from app.models.sensor import Sensor, SensorInstallation
-from app.schemas.sensor import SensorCreate, SensorDetailRead, SensorListRead, SensorRead, SensorUpdate
+from app.schemas.sensor import (
+    SensorCreate,
+    SensorDeleteRequest,
+    SensorDetailRead,
+    SensorListRead,
+    SensorRead,
+    SensorUpdate,
+)
 from app.services.audit_service import log_action
 
 router = APIRouter(prefix="/sensors", tags=["sensors"])
@@ -32,7 +40,7 @@ async def list_sensors(
 @router.post("", response_model=SensorRead, status_code=status.HTTP_201_CREATED)
 async def create_sensor(
     payload: SensorCreate,
-    user: AuthUser = Depends(require_permissions(["sensor:update"])),
+    user: AuthUser = Depends(require_any_permission(["sensor:create", "sensor:update"])),
     session: AsyncSession = Depends(get_async_session),
 ) -> Sensor:
     sensor = Sensor(**payload.model_dump())
@@ -145,3 +153,35 @@ async def update_sensor(
     await session.commit()
     await session.refresh(sensor)
     return sensor
+
+
+@router.delete("/{sensor_id}")
+async def delete_sensor(
+    sensor_id: uuid.UUID,
+    payload: SensorDeleteRequest,
+    user: AuthUser = Depends(require_any_permission(["sensor:delete", "sensor:update"])),
+    session: AsyncSession = Depends(get_async_session),
+) -> dict[str, str]:
+    sensor = await session.get(Sensor, sensor_id)
+    if not sensor or sensor.deleted_at is not None:
+        raise AppError("Sensor não encontrado.", code="sensor_not_found", status_code=404)
+
+    before = {
+        "family": sensor.family,
+        "model": sensor.model,
+        "operational_status": sensor.operational_status,
+    }
+    sensor.deleted_at = datetime.now(timezone.utc)
+    await log_action(
+        session,
+        actor=user,
+        action="sensor_deleted",
+        entity_type="sensor",
+        entity_id=str(sensor.id),
+        entity_label_snapshot=sensor.family,
+        before_data=before,
+        after_data={"deleted_at": sensor.deleted_at.isoformat()},
+        reason=payload.reason,
+    )
+    await session.commit()
+    return {"status": "ok"}

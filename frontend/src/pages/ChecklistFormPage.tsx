@@ -1,4 +1,3 @@
-import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -16,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 import { photographFields, postFieldChecklistFields } from "../checklists/fieldChecklist";
 import { inventoryService } from "../services/inventoryService";
+import { useSnackbar } from "../state/SnackbarContext";
 import type { Platform } from "../types";
 
 const draftKey = "remobs_checklist_draft";
@@ -194,10 +194,9 @@ const foulingOptions = ["Pouca", "Média", "Muita", "Não se aplica"];
 
 export default function ChecklistFormPage() {
   const navigate = useNavigate();
+  const { showSuccess, showError, showInfo } = useSnackbar();
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [draft, setDraft] = useState<ChecklistDraft>(() => mergeDraft(localStorage.getItem(draftKey)));
-  const [error, setError] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const progress = useMemo(() => Math.round((draft.current_step / draft.total_steps) * 100), [draft.current_step, draft.total_steps]);
 
@@ -211,21 +210,17 @@ export default function ChecklistFormPage() {
 
   function update(field: keyof ChecklistDraft, value: string | number | Record<string, boolean>) {
     setDraft((current) => ({ ...current, [field]: value }));
-    setSaved(false);
   }
 
   function updatePhoto(key: string, checked: boolean) {
     setDraft((current) => ({ ...current, fotografias: { ...current.fotografias, [key]: checked } }));
-    setSaved(false);
   }
 
   function updatePostField(key: string, checked: boolean) {
     setDraft((current) => ({ ...current, pos_campo: { ...current.pos_campo, [key]: checked } }));
-    setSaved(false);
   }
 
   async function save(submit: boolean) {
-    setError(false);
     const checklist = await inventoryService.createChecklist({
       title: draft.title,
       template_name: draft.template_name,
@@ -248,8 +243,9 @@ export default function ChecklistFormPage() {
     setSubmitting(true);
     try {
       await save(true);
+      showSuccess("Checklist enviado com sucesso.");
     } catch {
-      setError(true);
+      showError("Não foi possível salvar o checklist.");
     } finally {
       setSubmitting(false);
     }
@@ -260,8 +256,6 @@ export default function ChecklistFormPage() {
       <CardContent>
         <Stack component="form" spacing={2.5} onSubmit={handleSubmit}>
           <Typography variant="h5">Novo checklist de campo</Typography>
-          {error && <Alert severity="error">Não foi possível salvar o checklist.</Alert>}
-          {saved && <Alert severity="success">Rascunho salvo neste dispositivo.</Alert>}
           <LinearProgress variant="determinate" value={progress} />
           <Typography variant="body2">
             Etapa {draft.current_step} de {draft.total_steps}
@@ -539,7 +533,7 @@ export default function ChecklistFormPage() {
               variant="outlined"
               onClick={() => {
                 localStorage.setItem(draftKey, JSON.stringify(draft));
-                setSaved(true);
+                showInfo("Rascunho salvo neste dispositivo.");
               }}
             >
               Salvar rascunho

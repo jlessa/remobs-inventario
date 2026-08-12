@@ -18,6 +18,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import LoadingState from "../components/LoadingState";
 import { inventoryService } from "../services/inventoryService";
+import { useSnackbar } from "../state/SnackbarContext";
 import type { InventoryItem, StockBalance } from "../types";
 
 const draftKey = "remobs_movement_request_draft";
@@ -47,11 +48,10 @@ export default function MovementRequestPage() {
     return saved ? { ...defaultDraft, ...JSON.parse(saved) } : defaultDraft;
   });
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState(false);
   const [loadingItems, setLoadingItems] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const { showSuccess, showError, showInfo } = useSnackbar();
   const stateItemId = (location.state as { itemId?: string } | null)?.itemId;
 
   useEffect(() => {
@@ -90,12 +90,10 @@ export default function MovementRequestPage() {
 
   function update(field: keyof DraftState, value: string) {
     setDraft((current) => ({ ...current, [field]: value }));
-    setSaved(false);
   }
 
   async function sendRequest() {
     if (!selected || !selectedBalance || validationError) return;
-    setError(false);
     try {
       await inventoryService.requestMovement({
         item_id: selected.id,
@@ -105,9 +103,10 @@ export default function MovementRequestPage() {
         reason: [draft.reason, draft.evidenceNote && `Evidência: ${draft.evidenceNote}`].filter(Boolean).join("\n"),
       });
       localStorage.removeItem(draftKey);
+      showSuccess("Solicitação de saída registrada.");
       navigate("/app/movements");
     } catch {
-      setError(true);
+      showError("Não foi possível solicitar a saída.");
     }
   }
 
@@ -124,8 +123,6 @@ export default function MovementRequestPage() {
         <CardContent>
           <Stack component="form" spacing={2} onSubmit={handleSubmit}>
             <Typography variant="h5">Solicitar saída</Typography>
-            {error && <Alert severity="error">Não foi possível solicitar a saída.</Alert>}
-            {saved && <Alert severity="success">Rascunho salvo neste dispositivo.</Alert>}
             {validationError && <Alert severity="warning">{validationError}</Alert>}
             <TextField
               select
@@ -171,7 +168,7 @@ export default function MovementRequestPage() {
                 variant="outlined"
                 onClick={() => {
                   localStorage.setItem(draftKey, JSON.stringify(draft));
-                  setSaved(true);
+                  showInfo("Rascunho salvo neste dispositivo.");
                 }}
               >
                 Salvar rascunho

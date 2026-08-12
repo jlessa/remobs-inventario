@@ -17,13 +17,19 @@ import { useNavigate, useParams } from "react-router-dom";
 import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
+import { useAuth } from "../state/AuthContext";
+import { useSnackbar } from "../state/SnackbarContext";
 import type { PlatformDetail } from "../types";
 
 export default function PlatformDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { hasAnyPermission, hasPermission } = useAuth();
+  const { showSuccess, showError } = useSnackbar();
   const [platform, setPlatform] = useState<PlatformDetail | null>(null);
   const [error, setError] = useState(false);
+  const canUpdate = hasPermission("platform:update");
+  const canDelete = hasAnyPermission("platform:delete", "platform:update");
 
   useEffect(() => {
     if (!id) return;
@@ -53,6 +59,32 @@ export default function PlatformDetailPage() {
               {[platform.platform_type, platform.manufacturer, platform.model].filter(Boolean).join(" • ")}
             </Typography>
             {platform.description && <Typography>{platform.description}</Typography>}
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1} useFlexGap flexWrap="wrap">
+              {canUpdate && (
+                <Button variant="outlined" onClick={() => navigate(`/app/platforms/${platform.id}/edit`)}>
+                  Editar
+                </Button>
+              )}
+              {canDelete && (
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={async () => {
+                    const confirmed = window.confirm(`Excluir a plataforma "${platform.name}"? Esta ação remove a plataforma da listagem.`);
+                    if (!confirmed) return;
+                    try {
+                      await inventoryService.deletePlatform(platform.id, "Exclusão pelo detalhe da plataforma.");
+                      showSuccess(`Plataforma "${platform.name}" excluída com sucesso.`);
+                      navigate("/app/platforms");
+                    } catch {
+                      showError(`Não foi possível excluir a plataforma "${platform.name}".`);
+                    }
+                  }}
+                >
+                  Excluir
+                </Button>
+              )}
+            </Stack>
           </Stack>
         </CardContent>
       </Card>
@@ -67,6 +99,11 @@ export default function PlatformDetailPage() {
                   <Typography fontWeight={700}>{platform.hull.code}</Typography>
                   <Typography color="text.secondary">{platform.hull.model || "Modelo não informado"}</Typography>
                   <StatusChip status={platform.hull.status} />
+                  {platform.hull.notes && (
+                    <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
+                      {platform.hull.notes}
+                    </Typography>
+                  )}
                 </Stack>
               ) : (
                 <Alert severity="info" sx={{ mt: 1 }}>

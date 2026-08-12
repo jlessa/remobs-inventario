@@ -5,6 +5,8 @@ import type {
   AuditLog,
   Checklist,
   DashboardSummary,
+  EntityFile,
+  EntityFileRole,
   InventoryItem,
   ItemHistory,
   Movement,
@@ -73,6 +75,35 @@ export interface PlatformCreatePayload {
   description?: string;
 }
 
+export interface PlatformUpdatePayload {
+  name?: string;
+  platform_type?: string;
+  manufacturer?: string | null;
+  model?: string | null;
+  operational_status?: string;
+  description?: string | null;
+  reason?: string | null;
+}
+
+export interface InventoryItemUpdatePayload {
+  name?: string;
+  brand?: string | null;
+  model?: string | null;
+  serial_number?: string | null;
+  patrimony_number?: string | null;
+  invoice_number?: string | null;
+  description?: string | null;
+  condition_status?: string;
+  category_name?: string;
+  location_name?: string;
+  unit?: string;
+  minimum_stock_national?: number;
+  minimum_stock_import?: number;
+  minimum_stock_maintenance?: number;
+  ideal_stock?: number;
+  reason?: string | null;
+}
+
 export interface SensorCreatePayload {
   sensor_type: string;
   family: string;
@@ -109,6 +140,21 @@ export const inventoryService = {
     return response.data;
   },
 
+  async suggestItemField(
+    field: "name" | "brand" | "model" | "category_name" | "location_name",
+    q: string,
+    options?: { limit?: number; signal?: AbortSignal },
+  ): Promise<string[]> {
+    const response = await inventoryApi.get<{ field: string; q: string; items: string[] }>(
+      "/inventory/items/suggestions",
+      {
+        params: { field, q, limit: options?.limit ?? 20 },
+        signal: options?.signal,
+      },
+    );
+    return response.data.items;
+  },
+
   async getItem(id: string): Promise<InventoryItem> {
     const response = await inventoryApi.get<InventoryItem>(`/inventory/items/${id}`);
     return response.data;
@@ -119,8 +165,55 @@ export const inventoryService = {
     return response.data;
   },
 
+  async listItemFiles(id: string): Promise<ApiList<EntityFile>> {
+    const response = await inventoryApi.get<ApiList<EntityFile>>(`/inventory/items/${id}/files`);
+    return response.data;
+  },
+
+  async uploadItemFile(
+    id: string,
+    file: File,
+    fileRole: EntityFileRole,
+    notes?: string,
+  ): Promise<EntityFile> {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("file_role", fileRole);
+    if (notes) {
+      formData.append("notes", notes);
+    }
+    const response = await inventoryApi.post<EntityFile>(`/inventory/items/${id}/files`, formData);
+    return response.data;
+  },
+
+  async downloadItemFile(itemId: string, entityFileId: string): Promise<Blob> {
+    const response = await inventoryApi.get<Blob>(`/inventory/items/${itemId}/files/${entityFileId}/content`, {
+      responseType: "blob",
+    });
+    return response.data;
+  },
+
+  async deleteItemFile(itemId: string, entityFileId: string, reason: string): Promise<{ status: string }> {
+    const response = await inventoryApi.delete<{ status: string }>(`/inventory/items/${itemId}/files/${entityFileId}`, {
+      data: { reason },
+    });
+    return response.data;
+  },
+
   async createItem(payload: InventoryItemPayload): Promise<InventoryItem> {
     const response = await inventoryApi.post<InventoryItem>("/inventory/items", payload);
+    return response.data;
+  },
+
+  async updateItem(id: string, payload: InventoryItemUpdatePayload): Promise<InventoryItem> {
+    const response = await inventoryApi.patch<InventoryItem>(`/inventory/items/${id}`, payload);
+    return response.data;
+  },
+
+  async deleteItem(id: string, reason: string): Promise<{ status: string }> {
+    const response = await inventoryApi.delete<{ status: string }>(`/inventory/items/${id}`, {
+      data: { reason },
+    });
     return response.data;
   },
 
@@ -154,8 +247,11 @@ export const inventoryService = {
     return response.data;
   },
 
-  async listPlatforms(): Promise<ApiList<Platform>> {
-    const response = await inventoryApi.get<ApiList<Platform>>("/platforms");
+  async listPlatforms(options?: { activeOnly?: boolean }): Promise<ApiList<Platform>> {
+    const activeOnly = options?.activeOnly ?? true;
+    const response = await inventoryApi.get<ApiList<Platform>>("/platforms", {
+      params: { active_only: activeOnly },
+    });
     return response.data;
   },
 
@@ -166,6 +262,18 @@ export const inventoryService = {
 
   async createPlatform(payload: PlatformCreatePayload): Promise<Platform> {
     const response = await inventoryApi.post<Platform>("/platforms", payload);
+    return response.data;
+  },
+
+  async updatePlatform(id: string, payload: PlatformUpdatePayload): Promise<Platform> {
+    const response = await inventoryApi.patch<Platform>(`/platforms/${id}`, payload);
+    return response.data;
+  },
+
+  async deletePlatform(id: string, reason: string): Promise<{ status: string }> {
+    const response = await inventoryApi.delete<{ status: string }>(`/platforms/${id}`, {
+      data: { reason },
+    });
     return response.data;
   },
 
@@ -189,6 +297,13 @@ export const inventoryService = {
     return response.data;
   },
 
+  async deleteSensor(id: string, reason: string): Promise<{ status: string }> {
+    const response = await inventoryApi.delete<{ status: string }>(`/sensors/${id}`, {
+      data: { reason },
+    });
+    return response.data;
+  },
+
   async listChecklists(): Promise<ApiList<Checklist>> {
     const response = await inventoryApi.get<ApiList<Checklist>>("/checklists");
     return response.data;
@@ -201,6 +316,13 @@ export const inventoryService = {
 
   async createChecklist(payload: ChecklistPayload): Promise<Checklist> {
     const response = await inventoryApi.post<Checklist>("/checklists", payload);
+    return response.data;
+  },
+
+  async deleteChecklist(id: string, reason: string): Promise<{ status: string }> {
+    const response = await inventoryApi.delete<{ status: string }>(`/checklists/${id}`, {
+      data: { reason },
+    });
     return response.data;
   },
 

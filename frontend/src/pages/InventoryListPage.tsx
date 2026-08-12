@@ -1,4 +1,5 @@
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/DeleteOutline";
 import SearchIcon from "@mui/icons-material/Search";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
@@ -8,6 +9,7 @@ import CardActionArea from "@mui/material/CardActionArea";
 import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
 import Fab from "@mui/material/Fab";
+import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
@@ -19,6 +21,7 @@ import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
 import { useAuth } from "../state/AuthContext";
+import { useSnackbar } from "../state/SnackbarContext";
 import type { InventoryItem } from "../types";
 
 type Filter = "todos" | "critico" | "consumable" | "permanent_component" | "avariado";
@@ -27,10 +30,13 @@ export default function InventoryListPage() {
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("todos");
   const navigate = useNavigate();
   const { hasPermission } = useAuth();
+  const { showSuccess, showError } = useSnackbar();
+  const canDelete = hasPermission("inventory:item:delete");
 
   useEffect(() => {
     inventoryService
@@ -66,6 +72,24 @@ export default function InventoryListPage() {
     ["avariado", "Avariados"],
   ];
 
+  async function handleDelete(item: InventoryItem) {
+    const confirmed = window.confirm(`Excluir o item "${item.name}"? Esta ação inativa o item no inventário.`);
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingId(item.id);
+    try {
+      await inventoryService.deleteItem(item.id, "Exclusão pela listagem do inventário.");
+      setItems((current) => current.filter((entry) => entry.id !== item.id));
+      showSuccess(`Item "${item.name}" excluído com sucesso.`);
+    } catch {
+      showError(`Não foi possível excluir o item "${item.name}".`);
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   return (
     <Stack spacing={2}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -95,28 +119,42 @@ export default function InventoryListPage() {
           const isCritical = item.minimum_stock_national > 0 && item.stock_total < item.minimum_stock_national;
           return (
             <Card key={item.id}>
-              <CardActionArea onClick={() => navigate(`/app/inventory/${item.id}`)}>
-                <CardContent>
-                  <Stack spacing={1}>
-                    <Stack direction="row" justifyContent="space-between" gap={1}>
-                      <Box>
-                        <Typography fontWeight={700}>{item.name}</Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {[item.brand, item.model, item.current_location_name].filter(Boolean).join(" • ")}
+              <Stack direction="row" alignItems="stretch">
+                <CardActionArea onClick={() => navigate(`/app/inventory/${item.id}`)} sx={{ flex: 1 }}>
+                  <CardContent>
+                    <Stack spacing={1}>
+                      <Stack direction="row" justifyContent="space-between" gap={1}>
+                        <Box>
+                          <Typography fontWeight={700}>{item.name}</Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {[item.brand, item.model, item.current_location_name].filter(Boolean).join(" • ")}
+                          </Typography>
+                        </Box>
+                        <StatusChip status={item.condition_status} />
+                      </Stack>
+                      <Stack direction="row" spacing={1} alignItems="center" useFlexGap flexWrap="wrap">
+                        <Typography variant="body2">
+                          Saldo total: {item.stock_total} {item.unit}
                         </Typography>
-                      </Box>
-                      <StatusChip status={item.condition_status} />
+                        {isCritical && <Chip size="small" color="warning" label={`Mínimo ${item.minimum_stock_national}`} />}
+                        {item.serial_number && <Chip size="small" variant="outlined" label={`Série ${item.serial_number}`} />}
+                      </Stack>
                     </Stack>
-                    <Stack direction="row" spacing={1} alignItems="center" useFlexGap flexWrap="wrap">
-                      <Typography variant="body2">
-                        Saldo total: {item.stock_total} {item.unit}
-                      </Typography>
-                      {isCritical && <Chip size="small" color="warning" label={`Mínimo ${item.minimum_stock_national}`} />}
-                      {item.serial_number && <Chip size="small" variant="outlined" label={`Série ${item.serial_number}`} />}
-                    </Stack>
-                  </Stack>
-                </CardContent>
-              </CardActionArea>
+                  </CardContent>
+                </CardActionArea>
+                {canDelete && (
+                  <Box sx={{ display: "flex", alignItems: "center", pr: 1 }}>
+                    <IconButton
+                      aria-label={`Excluir item ${item.name}`}
+                      color="error"
+                      disabled={deletingId === item.id}
+                      onClick={() => handleDelete(item)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                )}
+              </Stack>
             </Card>
           );
         })}

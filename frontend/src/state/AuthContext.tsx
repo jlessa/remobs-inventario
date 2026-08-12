@@ -11,6 +11,7 @@ interface AuthContextValue {
   logout: () => void;
   refreshUser: () => Promise<void>;
   hasPermission: (permission: string) => boolean;
+  hasAnyPermission: (...permissions: string[]) => boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -72,6 +73,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       refreshUser,
       hasPermission: (permission: string) =>
         Boolean(user?.permission_codes.includes("*") || user?.permission_codes.includes(permission)),
+      hasAnyPermission: (...permissions: string[]) => {
+        if (!user) return false;
+        if (user.permission_codes.includes("*")) return true;
+        if (permissions.length === 0) return true;
+        return permissions.some((permission) => user.permission_codes.includes(permission));
+      },
     }),
     [loading, login, logout, refreshUser, token, user],
   );

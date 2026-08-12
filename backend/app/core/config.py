@@ -33,6 +33,13 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173,http://localhost:3000"
     request_id_header: str = "X-Request-ID"
 
+    storage_backend: str = "local"
+    storage_local_path: str = str(BASE_DIR / "storage" / "files")
+    storage_max_bytes: int = 15 * 1024 * 1024
+    storage_s3_bucket: str = "inventario-remobs"
+    storage_s3_region: str = "sa-east-1"
+    storage_s3_prefix: str = "remobs-inventario"
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
@@ -40,6 +47,15 @@ class Settings(BaseSettings):
     @property
     def database_ssl_required(self) -> bool:
         return self.database_ssl.strip().lower() in {"1", "true", "yes", "require", "required"}
+
+    @property
+    def storage_backend_normalized(self) -> str:
+        return (self.storage_backend or "local").strip().lower()
+
+    @property
+    def storage_s3_prefix_normalized(self) -> str:
+        prefix = (self.storage_s3_prefix or "").strip().strip("/")
+        return f"{prefix}/" if prefix else ""
 
 
 @lru_cache(maxsize=1)

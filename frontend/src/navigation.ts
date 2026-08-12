@@ -23,7 +23,7 @@ export const navigationItems: NavigationItem[] = [
   { label: "Alertas", path: "/app/alerts", icon: WarningAmberIcon, permissions: ["inventory:item:read"], bottom: true },
   { label: "Plataformas", path: "/app/platforms", icon: HubIcon, permissions: ["platform:read"], bottom: false },
   { label: "Sensores", path: "/app/sensors", icon: SensorsIcon, permissions: ["sensor:read"], bottom: false },
-  { label: "Checklists", path: "/app/checklists", icon: ChecklistIcon, permissions: ["checklist:submit"], bottom: false },
+  { label: "Checklists", path: "/app/checklists", icon: ChecklistIcon, permissions: ["checklist:read", "checklist:submit"], bottom: false },
   { label: "Sincronização", path: "/app/sync", icon: SyncIcon, permissions: ["inventory:item:read"], bottom: false },
 ];
 
@@ -34,6 +34,18 @@ export function hasPermission(userPermissions: string[], required: string[]): bo
   return required.every((permission) => userPermissions.includes(permission));
 }
 
+/** Aceita se o usuário tiver ao menos uma das permissões (ou `*`). Lista vazia = liberado. */
+export function hasAnyPermission(userPermissions: string[], alternatives: string[]): boolean {
+  if (userPermissions.includes("*")) {
+    return true;
+  }
+  if (alternatives.length === 0) {
+    return true;
+  }
+  return alternatives.some((permission) => userPermissions.includes(permission));
+}
+
 export function getVisibleNavigation(userPermissions: string[]): NavigationItem[] {
-  return navigationItems.filter((item) => hasPermission(userPermissions, item.permissions));
+  // Itens de menu usam OR entre as permissões listadas (ex.: checklist:read | checklist:submit).
+  return navigationItems.filter((item) => hasAnyPermission(userPermissions, item.permissions));
 }

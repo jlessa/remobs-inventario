@@ -1,5 +1,88 @@
 # CHANGELOG
 
+## [2026-08-06]
+
+### Corrigido
+- Edição de item (`PATCH /inventory/items/{id}`) retornava **500** em produção por `sqlalchemy.exc.MissingGreenlet` ao serializar `updated_at` expirado após update assíncrono.
+- `update_item` agora faz `flush` + `refresh` antes de `serialize_item`/auditoria; teste de regressão `test_updates_inventory_item_without_missing_greenlet`.
+- Plano: `planos/2026-08-06-correcao-edit-item-missing-greenlet.md`.
+
+### Publicado
+- Backend ECS: imagem ECR `prod-2026-08-06-fix-edit-item`, task definition `remobs-inventario-backend:11`, rollout `COMPLETED` (1/1).
+- Plano de deploy: `planos/2026-08-06-deploy-fix-edit-item-missing-greenlet.md`.
+
+### Operação em produção
+- Soft-delete de **533** componentes permanentes fora da allowlist (ACDC, LANTERNA, PAINEL SOLAR, ESTAÇÃO METEOROLÓGICA, PLUVIOMETRO, ANEMOMETRO).
+- Permaneceram **31** permanentes ativos: 16 painéis solares, 6 lanternas, 3 anemômetros, 3 estações meteorológicas, 3 pluviômetros (nenhum ACDC cadastrado).
+- Script: `backend/scripts/cleanup_permanent_items_allowlist.py`; plano: `planos/2026-08-06-apagar-permanentes-fora-lista-producao.md`.
+- Consumíveis não foram alterados; exclusão foi soft-delete com auditoria.
+- Restore de **11** itens ADCP soft-deletados (`is_active=true`, `deleted_at=null`) via `backend/scripts/restore_soft_deleted_adcp.py`; permanentes ativos após restore: **42**.
+- Restore de **3** itens `Unidade de Comando` (MessenOcean UCMO) via `backend/scripts/restore_soft_deleted_by_name.py`; permanentes ativos após restore: **45**.
+
+### Publicado
+- Backend ECS: imagem ECR `prod-2026-08-06-crud-permissions`, task definition `remobs-inventario-backend:10`, rollout `COMPLETED`.
+- Frontend Amplify app `d1oidnxd2f4saq`, branch `prod`, job `31` `SUCCEED`; cache PWA `remobs-inventario-v8`.
+- Plano de deploy: `planos/2026-08-06-deploy-crud-completo-permissoes.md`.
+
+### Adicionado
+- CRUD completo de cadastros no inventário: edição de itens, plataformas e sensores; exclusão de sensores e checklists; botões Editar/Excluir nos detalhes e listagens com gate de permissão.
+- Permissões granulares novas: `platform:create|delete`, `sensor:create|delete`, `checklist:read|create|update|delete` (além das existentes), com compatibilidade legada no backend (`*:update` / `checklist:submit` ainda autorizam create/delete/list por uma versão).
+- Endpoint `DELETE /sensors/{id}` (soft delete + auditoria) e `DELETE /checklists/{id}` (hard delete com reason e auditoria, inclusive submitted).
+- Rotas frontend de edição: `/inventory/:id/edit`, `/platforms/:id/edit`, `/sensors/:id/edit`.
+- Script `register_inventory_permissions.py` atualizado para registrar o catálogo completo e anexar à role `admin-inventario` (merge com permissões já existentes da role).
+- Em produção (`remobs_users`): 8 permissões novas criadas e anexadas à role `admin-inventario` (id 24); catálogo inventário 21/21 na role.
+- Plano `planos/2026-08-06-crud-completo-permissoes-cadastros.md`.
+
+### Adicionado
+- Feedback visual global com Snackbar (`SnackbarProvider`) para ações mutáveis: anexar/baixar/remover arquivo, cadastros, exclusões, aprovação de movimentações, checklist, sync e inconsistência de sensor.
+- Autocomplete rápido nos campos Nome, Marca, Modelo, Categoria e Local do cadastro de itens (`InventoryFormPage`), com sugestão a partir de 1 letra.
+- Endpoint `GET /inventory/items/suggestions?field=name|brand|model|category_name|location_name&q=...&limit=20` com valores distintos por prefixo (case-insensitive), itens/categorias/locais ativos e limite baixo para baixa latência.
+- Índices em `inventory_items.brand` e `inventory_items.model` (migração `0003_item_brand_model_idx`).
+- Plano `planos/2026-08-06-autocomplete-campos-cadastro-itens.md`.
+
+### Corrigido
+- Upload de arquivos e imagens no detalhe do item de inventário, que existia apenas como botões estáticos sem backend nem integração.
+
+### Adicionado
+- Endpoints de anexos por item: `GET/POST /inventory/items/{id}/files`, `GET .../files/{entity_file_id}/content` e `DELETE .../files/{entity_file_id}`.
+- Serviço de armazenamento local configurável (`REMOBS_STORAGE_LOCAL_PATH`, limite `REMOBS_STORAGE_MAX_BYTES`) com validação de papel (`foto`/`documento`), MIME e tamanho.
+- UI de anexos no `InventoryDetailPage`: enviar foto/documento, listar, pré-visualizar imagens autenticadas, baixar e remover (soft delete com auditoria).
+- Plano `planos/2026-08-06-correcao-upload-arquivos-imagens.md` e testes de contrato backend/frontend.
+- Storage S3 no backend (`REMOBS_STORAGE_BACKEND=s3`) com bucket `inventario-remobs` (região `sa-east-1`, prefixo `remobs-inventario/`), dependência `boto3` e script `backend/scripts/provision_inventario_s3_bucket.py`.
+- Role IAM `remobs-inventario-backend-task-role` com permissão de leitura/escrita/exclusão no prefixo do bucket; script de task definition atualizado para injetar envs S3 e `taskRoleArn`.
+- Plano `planos/2026-08-06-bucket-s3-inventario-remobs.md`.
+
+### Publicado
+- Frontend Amplify app `d1oidnxd2f4saq`, branch `prod`, job `30` `SUCCEED` com feedback Snackbar nas ações; cache PWA `remobs-inventario-v7`.
+- Plano de deploy: `planos/2026-08-06-deploy-feedback-snackbar.md`.
+- Backend em produção: imagem ECR `prod-2026-08-06-autocomplete`, task definition `remobs-inventario-backend:9`, migração `0003_item_brand_model_idx`, serviço ECS estável com autocomplete de cadastro.
+- Frontend Amplify job `29` `SUCCEED` (autocomplete); cache PWA `remobs-inventario-v6`.
+- Plano de deploy: `planos/2026-08-06-deploy-autocomplete-cadastro-itens.md`.
+- Backend em produção (upload S3 anterior): imagem ECR `prod-2026-08-06-s3-files`, task definition `remobs-inventario-backend:8` com `taskRoleArn` e storage S3 no bucket `inventario-remobs` (prefixo `remobs-inventario/`).
+- Frontend Amplify job `28` `SUCCEED` (upload); plano `planos/2026-08-06-deploy-upload-s3-producao.md`.
+
+## [2026-08-04]
+
+### Adicionado
+- Exclusão na listagem de inventário (`InventoryListPage`) com botão por item, confirmação e permissão `inventory:item:delete`, usando o endpoint já existente `DELETE /inventory/items/{id}`.
+- Exclusão na listagem de plataformas (`PlatformsPage`) com botão por plataforma, confirmação e permissão `platform:update`.
+- Endpoint `DELETE /platforms/{platform_id}` no backend, com soft delete (`deleted_at`), auditoria e motivo obrigatório.
+- Métodos `deleteItem` e `deletePlatform` no serviço frontend `inventoryService`.
+- Role `admin-inventario` criado em produção no controle de usuários REMOBS (`api-controle-usuarios.remobs.com.br` / banco `remobs_users`), com as 13 permissões do inventário: `inventory:item:read|create|update|delete`, `inventory:movement:request|approve`, `platform:read|update`, `sensor:read|update`, `checklist:submit`, `audit:log:read` e `sync:write`.
+- Registro operacional em `planos/2026-08-04-criar-role-admin-inventario-producao.md` e `planos/2026-08-04-exclusao-listas-itens-plataformas.md`.
+
+### Adicionado
+- Importação de plataformas a partir da API de boias PNBOIA (`/v1/info/available_buoys`), com metadados (`buoy_id`, local, coordenadas, modo, tipo, endpoint) e marcador de origem `remobs-import:pnboia-buoy:{id}`.
+- Serviço `backend/app/services/pnboia_platforms.py` e script `backend/scripts/import_pnboia_platforms.py` para sincronização idempotente.
+- Filtro `active_only` em `GET /platforms` (padrão `true`) e switch “Somente ativas” na listagem de plataformas (padrão ligado).
+- Enriquecimento via `/v1/info/metadata`: fabricante/modelo real da boia, casco (`hulls`), sistemas (Fundeio, Estrutura, Aquisição, Histórico) e sensores vinculados (`sensors` + `sensor_installations`), a partir de atributos de sensores e parâmetros da API.
+
+### Publicado
+- Backend em produção: imagem ECR `prod-2026-08-04-delete-lists`, task definition `remobs-inventario-backend:6`, serviço ECS `remobs-inventario-backend` no cluster `remobs-inventario-cluster` (profile `aws-remobs`, região `sa-east-1`).
+- Frontend em produção no Amplify app `d1oidnxd2f4saq`, branch `prod`, job `25` com status `SUCCEED`; cache do service worker atualizado para `remobs-inventario-v3`.
+- Carga em produção de 45 boias PNBOIA (8 ativas e 37 inativas) no banco `remobs_inventario`.
+- Backend atualizado para task definition `remobs-inventario-backend:7` (imagem `prod-2026-08-04-pnboia-platforms`) e frontend Amplify job `26` SUCCEED com cache PWA `remobs-inventario-v4`.
+
 ## [2026-06-17]
 
 ### Corrigido

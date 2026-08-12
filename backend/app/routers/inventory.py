@@ -3,16 +3,20 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, File, Form, Query, UploadFile, status
+from fastapi.responses import Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_async_session
+from app.core.errors import AppError
 from app.core.permissions import require_permissions
 from app.core.security import AuthUser
 from app.models.inventory import InventoryItem, StockBalance, StockMovement
+from app.schemas.file import EntityFileDeleteRequest, EntityFileListRead, EntityFileRead
 from app.schemas.inventory import (
     InventoryDeleteRequest,
+    InventoryFieldSuggestionsRead,
     InventoryItemCreate,
     InventoryItemRead,
     InventoryItemUpdate,
@@ -20,6 +24,8 @@ from app.schemas.inventory import (
     ItemHistoryRead,
 )
 from app.services.audit_service import log_action
+from app.services.file_service import attach_upload, get_entity_file_or_404, list_entity_files, soft_delete_entity_file
+from app.services import file_storage
 from app.services.inventory_service import (
     active_items_query,
     audit_logs_for_item,
@@ -31,6 +37,7 @@ from app.services.inventory_service import (
     serialize_item,
     serialize_items_bulk,
     serialize_movement,
+    suggest_item_field_values,
 )
 
 router = APIRouter(prefix="/inventory/items", tags=["inventory"])
@@ -51,6 +58,19 @@ async def list_items(
 
     items = (await session.execute(stmt)).scalars().all()
     return {"items": await serialize_items_bulk(session, items), "total": len(items)}
+
+
+@router.get("/suggestions", response_model=InventoryFieldSuggestionsRead)
+async def suggest_item_fields(
+    field: str = Query(..., pattern="^(name|brand|model|category_name|location_name)$"),
+    q: str = Query(default="", max_length=240),
+    limit: int = Query(default=20, ge=1, le=50),
+    user: AuthUser = Depends(require_permissions(["inventory:item:read"])),
+    session: AsyncSession = Depends(get_async_session),
+) -> dict:
+    """Sugestões rápidas de nome/marca/modelo/categoria/local para autocomplete no cadastro."""
+    items = await suggest_item_field_values(session, field=field, q=q, limit=limit)
+    return {"field": field, "q": q.strip(), "items": items}
 
 
 @router.post("", response_model=InventoryItemRead, status_code=status.HTTP_201_CREATED)
@@ -137,6 +157,11 @@ async def update_item(
             setattr(item, field, value)
     item.row_version += 1
 
+    # flush+refresh: updated_at tem onupdate=func.now() e fica expirado no async;
+    # acessar item.updated_at em serialize_item sem refresh gera MissingGreenlet (500).
+    await session.flush()
+    await session.refresh(item)
+
     after_data = await serialize_item(session, item)
     await log_action(
         session,
@@ -200,3 +225,87 @@ async def get_item_history(
         "movements": [await serialize_movement(session, movement) for movement in movements],
         "audit_logs": await audit_logs_for_item(session, item_id),
     }
+
+
+@router.get("/{item_id}/files", response_model=EntityFileListRead)
+async def list_item_files(
+    item_id: uuid.UUID,
+    user: AuthUser = Depends(require_permissions(["inventory:item:read"])),
+    session: AsyncSession = Depends(get_async_session),
+) -> dict:
+    await get_item_or_404(session, item_id)
+    items = await list_entity_files(session, entity_type="inventory_item", entity_id=str(item_id))
+    return {"items": items, "total": len(items)}
+
+
+@router.post("/{item_id}/files", response_model=EntityFileRead, status_code=status.HTTP_201_CREATED)
+async def upload_item_file(
+    item_id: uuid.UUID,
+    file: UploadFile = File(...),
+    file_role: str = Form(default="documento"),
+    notes: str | None = Form(default=None),
+    user: AuthUser = Depends(require_permissions(["inventory:item:update"])),
+    session: AsyncSession = Depends(get_async_session),
+) -> dict:
+    item = await get_item_or_404(session, item_id)
+    content = await file.read()
+    if not content:
+        raise AppError("Arquivo vazio não é permitido.", code="empty_file", status_code=400)
+
+    result = await attach_upload(
+        session,
+        actor=user,
+        entity_type="inventory_item",
+        entity_id=str(item.id),
+        entity_label=item.name,
+        file_role=file_role,
+        original_name=file.filename or "arquivo",
+        mime_type=file.content_type or "application/octet-stream",
+        content=content,
+        notes=notes,
+    )
+    await session.commit()
+    return result
+
+
+@router.get("/{item_id}/files/{entity_file_id}/content")
+async def download_item_file(
+    item_id: uuid.UUID,
+    entity_file_id: uuid.UUID,
+    user: AuthUser = Depends(require_permissions(["inventory:item:read"])),
+    session: AsyncSession = Depends(get_async_session),
+) -> Response:
+    await get_item_or_404(session, item_id)
+    _entity_file, file_meta = await get_entity_file_or_404(
+        session,
+        entity_type="inventory_item",
+        entity_id=str(item_id),
+        entity_file_id=entity_file_id,
+    )
+    content = file_storage.read_bytes(file_meta.storage_key)
+    headers = {
+        "Content-Disposition": f'inline; filename="{file_meta.original_name}"',
+    }
+    return Response(content=content, media_type=file_meta.mime_type, headers=headers)
+
+
+@router.delete("/{item_id}/files/{entity_file_id}")
+async def delete_item_file(
+    item_id: uuid.UUID,
+    entity_file_id: uuid.UUID,
+    payload: EntityFileDeleteRequest,
+    user: AuthUser = Depends(require_permissions(["inventory:item:update"])),
+    session: AsyncSession = Depends(get_async_session),
+) -> dict[str, str]:
+    item = await get_item_or_404(session, item_id)
+    await soft_delete_entity_file(
+        session,
+        actor=user,
+        entity_type="inventory_item",
+        entity_id=str(item.id),
+        entity_label=item.name,
+        entity_file_id=entity_file_id,
+        reason=payload.reason,
+    )
+    await session.commit()
+    return {"status": "ok"}

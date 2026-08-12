@@ -10,14 +10,15 @@ import { useEffect, useState } from "react";
 import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
+import { useSnackbar } from "../state/SnackbarContext";
 import type { SyncConflict, SyncStatus } from "../types";
 
 export default function SyncPage() {
   const [status, setStatus] = useState<SyncStatus | null>(null);
   const [conflicts, setConflicts] = useState<SyncConflict[]>([]);
   const [error, setError] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const { showSuccess, showError } = useSnackbar();
 
   function load() {
     setError(false);
@@ -36,17 +37,16 @@ export default function SyncPage() {
   useEffect(load, []);
 
   async function resolve(conflict: SyncConflict, decision: "adjust" | "discard" | "send_to_admin") {
-    setError(false);
     try {
       await inventoryService.resolveSyncConflict({
         client_action_id: conflict.client_action_id,
         decision,
         reason: "Decisão registrada na tela de sincronização.",
       });
-      setMessage("Conflito atualizado.");
+      showSuccess("Conflito atualizado com sucesso.");
       load();
     } catch {
-      setError(true);
+      showError("Não foi possível atualizar o conflito.");
     }
   }
 
@@ -59,7 +59,6 @@ export default function SyncPage() {
         </Button>
       </Stack>
       {error && <Alert severity="warning">Não foi possível consultar o estado de sincronização.</Alert>}
-      {message && <Alert severity="success">{message}</Alert>}
       {loading && <LoadingState message="Carregando sincronização..." />}
       {!loading && (
         <>

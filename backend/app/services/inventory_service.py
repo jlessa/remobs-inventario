@@ -289,3 +289,80 @@ async def audit_logs_for_item(session: AsyncSession, item_id: uuid.UUID) -> list
 
 def active_items_query() -> Select[tuple[InventoryItem]]:
     return select(InventoryItem).where(InventoryItem.deleted_at.is_(None), InventoryItem.is_active.is_(True))
+
+
+ITEM_SUGGESTION_FIELDS: dict[str, Any] = {
+    "name": InventoryItem.name,
+    "brand": InventoryItem.brand,
+    "model": InventoryItem.model,
+}
+
+ALLOWED_SUGGESTION_FIELDS = ("name", "brand", "model", "category_name", "location_name")
+
+
+async def suggest_item_field_values(
+    session: AsyncSession,
+    *,
+    field: str,
+    q: str,
+    limit: int = 20,
+) -> list[str]:
+    """Retorna valores distintos para autocomplete do cadastro de itens.
+
+    Campos name/brand/model vêm de inventory_items (DISTINCT + prefixo).
+    category_name e location_name vêm das tabelas próprias (já indexadas).
+    """
+    if field not in ALLOWED_SUGGESTION_FIELDS:
+        raise AppError(
+            "Campo de sugestão inválido.",
+            code="invalid_suggestion_field",
+            status_code=400,
+            meta={"allowed_fields": list(ALLOWED_SUGGESTION_FIELDS)},
+        )
+
+    term = q.strip()
+    if not term:
+        return []
+
+    safe_limit = max(1, min(limit, 50))
+
+    if field == "category_name":
+        stmt = (
+            select(InventoryCategory.name)
+            .where(
+                InventoryCategory.is_active.is_(True),
+                InventoryCategory.name != "",
+                InventoryCategory.name.ilike(f"{term}%"),
+            )
+            .order_by(InventoryCategory.name.asc())
+            .limit(safe_limit)
+        )
+    elif field == "location_name":
+        stmt = (
+            select(Location.name)
+            .where(
+                Location.is_active.is_(True),
+                Location.name != "",
+                Location.name.ilike(f"{term}%"),
+            )
+            .order_by(Location.name.asc())
+            .limit(safe_limit)
+        )
+    else:
+        column = ITEM_SUGGESTION_FIELDS[field]
+        stmt = (
+            select(column)
+            .where(
+                InventoryItem.deleted_at.is_(None),
+                InventoryItem.is_active.is_(True),
+                column.is_not(None),
+                column != "",
+                column.ilike(f"{term}%"),
+            )
+            .distinct()
+            .order_by(column.asc())
+            .limit(safe_limit)
+        )
+
+    rows = (await session.execute(stmt)).scalars().all()
+    return [str(value) for value in rows if value]

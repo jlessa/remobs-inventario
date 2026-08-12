@@ -14,14 +14,20 @@ import { checklistAnswerGroups, formatChecklistValue, getKnownChecklistAnswerKey
 import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
+import { useAuth } from "../state/AuthContext";
+import { useSnackbar } from "../state/SnackbarContext";
 import type { Checklist } from "../types";
 
 export default function ChecklistDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { hasAnyPermission, hasPermission } = useAuth();
+  const { showSuccess, showError } = useSnackbar();
   const [checklist, setChecklist] = useState<Checklist | null>(null);
   const [error, setError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const canSubmit = hasPermission("checklist:submit");
+  const canDelete = hasAnyPermission("checklist:delete", "checklist:submit");
 
   useEffect(() => {
     if (!id) return;
@@ -34,12 +40,12 @@ export default function ChecklistDetailPage() {
   async function submit() {
     if (!checklist) return;
     setSubmitting(true);
-    setError(false);
     try {
       const updated = await inventoryService.submitChecklist(checklist.id, "Checklist enviado pelo painel operacional.");
       setChecklist(updated);
+      showSuccess("Checklist enviado com sucesso.");
     } catch {
-      setError(true);
+      showError("Não foi possível enviar o checklist.");
     } finally {
       setSubmitting(false);
     }
@@ -63,7 +69,6 @@ export default function ChecklistDetailPage() {
       <Button startIcon={<ArrowBackIcon />} onClick={() => navigate("/app/checklists")} sx={{ alignSelf: "flex-start" }}>
         Checklists
       </Button>
-      {error && <Alert severity="error">Não foi possível enviar o checklist.</Alert>}
       <Card>
         <CardContent>
           <Stack spacing={1.5}>
@@ -116,16 +121,37 @@ export default function ChecklistDetailPage() {
         </CardContent>
       </Card>
 
-      {checklist.status !== "submitted" && (
-        <Button
-          variant="contained"
-          onClick={submit}
-          disabled={submitting}
-          startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : undefined}
-        >
-          {submitting ? "Enviando..." : "Enviar checklist"}
-        </Button>
-      )}
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={1} useFlexGap flexWrap="wrap">
+        {checklist.status !== "submitted" && canSubmit && (
+          <Button
+            variant="contained"
+            onClick={submit}
+            disabled={submitting}
+            startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : undefined}
+          >
+            {submitting ? "Enviando..." : "Enviar checklist"}
+          </Button>
+        )}
+        {canDelete && (
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={async () => {
+              const confirmed = window.confirm(`Excluir o checklist "${checklist.title}"? Esta ação remove o registro permanentemente.`);
+              if (!confirmed) return;
+              try {
+                await inventoryService.deleteChecklist(checklist.id, "Exclusão pelo detalhe do checklist.");
+                showSuccess(`Checklist "${checklist.title}" excluído com sucesso.`);
+                navigate("/app/checklists");
+              } catch {
+                showError(`Não foi possível excluir o checklist "${checklist.title}".`);
+              }
+            }}
+          >
+            Excluir
+          </Button>
+        )}
+      </Stack>
     </Stack>
   );
 }

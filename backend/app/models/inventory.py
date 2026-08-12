@@ -41,8 +41,8 @@ class InventoryItem(Base):
         index=True,
     )
     name: Mapped[str] = mapped_column(String(240), nullable=False, index=True)
-    brand: Mapped[str | None] = mapped_column(String(160), nullable=True)
-    model: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    brand: Mapped[str | None] = mapped_column(String(160), nullable=True, index=True)
+    model: Mapped[str | None] = mapped_column(String(160), nullable=True, index=True)
     serial_number: Mapped[str | None] = mapped_column(String(160), nullable=True, index=True)
     patrimony_number: Mapped[str | None] = mapped_column(String(160), nullable=True, index=True)
     invoice_number: Mapped[str | None] = mapped_column(String(160), nullable=True)

@@ -12,6 +12,20 @@ describe("cliente de inventário", () => {
     expect(inventoryApi.getUri({ url: "/inventory/items" })).toBe("http://127.0.0.1:8000/inventory/items");
   });
 
+  it("consulta sugestões de nome, marca e modelo para autocomplete", async () => {
+    const get = vi.spyOn(inventoryApi, "get").mockResolvedValue({
+      data: { field: "name", q: "si", items: ["Silicone bisnaga 200 ml"] },
+    });
+
+    const items = await inventoryService.suggestItemField("name", "si", { limit: 10 });
+
+    expect(items).toEqual(["Silicone bisnaga 200 ml"]);
+    expect(get).toHaveBeenCalledWith("/inventory/items/suggestions", {
+      params: { field: "name", q: "si", limit: 10 },
+      signal: undefined,
+    });
+  });
+
   it("consulta detalhes operacionais de plataforma e sensor", async () => {
     const get = vi.spyOn(inventoryApi, "get").mockResolvedValue({ data: { id: "id-teste" } });
     const patch = vi.spyOn(inventoryApi, "patch").mockResolvedValue({ data: { id: "sensor-1" } });

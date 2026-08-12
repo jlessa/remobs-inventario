@@ -35,6 +35,10 @@ class ChecklistSubmit(BaseModel):
     reason: str = Field(min_length=3)
 
 
+class ChecklistDeleteRequest(BaseModel):
+    reason: str = Field(min_length=3)
+
+
 class ChecklistRead(BaseModel):
     id: uuid.UUID
     title: str

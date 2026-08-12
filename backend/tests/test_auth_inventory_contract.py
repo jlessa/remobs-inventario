@@ -17,9 +17,32 @@ TEST_SECRET = "segredo-de-teste-remobs-com-tamanho-seguro"
 
 
 def _configure_test_environment() -> None:
-    db_path = Path(__file__).parent / "test.sqlite"
-    if db_path.exists():
-        db_path.unlink()
+    db_path = Path(__file__).parent / f"test-{uuid.uuid4().hex}.sqlite"
+    # Remove leftovers from runs anteriores (Windows pode manter lock no arquivo fixo).
+    for stale in Path(__file__).parent.glob("test*.sqlite"):
+        try:
+            stale.unlink()
+        except OSError:
+            pass
+
+    storage_path = Path(__file__).parent / "test_storage"
+    if storage_path.exists():
+        for child in storage_path.rglob("*"):
+            if child.is_file():
+                try:
+                    child.unlink()
+                except OSError:
+                    pass
+        for child in sorted(storage_path.rglob("*"), reverse=True):
+            if child.is_dir():
+                try:
+                    child.rmdir()
+                except OSError:
+                    pass
+        try:
+            storage_path.rmdir()
+        except OSError:
+            pass
 
     os.environ["REMOBS_DATABASE_URL"] = f"sqlite+aiosqlite:///{db_path.as_posix()}"
     os.environ["REMOBS_DATABASE_SCHEMA"] = ""
@@ -27,6 +50,7 @@ def _configure_test_environment() -> None:
     os.environ["REMOBS_JWT_ISSUER"] = "remobs-users"
     os.environ["REMOBS_JWT_AUDIENCE"] = "remobs-api"
     os.environ["REMOBS_ENVIRONMENT"] = "test"
+    os.environ["REMOBS_STORAGE_LOCAL_PATH"] = str(storage_path)
 
 
 _configure_test_environment()
@@ -153,6 +177,92 @@ def test_inventory_accepts_valid_token_and_lists_items(client: TestClient) -> No
     assert response.json() == {"items": [], "total": 0}
 
 
+def test_item_field_suggestions_prefix_and_distinct(client: TestClient) -> None:
+    headers = auth_headers(["inventory:item:create", "inventory:item:read"])
+
+    for name, brand, model in [
+        ("Silicone bisnaga 200 ml", "Dow", "200 ml"),
+        ("Silicone spray", "Dow", "Spray"),
+        ("Cabo de aço 10mm", "Acme", "CA-10"),
+    ]:
+        response = client.post(
+            "/inventory/items",
+            headers=headers,
+            json={
+                "item_type": "consumable",
+                "name": name,
+                "brand": brand,
+                "model": model,
+                "category_name": "Consumíveis",
+                "location_name": "Estoque",
+                "unit": "un",
+                "initial_quantity": 1,
+                "reason": "Seed autocomplete.",
+            },
+        )
+        assert response.status_code == 201
+
+    name_response = client.get(
+        "/inventory/items/suggestions",
+        headers=headers,
+        params={"field": "name", "q": "s"},
+    )
+    assert name_response.status_code == 200
+    name_payload = name_response.json()
+    assert name_payload["field"] == "name"
+    assert name_payload["q"] == "s"
+    assert "Silicone bisnaga 200 ml" in name_payload["items"]
+    assert "Silicone spray" in name_payload["items"]
+    assert "Cabo de aço 10mm" not in name_payload["items"]
+
+    brand_response = client.get(
+        "/inventory/items/suggestions",
+        headers=headers,
+        params={"field": "brand", "q": "d"},
+    )
+    assert brand_response.status_code == 200
+    assert brand_response.json()["items"] == ["Dow"]
+
+    model_response = client.get(
+        "/inventory/items/suggestions",
+        headers=headers,
+        params={"field": "model", "q": "c"},
+    )
+    assert model_response.status_code == 200
+    assert "CA-10" in model_response.json()["items"]
+
+    empty_response = client.get(
+        "/inventory/items/suggestions",
+        headers=headers,
+        params={"field": "name", "q": ""},
+    )
+    assert empty_response.status_code == 200
+    assert empty_response.json()["items"] == []
+
+    category_response = client.get(
+        "/inventory/items/suggestions",
+        headers=headers,
+        params={"field": "category_name", "q": "c"},
+    )
+    assert category_response.status_code == 200
+    assert "Consumíveis" in category_response.json()["items"]
+
+    location_response = client.get(
+        "/inventory/items/suggestions",
+        headers=headers,
+        params={"field": "location_name", "q": "e"},
+    )
+    assert location_response.status_code == 200
+    assert "Estoque" in location_response.json()["items"]
+
+    forbidden = client.get(
+        "/inventory/items/suggestions",
+        headers=auth_headers(["platform:read"]),
+        params={"field": "name", "q": "s"},
+    )
+    assert forbidden.status_code == 403
+
+
 def test_creates_inventory_item_with_stock_and_audit_log(client: TestClient) -> None:
     headers = auth_headers(["inventory:item:create", "inventory:item:read", "audit:log:read"])
 
@@ -183,6 +293,69 @@ def test_creates_inventory_item_with_stock_and_audit_log(client: TestClient) -> 
     assert logs_response.status_code == 200
     actions = [entry["action"] for entry in logs_response.json()["items"]]
     assert "inventory_item_created" in actions
+
+
+def test_updates_inventory_item_without_missing_greenlet(client: TestClient) -> None:
+    """PATCH deve recarregar updated_at (onupdate) antes de serializar; evita 500 MissingGreenlet."""
+    headers = auth_headers(
+        ["inventory:item:create", "inventory:item:read", "inventory:item:update", "audit:log:read"]
+    )
+
+    create_response = client.post(
+        "/inventory/items",
+        headers=headers,
+        json={
+            "item_type": "permanent_component",
+            "name": f"ADCP editavel {uuid.uuid4()}",
+            "brand": "Nortek",
+            "model": "AquaPro",
+            "category_name": "Sensor",
+            "location_name": "Laboratorio",
+            "unit": "un",
+            "initial_quantity": 1,
+            "reason": "Cadastro para teste de edição.",
+        },
+    )
+    assert create_response.status_code == 201
+    item_id = create_response.json()["id"]
+    previous_version = create_response.json()["row_version"]
+
+    update_response = client.patch(
+        f"/inventory/items/{item_id}",
+        headers=headers,
+        json={
+            "name": "ADCP atualizado",
+            "brand": "Nortek",
+            "model": "Signature 500",
+            "serial_number": "SN-EDIT-1",
+            "condition_status": "manutencao",
+            "category_name": "Sensor",
+            "location_name": "Laboratorio",
+            "unit": "un",
+            "minimum_stock_national": 0,
+            "minimum_stock_import": 0,
+            "minimum_stock_maintenance": 0,
+            "ideal_stock": 1,
+            "reason": "Atualização cadastral de teste.",
+        },
+    )
+    assert update_response.status_code == 200, update_response.text
+    updated = update_response.json()
+    assert updated["name"] == "ADCP atualizado"
+    assert updated["model"] == "Signature 500"
+    assert updated["serial_number"] == "SN-EDIT-1"
+    assert updated["condition_status"] == "manutencao"
+    assert updated["row_version"] == previous_version + 1
+    assert updated["updated_at"] is not None
+
+    detail = client.get(f"/inventory/items/{item_id}", headers=headers)
+    assert detail.status_code == 200
+    assert detail.json()["name"] == "ADCP atualizado"
+
+    logs_response = client.get("/audit-logs", headers=headers)
+    assert logs_response.status_code == 200
+    actions = [entry["action"] for entry in logs_response.json()["items"]]
+    assert "inventory_item_updated" in actions
 
 
 def test_requests_and_approves_stock_movement(client: TestClient) -> None:
@@ -603,3 +776,210 @@ def test_dashboard_summary_returns_aggregated_operational_counts(client: TestCli
         assert payload[key] == value
     assert payload["critical_stock_items"][0]["stock_total"] < payload["critical_stock_items"][0]["minimum_stock_national"]
     assert payload["critical_alerts"][0]["severity"] == "critical"
+
+
+def test_item_file_upload_list_download_and_delete(client: TestClient) -> None:
+    headers = auth_headers(["inventory:item:create", "inventory:item:read", "inventory:item:update", "audit:log:read"])
+
+    item_response = client.post(
+        "/inventory/items",
+        headers=headers,
+        json={
+            "item_type": "permanent_component",
+            "name": f"Sensor com anexo {uuid.uuid4()}",
+            "category_name": "Sensores",
+            "location_name": "Laboratório",
+            "unit": "un",
+            "initial_quantity": 1,
+            "reason": "Item para teste de upload.",
+        },
+    )
+    assert item_response.status_code == 201
+    item_id = item_response.json()["id"]
+
+    png_bytes = (
+        b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01"
+        b"\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N"
+        b"\x00\x00\x00\x00IEND\xaeB`\x82"
+    )
+    upload_response = client.post(
+        f"/inventory/items/{item_id}/files",
+        headers=headers,
+        data={"file_role": "foto", "notes": "Foto de identificação"},
+        files={"file": ("sensor.png", png_bytes, "image/png")},
+    )
+    assert upload_response.status_code == 201, upload_response.text
+    uploaded = upload_response.json()
+    assert uploaded["file_role"] == "foto"
+    assert uploaded["original_name"] == "sensor.png"
+    assert uploaded["mime_type"] == "image/png"
+    assert uploaded["size_bytes"] == len(png_bytes)
+    entity_file_id = uploaded["id"]
+
+    list_response = client.get(f"/inventory/items/{item_id}/files", headers=headers)
+    assert list_response.status_code == 200
+    listed = list_response.json()
+    assert listed["total"] == 1
+    assert listed["items"][0]["id"] == entity_file_id
+
+    download_response = client.get(
+        f"/inventory/items/{item_id}/files/{entity_file_id}/content",
+        headers=headers,
+    )
+    assert download_response.status_code == 200
+    assert download_response.content == png_bytes
+    assert download_response.headers["content-type"].startswith("image/png")
+
+    delete_response = client.request(
+        "DELETE",
+        f"/inventory/items/{item_id}/files/{entity_file_id}",
+        headers=headers,
+        json={"reason": "Arquivo de teste removido."},
+    )
+    assert delete_response.status_code == 200
+    assert delete_response.json() == {"status": "ok"}
+
+    after_delete = client.get(f"/inventory/items/{item_id}/files", headers=headers)
+    assert after_delete.status_code == 200
+    assert after_delete.json() == {"items": [], "total": 0}
+
+    missing = client.get(
+        f"/inventory/items/{item_id}/files/{entity_file_id}/content",
+        headers=headers,
+    )
+    assert missing.status_code == 404
+
+
+def test_item_file_rejects_invalid_image_type(client: TestClient) -> None:
+    headers = auth_headers(["inventory:item:create", "inventory:item:read", "inventory:item:update"])
+    item_response = client.post(
+        "/inventory/items",
+        headers=headers,
+        json={
+            "item_type": "consumable",
+            "name": f"Item sem foto inválida {uuid.uuid4()}",
+            "category_name": "Consumíveis",
+            "location_name": "Estoque",
+            "unit": "un",
+            "initial_quantity": 1,
+            "reason": "Teste MIME.",
+        },
+    )
+    item_id = item_response.json()["id"]
+
+    response = client.post(
+        f"/inventory/items/{item_id}/files",
+        headers=headers,
+        data={"file_role": "foto"},
+        files={"file": ("malware.exe", b"MZ fake", "application/octet-stream")},
+    )
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "unsupported_image_type"
+
+
+def test_platform_create_accepts_granular_or_legacy_permission(client: TestClient) -> None:
+    granular = client.post(
+        "/platforms",
+        headers=auth_headers(["platform:create"]),
+        json={"name": f"Boia granular {uuid.uuid4()}", "platform_type": "boia_fixa"},
+    )
+    assert granular.status_code == 201
+
+    legacy = client.post(
+        "/platforms",
+        headers=auth_headers(["platform:update"]),
+        json={"name": f"Boia legado {uuid.uuid4()}", "platform_type": "boia_fixa"},
+    )
+    assert legacy.status_code == 201
+
+    denied = client.post(
+        "/platforms",
+        headers=auth_headers(["platform:read"]),
+        json={"name": f"Boia sem perm {uuid.uuid4()}", "platform_type": "boia_fixa"},
+    )
+    assert denied.status_code == 403
+
+
+def test_sensor_delete_soft_and_permission_legacy(client: TestClient) -> None:
+    headers = auth_headers(["sensor:create", "sensor:read", "sensor:delete"])
+    create_response = client.post(
+        "/sensors",
+        headers=headers,
+        json={"sensor_type": "meteorologico", "family": f"Sensor del {uuid.uuid4()}"},
+    )
+    assert create_response.status_code == 201
+    sensor_id = create_response.json()["id"]
+
+    delete_response = client.request(
+        "DELETE",
+        f"/sensors/{sensor_id}",
+        headers=headers,
+        json={"reason": "Remoção de teste."},
+    )
+    assert delete_response.status_code == 200
+    assert delete_response.json() == {"status": "ok"}
+
+    missing = client.get(f"/sensors/{sensor_id}", headers=headers)
+    assert missing.status_code == 404
+
+    legacy_headers = auth_headers(["sensor:update", "sensor:read"])
+    create_legacy = client.post(
+        "/sensors",
+        headers=legacy_headers,
+        json={"sensor_type": "meteorologico", "family": f"Sensor legado {uuid.uuid4()}"},
+    )
+    assert create_legacy.status_code == 201
+    legacy_id = create_legacy.json()["id"]
+    delete_legacy = client.request(
+        "DELETE",
+        f"/sensors/{legacy_id}",
+        headers=legacy_headers,
+        json={"reason": "Remoção via legado update."},
+    )
+    assert delete_legacy.status_code == 200
+
+
+def test_checklist_delete_any_status_with_reason(client: TestClient) -> None:
+    headers = auth_headers(["checklist:create", "checklist:read", "checklist:submit", "checklist:delete"])
+    create_response = client.post(
+        "/checklists",
+        headers=headers,
+        json={
+            "title": f"Checklist del {uuid.uuid4()}",
+            "template_name": "campo",
+            "total_steps": 1,
+        },
+    )
+    assert create_response.status_code == 201
+    checklist_id = create_response.json()["id"]
+
+    submit_response = client.post(
+        f"/checklists/{checklist_id}/submit",
+        headers=headers,
+        json={"reason": "Envio para teste de exclusão."},
+    )
+    assert submit_response.status_code == 200
+    assert submit_response.json()["status"] == "submitted"
+
+    delete_response = client.request(
+        "DELETE",
+        f"/checklists/{checklist_id}",
+        headers=headers,
+        json={"reason": "Exclusão de checklist submitted."},
+    )
+    assert delete_response.status_code == 200
+    assert delete_response.json() == {"status": "ok"}
+
+    missing = client.get(f"/checklists/{checklist_id}", headers=headers)
+    assert missing.status_code == 404
+
+
+def test_checklist_list_accepts_read_or_submit_permission(client: TestClient) -> None:
+    only_read = client.get("/checklists", headers=auth_headers(["checklist:read"]))
+    assert only_read.status_code == 200
+
+    only_submit = client.get("/checklists", headers=auth_headers(["checklist:submit"]))
+    assert only_submit.status_code == 200
+
+    denied = client.get("/checklists", headers=auth_headers(["inventory:item:read"]))
+    assert denied.status_code == 403

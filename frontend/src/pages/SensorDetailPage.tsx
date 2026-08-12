@@ -15,14 +15,19 @@ import { useNavigate, useParams } from "react-router-dom";
 import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
+import { useAuth } from "../state/AuthContext";
+import { useSnackbar } from "../state/SnackbarContext";
 import type { SensorDetail } from "../types";
 
 export default function SensorDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { hasAnyPermission, hasPermission } = useAuth();
+  const { showSuccess, showError } = useSnackbar();
   const [sensor, setSensor] = useState<SensorDetail | null>(null);
   const [error, setError] = useState(false);
-  const [actionError, setActionError] = useState(false);
+  const canUpdate = hasPermission("sensor:update");
+  const canDelete = hasAnyPermission("sensor:delete", "sensor:update");
 
   useEffect(() => {
     if (!id) return;
@@ -57,6 +62,32 @@ export default function SensorDetailPage() {
             </Typography>
             <Typography>Número de série: {sensor.serial_number || "Não informado"}</Typography>
             <Typography>Patrimônio: {sensor.patrimony_number || "Não informado"}</Typography>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1} useFlexGap flexWrap="wrap">
+              {canUpdate && (
+                <Button variant="outlined" onClick={() => navigate(`/app/sensors/${sensor.id}/edit`)}>
+                  Editar
+                </Button>
+              )}
+              {canDelete && (
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={async () => {
+                    const confirmed = window.confirm(`Excluir o sensor "${sensor.family}"? Esta ação remove o sensor da listagem.`);
+                    if (!confirmed) return;
+                    try {
+                      await inventoryService.deleteSensor(sensor.id, "Exclusão pelo detalhe do sensor.");
+                      showSuccess(`Sensor "${sensor.family}" excluído com sucesso.`);
+                      navigate("/app/sensors");
+                    } catch {
+                      showError(`Não foi possível excluir o sensor "${sensor.family}".`);
+                    }
+                  }}
+                >
+                  Excluir
+                </Button>
+              )}
+            </Stack>
           </Stack>
         </CardContent>
       </Card>
@@ -83,29 +114,30 @@ export default function SensorDetailPage() {
         <CardContent>
           <Stack spacing={1}>
             <Typography variant="h6">Calibração e operação</Typography>
-            {actionError && <Alert severity="error">Não foi possível registrar a inconsistência.</Alert>}
             <Typography>Vencimento: {calibrationText}</Typography>
             {sensor.notes && <Typography color="text.secondary">{sensor.notes}</Typography>}
-            <Button
-              startIcon={<ErrorOutlineIcon />}
-              variant="outlined"
-              color="warning"
-              onClick={async () => {
-                setActionError(false);
-                try {
-                  await inventoryService.updateSensor(sensor.id, {
-                    operational_status: "inconsistencia",
-                    reason: "Inconsistência registrada pelo painel operacional.",
-                  });
-                  const updated = await inventoryService.getSensor(sensor.id);
-                  setSensor(updated);
-                } catch {
-                  setActionError(true);
-                }
-              }}
-            >
-              Registrar inconsistência
-            </Button>
+            {canUpdate && (
+              <Button
+                startIcon={<ErrorOutlineIcon />}
+                variant="outlined"
+                color="warning"
+                onClick={async () => {
+                  try {
+                    await inventoryService.updateSensor(sensor.id, {
+                      operational_status: "inconsistencia",
+                      reason: "Inconsistência registrada pelo painel operacional.",
+                    });
+                    const updated = await inventoryService.getSensor(sensor.id);
+                    setSensor(updated);
+                    showSuccess("Inconsistência registrada com sucesso.");
+                  } catch {
+                    showError("Não foi possível registrar a inconsistência.");
+                  }
+                }}
+              >
+                Registrar inconsistência
+              </Button>
+            )}
           </Stack>
         </CardContent>
       </Card>

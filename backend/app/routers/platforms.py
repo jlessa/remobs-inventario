@@ -1,38 +1,52 @@
 from __future__ import annotations
 
 import uuid
+from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_async_session
 from app.core.errors import AppError
-from app.core.permissions import require_permissions
+from app.core.permissions import require_any_permission, require_permissions
 from app.core.security import AuthUser
 from app.models.platform import Hull, Platform, PlatformSystem
 from app.models.sensor import Sensor, SensorInstallation
-from app.schemas.platform import PlatformCreate, PlatformDetailRead, PlatformListRead, PlatformRead, PlatformUpdate
+from app.schemas.platform import (
+    PlatformCreate,
+    PlatformDeleteRequest,
+    PlatformDetailRead,
+    PlatformListRead,
+    PlatformRead,
+    PlatformUpdate,
+)
 from app.services.audit_service import log_action
+from app.services.pnboia_platforms import ACTIVE_OPERATIONAL_STATUSES
 
 router = APIRouter(prefix="/platforms", tags=["platforms"])
 
 
 @router.get("", response_model=PlatformListRead)
 async def list_platforms(
+    active_only: bool = Query(
+        True,
+        description="Quando true, retorna apenas plataformas com status operacional ativo (em_operacao/disponivel).",
+    ),
     user: AuthUser = Depends(require_permissions(["platform:read"])),
     session: AsyncSession = Depends(get_async_session),
 ) -> dict:
-    items = (
-        await session.execute(select(Platform).where(Platform.deleted_at.is_(None)).order_by(Platform.name))
-    ).scalars().all()
+    stmt = select(Platform).where(Platform.deleted_at.is_(None))
+    if active_only:
+        stmt = stmt.where(Platform.operational_status.in_(sorted(ACTIVE_OPERATIONAL_STATUSES)))
+    items = (await session.execute(stmt.order_by(Platform.name))).scalars().all()
     return {"items": items, "total": len(items)}
 
 
 @router.post("", response_model=PlatformRead, status_code=status.HTTP_201_CREATED)
 async def create_platform(
     payload: PlatformCreate,
-    user: AuthUser = Depends(require_permissions(["platform:update"])),
+    user: AuthUser = Depends(require_any_permission(["platform:create", "platform:update"])),
     session: AsyncSession = Depends(get_async_session),
 ) -> Platform:
     platform = Platform(**payload.model_dump())
@@ -142,3 +156,35 @@ async def update_platform(
     await session.commit()
     await session.refresh(platform)
     return platform
+
+
+@router.delete("/{platform_id}")
+async def delete_platform(
+    platform_id: uuid.UUID,
+    payload: PlatformDeleteRequest,
+    user: AuthUser = Depends(require_any_permission(["platform:delete", "platform:update"])),
+    session: AsyncSession = Depends(get_async_session),
+) -> dict[str, str]:
+    platform = await session.get(Platform, platform_id)
+    if not platform or platform.deleted_at is not None:
+        raise AppError("Plataforma não encontrada.", code="platform_not_found", status_code=404)
+
+    before = {
+        "name": platform.name,
+        "platform_type": platform.platform_type,
+        "operational_status": platform.operational_status,
+    }
+    platform.deleted_at = datetime.now(timezone.utc)
+    await log_action(
+        session,
+        actor=user,
+        action="platform_deleted",
+        entity_type="platform",
+        entity_id=str(platform.id),
+        entity_label_snapshot=platform.name,
+        before_data=before,
+        after_data={"deleted_at": platform.deleted_at.isoformat()},
+        reason=payload.reason,
+    )
+    await session.commit()
+    return {"status": "ok"}

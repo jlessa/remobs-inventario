@@ -1,9 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import ChecklistFormPage from "../src/pages/ChecklistFormPage";
 import { inventoryService } from "../src/services/inventoryService";
+import { renderWithProviders } from "./test-utils";
 
 describe("formulário de checklist de campo", () => {
   afterEach(() => {
@@ -50,7 +51,7 @@ describe("formulário de checklist de campo", () => {
       submitted_at: "2026-06-15T12:30:00Z",
     });
 
-    render(
+    renderWithProviders(
       <MemoryRouter>
         <ChecklistFormPage />
       </MemoryRouter>,

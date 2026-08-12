@@ -11,6 +11,7 @@ import LoadingState from "../components/LoadingState";
 import StatusChip from "../components/StatusChip";
 import { inventoryService } from "../services/inventoryService";
 import { useAuth } from "../state/AuthContext";
+import { useSnackbar } from "../state/SnackbarContext";
 import type { Movement } from "../types";
 
 export default function MovementsPage() {
@@ -19,6 +20,7 @@ export default function MovementsPage() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { hasPermission } = useAuth();
+  const { showSuccess, showError } = useSnackbar();
 
   function load() {
     inventoryService
@@ -32,9 +34,14 @@ export default function MovementsPage() {
 
   async function decide(id: string, action: "approve" | "reject") {
     const reason = action === "approve" ? "Decisão autorizada pelo painel." : "Decisão reprovada pelo painel.";
-    if (action === "approve") await inventoryService.approveMovement(id, reason);
-    if (action === "reject") await inventoryService.rejectMovement(id, reason);
-    load();
+    try {
+      if (action === "approve") await inventoryService.approveMovement(id, reason);
+      if (action === "reject") await inventoryService.rejectMovement(id, reason);
+      showSuccess(action === "approve" ? "Movimentação aprovada." : "Movimentação reprovada.");
+      load();
+    } catch {
+      showError(action === "approve" ? "Não foi possível aprovar a movimentação." : "Não foi possível reprovar a movimentação.");
+    }
   }
 
   return (

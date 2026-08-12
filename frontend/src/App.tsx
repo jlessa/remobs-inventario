@@ -45,15 +45,18 @@ export default function App() {
           <Route path="home" element={<HomePage />} />
           <Route path="inventory" element={<InventoryListPage />} />
           <Route path="inventory/new" element={<InventoryFormPage />} />
+          <Route path="inventory/:id/edit" element={<InventoryFormPage />} />
           <Route path="inventory/:id" element={<InventoryDetailPage />} />
           <Route path="movements" element={<MovementsPage />} />
           <Route path="movements/new" element={<MovementRequestPage />} />
           <Route path="alerts" element={<AlertsPage />} />
           <Route path="platforms" element={<PlatformsPage />} />
           <Route path="platforms/new" element={<PlatformFormPage />} />
+          <Route path="platforms/:id/edit" element={<PlatformFormPage />} />
           <Route path="platforms/:id" element={<PlatformDetailPage />} />
           <Route path="sensors" element={<SensorsPage />} />
           <Route path="sensors/new" element={<SensorFormPage />} />
+          <Route path="sensors/:id/edit" element={<SensorFormPage />} />
           <Route path="sensors/:id" element={<SensorDetailPage />} />
           <Route path="checklists" element={<ChecklistListPage />} />
           <Route path="checklists/new" element={<ChecklistFormPage />} />

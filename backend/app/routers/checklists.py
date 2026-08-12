@@ -9,10 +9,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_async_session
 from app.core.errors import AppError
-from app.core.permissions import require_permissions
+from app.core.permissions import require_any_permission, require_permissions
 from app.core.security import AuthUser
 from app.models.checklist import FieldChecklist
-from app.schemas.checklist import ChecklistCreate, ChecklistListRead, ChecklistRead, ChecklistSubmit, ChecklistUpdate
+from app.schemas.checklist import (
+    ChecklistCreate,
+    ChecklistDeleteRequest,
+    ChecklistListRead,
+    ChecklistRead,
+    ChecklistSubmit,
+    ChecklistUpdate,
+)
 from app.services.audit_service import log_action
 
 router = APIRouter(prefix="/checklists", tags=["checklists"])
@@ -27,7 +34,7 @@ async def get_checklist_or_404(session: AsyncSession, checklist_id: uuid.UUID) -
 
 @router.get("", response_model=ChecklistListRead)
 async def list_checklists(
-    user: AuthUser = Depends(require_permissions(["checklist:submit"])),
+    user: AuthUser = Depends(require_any_permission(["checklist:read", "checklist:submit"])),
     session: AsyncSession = Depends(get_async_session),
 ) -> dict:
     items = (
@@ -41,7 +48,7 @@ async def list_checklists(
 @router.post("", response_model=ChecklistRead, status_code=status.HTTP_201_CREATED)
 async def create_checklist(
     payload: ChecklistCreate,
-    user: AuthUser = Depends(require_permissions(["checklist:submit"])),
+    user: AuthUser = Depends(require_any_permission(["checklist:create", "checklist:submit"])),
     session: AsyncSession = Depends(get_async_session),
 ) -> FieldChecklist:
     checklist = FieldChecklist(
@@ -75,7 +82,7 @@ async def create_checklist(
 @router.get("/{checklist_id}", response_model=ChecklistRead)
 async def get_checklist(
     checklist_id: uuid.UUID,
-    user: AuthUser = Depends(require_permissions(["checklist:submit"])),
+    user: AuthUser = Depends(require_any_permission(["checklist:read", "checklist:submit"])),
     session: AsyncSession = Depends(get_async_session),
 ) -> FieldChecklist:
     return await get_checklist_or_404(session, checklist_id)
@@ -85,7 +92,7 @@ async def get_checklist(
 async def update_checklist(
     checklist_id: uuid.UUID,
     payload: ChecklistUpdate,
-    user: AuthUser = Depends(require_permissions(["checklist:submit"])),
+    user: AuthUser = Depends(require_any_permission(["checklist:update", "checklist:submit"])),
     session: AsyncSession = Depends(get_async_session),
 ) -> FieldChecklist:
     checklist = await get_checklist_or_404(session, checklist_id)
@@ -145,3 +152,34 @@ async def submit_checklist(
     await session.commit()
     await session.refresh(checklist)
     return checklist
+
+
+@router.delete("/{checklist_id}")
+async def delete_checklist(
+    checklist_id: uuid.UUID,
+    payload: ChecklistDeleteRequest,
+    user: AuthUser = Depends(require_any_permission(["checklist:delete", "checklist:submit"])),
+    session: AsyncSession = Depends(get_async_session),
+) -> dict[str, str]:
+    checklist = await get_checklist_or_404(session, checklist_id)
+    before = {
+        "title": checklist.title,
+        "status": checklist.status,
+        "template_name": checklist.template_name,
+        "platform_id": str(checklist.platform_id) if checklist.platform_id else None,
+        "platform_name": checklist.platform_name,
+    }
+    await log_action(
+        session,
+        actor=user,
+        action="field_checklist_deleted",
+        entity_type="field_checklist",
+        entity_id=str(checklist.id),
+        entity_label_snapshot=checklist.title,
+        before_data=before,
+        after_data={"deleted": True},
+        reason=payload.reason,
+    )
+    await session.delete(checklist)
+    await session.commit()
+    return {"status": "ok"}

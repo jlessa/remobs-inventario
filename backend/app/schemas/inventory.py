@@ -93,6 +93,12 @@ class InventoryListRead(BaseModel):
     total: int
 
 
+class InventoryFieldSuggestionsRead(BaseModel):
+    field: str
+    q: str
+    items: list[str]
+
+
 class InventoryDeleteRequest(BaseModel):
     reason: str = Field(min_length=3)
 
