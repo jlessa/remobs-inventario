@@ -2,6 +2,10 @@
 
 ## [2026-08-12]
 
+### Publicado
+- Deploy em produção (ECS + Amplify) das entregas de Locais, origem na saída e visualização de imagem; cache PWA `remobs-inventario-v9`.
+- Plano de deploy: `planos/2026-08-12-deploy-locais-saida-producao.md`.
+
 ### Corrigido
 - No detalhe do item, fotos anexadas passam a abrir em Dialog para visualização (clique na miniatura ou botão Visualizar), sem forçar download.
 - Botão Baixar permanece apenas para documentos (não-imagem).
