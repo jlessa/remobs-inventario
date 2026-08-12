@@ -49,7 +49,7 @@ describe("resolveOriginLocationId", () => {
     expect(resolveOriginLocationId(itemEstoque)).toBe("loc-campo");
   });
 
-  it("usa o primeiro saldo com estoque se o local atual não tiver disponível", () => {
+  it("mantém o local atual do item mesmo sem saldo disponível nesse local", () => {
     const item: InventoryItem = {
       ...itemEstoque,
       current_location_id: "loc-campo",
@@ -70,11 +70,11 @@ describe("resolveOriginLocationId", () => {
         },
       ],
     };
-    expect(resolveOriginLocationId(item)).toBe("loc-estoque");
+    expect(resolveOriginLocationId(item)).toBe("loc-campo");
   });
 
-  it("retorna string vazia sem balances", () => {
-    expect(resolveOriginLocationId({ ...itemEstoque, balances: [] })).toBe("");
+  it("usa o local atual mesmo sem linhas de saldo", () => {
+    expect(resolveOriginLocationId({ ...itemEstoque, balances: [] })).toBe("loc-campo");
   });
 });
 
@@ -97,6 +97,7 @@ describe("MovementRequestPage origem", () => {
       }),
     );
     vi.spyOn(inventoryService, "listItems").mockResolvedValue({ items: [itemEstoque], total: 1 });
+    vi.spyOn(inventoryService, "getItem").mockResolvedValue(itemEstoque);
     vi.spyOn(inventoryService, "listLocations").mockResolvedValue({
       items: [
         {
@@ -131,5 +132,43 @@ describe("MovementRequestPage origem", () => {
     });
     const origin = screen.getByRole("combobox", { name: /^Origem/i }) as HTMLInputElement;
     expect(origin.value).not.toMatch(/Estoque/);
+  });
+
+  it("preenche origem com o local do item mesmo sem saldos", async () => {
+    const itemSemSaldo: InventoryItem = { ...itemEstoque, stock_total: 0, balances: [] };
+    vi.spyOn(inventoryService, "listItems").mockResolvedValue({ items: [itemSemSaldo], total: 1 });
+    vi.spyOn(inventoryService, "getItem").mockResolvedValue(itemSemSaldo);
+    vi.spyOn(inventoryService, "listLocations").mockResolvedValue({
+      items: [
+        {
+          id: "loc-campo",
+          name: "Campo",
+          location_type: "campo",
+          is_active: true,
+          created_at: "2026-01-01T00:00:00Z",
+        },
+        {
+          id: "loc-estoque",
+          name: "Estoque",
+          location_type: "estoque",
+          is_active: true,
+          created_at: "2026-01-01T00:00:00Z",
+        },
+      ],
+      total: 2,
+    });
+
+    renderWithProviders(
+      <MemoryRouter initialEntries={[{ pathname: "/app/movements/new", state: { itemId: "item-1" } }]}>
+        <Routes>
+          <Route path="/app/movements/new" element={<MovementRequestPage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      const origin = screen.getByRole("combobox", { name: /^Origem/i }) as HTMLInputElement;
+      expect(origin.value).toMatch(/Campo/);
+    });
   });
 });

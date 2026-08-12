@@ -48,21 +48,36 @@ function availableQty(balance: StockBalance): number {
   return balance.quantity - balance.reserved_quantity;
 }
 
-/** Prefere o local atual do item quando houver saldo disponível; senão o primeiro com estoque. */
+function availableAtLocation(item: InventoryItem | undefined | null, locationId: string): number {
+  const balance = item?.balances.find((entry) => entry.location_id === locationId);
+  return balance ? availableQty(balance) : 0;
+}
+
+/** Prefere o Local cadastrado no item; senão o primeiro saldo com estoque. */
 export function resolveOriginLocationId(item: InventoryItem | undefined | null): string {
-  if (!item?.balances?.length) return "";
+  if (item?.current_location_id) return item.current_location_id;
 
-  if (item.current_location_id) {
-    const current = item.balances.find(
-      (balance) => balance.location_id === item.current_location_id && availableQty(balance) > 0,
-    );
-    if (current) return current.location_id;
-  }
-
-  const withStock = item.balances.find((balance) => availableQty(balance) > 0);
+  const withStock = item?.balances.find((balance) => availableQty(balance) > 0);
   if (withStock) return withStock.location_id;
 
-  return item.balances[0]?.location_id || "";
+  return item?.balances[0]?.location_id || "";
+}
+
+export function originLocationOptions(
+  locations: InventoryLocation[],
+  item: InventoryItem | undefined | null,
+): InventoryLocation[] {
+  const options = [...locations];
+  if (item?.current_location_id && !options.some((entry) => entry.id === item.current_location_id)) {
+    options.unshift({
+      id: item.current_location_id,
+      name: item.current_location_name || "Local atual",
+      location_type: "estoque",
+      is_active: true,
+      created_at: item.updated_at || item.created_at || "",
+    });
+  }
+  return options;
 }
 
 export default function MovementRequestPage() {
@@ -80,12 +95,21 @@ export default function MovementRequestPage() {
   const stateItemId = (location.state as { itemId?: string } | null)?.itemId;
 
   useEffect(() => {
-    Promise.all([inventoryService.listItems(), inventoryService.listLocations({ activeOnly: true })])
-      .then(([itemsData, locationsData]) => {
-        setItems(itemsData.items);
+    Promise.all([
+      inventoryService.listItems(),
+      inventoryService.listLocations({ activeOnly: true }),
+      stateItemId ? inventoryService.getItem(stateItemId).catch(() => null) : Promise.resolve(null),
+    ])
+      .then(([itemsData, locationsData, detailedItem]) => {
+        const mergedItems =
+          detailedItem && !itemsData.items.some((item) => item.id === detailedItem.id)
+            ? [detailedItem, ...itemsData.items]
+            : itemsData.items;
+        setItems(mergedItems);
         setLocations(locationsData.items);
-        const preferredItemId = stateItemId || draft.itemId || itemsData.items[0]?.id || "";
-        const preferredItem = itemsData.items.find((item) => item.id === preferredItemId) || itemsData.items[0];
+        const preferredItemId = detailedItem?.id || stateItemId || draft.itemId || mergedItems[0]?.id || "";
+        const preferredItem =
+          detailedItem || mergedItems.find((item) => item.id === preferredItemId) || mergedItems[0];
         setDraft((current) => {
           const itemChanged = Boolean(stateItemId) || current.itemId !== (preferredItem?.id || "");
           const nextItemId = preferredItem?.id || "";
@@ -116,15 +140,12 @@ export default function MovementRequestPage() {
   }, [draft]);
 
   const selected = useMemo(() => items.find((item) => item.id === draft.itemId), [draft.itemId, items]);
-  const selectedBalance = useMemo<StockBalance | undefined>(
-    () => selected?.balances.find((balance) => balance.location_id === draft.fromLocationId),
-    [draft.fromLocationId, selected],
-  );
-  const originOptions = useMemo(() => selected?.balances ?? [], [selected]);
+  const originOptions = useMemo(() => originLocationOptions(locations, selected), [locations, selected]);
   const selectedOrigin = useMemo(
-    () => originOptions.find((balance) => balance.location_id === draft.fromLocationId) || null,
+    () => originOptions.find((entry) => entry.id === draft.fromLocationId) || null,
     [draft.fromLocationId, originOptions],
   );
+  const available = availableAtLocation(selected, draft.fromLocationId);
   const selectedDestination = useMemo(() => {
     if (draft.toLocationId) {
       return locations.find((entry) => entry.id === draft.toLocationId) || null;
@@ -133,10 +154,9 @@ export default function MovementRequestPage() {
   }, [draft.destination, draft.toLocationId, locations]);
 
   const quantity = Number(draft.quantity);
-  const available = selectedBalance ? availableQty(selectedBalance) : 0;
   const validationError =
     !selected ? "Selecione um item." :
-    !selectedBalance ? "Selecione uma origem." :
+    !draft.fromLocationId ? "Selecione uma origem." :
     quantity <= 0 ? "Informe quantidade maior que zero." :
     quantity > available ? "Quantidade maior que o estoque disponível." :
     draft.destination.trim().length < 1 ? "Informe o destino." :
@@ -148,12 +168,12 @@ export default function MovementRequestPage() {
   }
 
   async function sendRequest() {
-    if (!selected || !selectedBalance || validationError) return;
+    if (!selected || !draft.fromLocationId || validationError) return;
     try {
       await inventoryService.requestMovement({
         item_id: selected.id,
         quantity,
-        from_location_id: selectedBalance.location_id,
+        from_location_id: draft.fromLocationId,
         ...(draft.toLocationId
           ? { to_location_id: draft.toLocationId }
           : { to_location_name: draft.destination.trim() }),
@@ -204,9 +224,9 @@ export default function MovementRequestPage() {
             <Autocomplete
               options={originOptions}
               value={selectedOrigin}
-              getOptionLabel={(option) => `${option.location_name} (${availableQty(option)} disponível)`}
-              isOptionEqualToValue={(option, value) => option.location_id === value.location_id}
-              onChange={(_event, value) => update("fromLocationId", value?.location_id || "")}
+              getOptionLabel={(option) => `${option.name} (${availableAtLocation(selected, option.id)} disponível)`}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              onChange={(_event, value) => update("fromLocationId", value?.id || "")}
               renderInput={(params) => <TextField {...params} label="Origem" required />}
             />
             <Stack direction="row" spacing={1} alignItems="center">

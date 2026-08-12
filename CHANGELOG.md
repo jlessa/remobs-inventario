@@ -2,6 +2,22 @@
 
 ## [2026-08-12]
 
+### Corrigido
+- Solicitar saída passa a pré-preencher Origem com o **Local** do item mesmo quando não há linha de saldo (`stock_balances` vazio), usando a lista de Locais cadastrados.
+- Cadastro de item sempre cria saldo no local (quantidade 0 quando a inicial é 0); edição de local cria saldo no novo local se ainda não existir.
+- Causa em produção: ADCP `bfdf5c9c-d282-4293-85be-b43575dd19e8` está em Paiol PNBOIA, mas sem saldo — a origem ficava em branco.
+- Plano: `planos/2026-08-12-correcao-origem-saida-sem-saldo.md`.
+
+### Operação em produção
+- Reparo de **61** permanentes ativos sem `stock_balances`: criado saldo quantidade 1 no local atual (em geral Paiol PNBOIA).
+- Inclui o ADCP Nortek Signature 500 (`bfdf5c9c-d282-4293-85be-b43575dd19e8`).
+- Script: `backend/scripts/repair_missing_stock_balances.py`.
+
+### Documentado
+- Avaliação de chaves primárias: manter UUID v4 nas entidades de inventário; não migrar para inteiro sequencial.
+- Motivo: PWA/sync offline, dados e arquivos já em produção, e identificadores humanos já existentes (série, patrimônio, código do casco).
+- Plano: `planos/2026-08-12-avaliacao-uuid-vs-int-sequencial.md`.
+
 ### Publicado
 - Deploy em produção (ECS + Amplify) das entregas de Locais, origem na saída e visualização de imagem; cache PWA `remobs-inventario-v10`.
 - Backend: imagem ECR `prod-2026-08-12-locais-saida`, task definition `remobs-inventario-backend:12`, rollout `COMPLETED`.

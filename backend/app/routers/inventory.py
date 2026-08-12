@@ -102,8 +102,8 @@ async def create_item(
     session.add(item)
     await session.flush()
 
+    balance = await get_or_create_balance(session, item_id=item.id, location_id=location.id)
     if payload.initial_quantity:
-        balance = await get_or_create_balance(session, item_id=item.id, location_id=location.id)
         balance.quantity += payload.initial_quantity
 
     after_data = await serialize_item(session, item)
@@ -150,6 +150,7 @@ async def update_item(
     if "location_name" in data or "current_location_id" in data:
         location = await get_or_create_location(session, location_id=payload.current_location_id, name=payload.location_name)
         item.current_location_id = location.id
+        await get_or_create_balance(session, item_id=item.id, location_id=location.id)
 
     ignored = {"category_name", "category_id", "location_name", "current_location_id", "reason"}
     for field, value in data.items():

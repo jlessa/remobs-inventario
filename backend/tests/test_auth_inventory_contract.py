@@ -295,6 +295,61 @@ def test_creates_inventory_item_with_stock_and_audit_log(client: TestClient) -> 
     assert "inventory_item_created" in actions
 
 
+def test_creates_item_with_zero_quantity_still_has_balance_row(client: TestClient) -> None:
+    headers = auth_headers(["inventory:item:create", "inventory:item:read"])
+    response = client.post(
+        "/inventory/items",
+        headers=headers,
+        json={
+            "item_type": "permanent_component",
+            "name": f"ADCP sem quantidade {uuid.uuid4()}",
+            "category_name": "Sensores",
+            "location_name": "Paiol PNBOIA",
+            "unit": "un",
+            "initial_quantity": 0,
+            "reason": "Cadastro sem quantidade inicial.",
+        },
+    )
+    assert response.status_code == 201
+    item = response.json()
+    assert item["current_location_name"] == "Paiol PNBOIA"
+    assert item["stock_total"] == 0
+    assert len(item["balances"]) == 1
+    assert item["balances"][0]["location_name"] == "Paiol PNBOIA"
+    assert item["balances"][0]["quantity"] == 0
+
+
+def test_updates_item_location_creates_balance_at_new_location(client: TestClient) -> None:
+    headers = auth_headers(["inventory:item:create", "inventory:item:read", "inventory:item:update"])
+    created = client.post(
+        "/inventory/items",
+        headers=headers,
+        json={
+            "item_type": "permanent_component",
+            "name": f"ADCP troca local {uuid.uuid4()}",
+            "category_name": "Sensores",
+            "location_name": "Estoque",
+            "unit": "un",
+            "initial_quantity": 1,
+            "reason": "Cadastro inicial.",
+        },
+    )
+    assert created.status_code == 201
+    item_id = created.json()["id"]
+
+    updated = client.patch(
+        f"/inventory/items/{item_id}",
+        headers=headers,
+        json={"location_name": "Paiol PNBOIA", "reason": "Atualização de local."},
+    )
+    assert updated.status_code == 200
+    payload = updated.json()
+    assert payload["current_location_name"] == "Paiol PNBOIA"
+    locations = {balance["location_name"]: balance["quantity"] for balance in payload["balances"]}
+    assert "Paiol PNBOIA" in locations
+    assert locations["Estoque"] == 1
+
+
 def test_updates_inventory_item_without_missing_greenlet(client: TestClient) -> None:
     """PATCH deve recarregar updated_at (onupdate) antes de serializar; evita 500 MissingGreenlet."""
     headers = auth_headers(
