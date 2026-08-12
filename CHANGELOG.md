@@ -4,6 +4,9 @@
 
 ### Publicado
 - Deploy em produção (ECS + Amplify) das entregas de Locais, origem na saída e visualização de imagem; cache PWA `remobs-inventario-v9`.
+- Backend: imagem ECR `prod-2026-08-12-locais-saida`, task definition `remobs-inventario-backend:12`, rollout `COMPLETED`.
+- Frontend Amplify app `d1oidnxd2f4saq`, branch `prod`, job `32` `SUCCEED`.
+- Permissões `location:read|create|update|delete` criadas e anexadas à role `admin-inventario` (catálogo inventário 25/25).
 - Plano de deploy: `planos/2026-08-12-deploy-locais-saida-producao.md`.
 
 ### Corrigido

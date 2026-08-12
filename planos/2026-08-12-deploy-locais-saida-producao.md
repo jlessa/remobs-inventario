@@ -25,4 +25,25 @@ Usuário autorizou publicação em produção das entregas:
 7. Validar health, OpenAPI `/locations` e frontend.
 
 ## Resultado
-Em andamento.
+Concluído.
+
+| Item | Valor |
+|------|--------|
+| Imagem ECR | `prod-2026-08-12-locais-saida` |
+| Task definition | `remobs-inventario-backend:12` |
+| ECS rollout | `COMPLETED` (1/1 running) |
+| Amplify | app `d1oidnxd2f4saq`, branch `prod`, job `32` `SUCCEED` |
+| PWA cache | `remobs-inventario-v9` |
+| Bundle | `index-DYX0ehjL.js` |
+| Permissões | 4 novas (`location:read|create|update|delete`) criadas e anexadas à role `admin-inventario` (id 24); catálogo inventário **25/25** |
+
+### Validações
+- `https://api-inventario.remobs.com.br/healthz` → 200 `{"status":"ok"}`
+- OpenAPI: `/locations` e `/locations/{location_id}` presentes
+- `https://inventario.remobs.com.br/` → 200
+- `sw.js` com `remobs-inventario-v9`
+- Bundle com rota `/app/locations` e texto `Visualizar`
+
+### Observações
+- Usuários com role `admin-inventario` precisam **relogin** para carregar as permissões `location:*` no JWT.
+- Sem migração de banco no inventário neste deploy (tabela `locations` já existia).
