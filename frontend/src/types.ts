@@ -29,6 +29,7 @@ export interface InventoryItem {
   description: string | null;
   condition_status: string;
   category_name: string | null;
+  current_location_id: string | null;
   current_location_name: string | null;
   unit: string;
   minimum_stock_national: number;

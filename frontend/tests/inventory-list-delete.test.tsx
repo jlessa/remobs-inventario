@@ -35,6 +35,7 @@ describe("exclusão na listagem de inventário", () => {
           condition_status: "operacional",
           unit: "un",
           category_name: "Cabos",
+          current_location_id: "loc-1",
           current_location_name: "Paiol",
           stock_total: 4,
           minimum_stock_national: 2,

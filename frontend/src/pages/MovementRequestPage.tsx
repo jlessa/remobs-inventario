@@ -41,6 +41,27 @@ const defaultDraft: DraftState = {
   evidenceNote: "",
 };
 
+function availableQty(balance: StockBalance): number {
+  return balance.quantity - balance.reserved_quantity;
+}
+
+/** Prefere o local atual do item quando houver saldo disponível; senão o primeiro com estoque. */
+export function resolveOriginLocationId(item: InventoryItem | undefined | null): string {
+  if (!item?.balances?.length) return "";
+
+  if (item.current_location_id) {
+    const current = item.balances.find(
+      (balance) => balance.location_id === item.current_location_id && availableQty(balance) > 0,
+    );
+    if (current) return current.location_id;
+  }
+
+  const withStock = item.balances.find((balance) => availableQty(balance) > 0);
+  if (withStock) return withStock.location_id;
+
+  return item.balances[0]?.location_id || "";
+}
+
 export default function MovementRequestPage() {
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [draft, setDraft] = useState<DraftState>(() => {
@@ -59,15 +80,25 @@ export default function MovementRequestPage() {
       setItems(data.items);
       const preferredItemId = stateItemId || draft.itemId || data.items[0]?.id || "";
       const preferredItem = data.items.find((item) => item.id === preferredItemId) || data.items[0];
-      setDraft((current) => ({
-        ...current,
-        itemId: preferredItem?.id || "",
-        fromLocationId: current.fromLocationId || preferredItem?.balances[0]?.location_id || "",
-      }));
+      setDraft((current) => {
+        const itemChanged = Boolean(stateItemId) || current.itemId !== (preferredItem?.id || "");
+        const nextItemId = preferredItem?.id || "";
+        const nextOrigin =
+          itemChanged || !current.fromLocationId
+            ? resolveOriginLocationId(preferredItem)
+            : current.fromLocationId;
+        return {
+          ...current,
+          itemId: nextItemId,
+          fromLocationId: nextOrigin,
+        };
+      });
     })
       .catch(() => undefined)
       .finally(() => setLoadingItems(false));
-  }, [draft.itemId, stateItemId]);
+    // Intencionalmente não depende de draft.itemId para evitar loop de recarga.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateItemId]);
 
   useEffect(() => {
     localStorage.setItem(draftKey, JSON.stringify(draft));
@@ -79,7 +110,7 @@ export default function MovementRequestPage() {
     [draft.fromLocationId, selected],
   );
   const quantity = Number(draft.quantity);
-  const available = selectedBalance ? selectedBalance.quantity - selectedBalance.reserved_quantity : 0;
+  const available = selectedBalance ? availableQty(selectedBalance) : 0;
   const validationError =
     !selected ? "Selecione um item." :
     !selectedBalance ? "Selecione uma origem." :
@@ -133,7 +164,7 @@ export default function MovementRequestPage() {
                 setDraft((current) => ({
                   ...current,
                   itemId: event.target.value,
-                  fromLocationId: item?.balances[0]?.location_id || "",
+                  fromLocationId: resolveOriginLocationId(item),
                 }));
               }}
               required
@@ -147,7 +178,7 @@ export default function MovementRequestPage() {
             <TextField select label="Origem" value={draft.fromLocationId} onChange={(event) => update("fromLocationId", event.target.value)} required>
               {selected?.balances.map((balance) => (
                 <MenuItem key={balance.id} value={balance.location_id}>
-                  {balance.location_name} ({balance.quantity - balance.reserved_quantity} disponível)
+                  {balance.location_name} ({availableQty(balance)} disponível)
                 </MenuItem>
               ))}
             </TextField>

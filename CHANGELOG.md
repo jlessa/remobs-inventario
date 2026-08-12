@@ -6,6 +6,8 @@
 - No detalhe do item, fotos anexadas passam a abrir em Dialog para visualização (clique na miniatura ou botão Visualizar), sem forçar download.
 - Botão Baixar permanece apenas para documentos (não-imagem).
 - Plano: `planos/2026-08-12-visualizar-imagem-item-sem-download.md`.
+- Solicitar saída pré-preenche **Origem** com o local atual do item (`current_location_id`) quando houver saldo disponível nesse local; ao vir do detalhe, não reutiliza origem de outro item no rascunho.
+- Plano: `planos/2026-08-12-preencher-origem-saida-local-item.md`.
 
 ## [2026-08-06]
 

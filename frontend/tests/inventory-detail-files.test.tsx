@@ -30,6 +30,7 @@ const item = {
   condition_status: "operacional",
   unit: "un",
   category_name: "Energia",
+  current_location_id: "loc-1",
   current_location_name: "Estoque",
   stock_total: 3,
   minimum_stock_national: 1,
