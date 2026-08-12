@@ -2,6 +2,12 @@
 
 ## [2026-08-12]
 
+### Publicado
+- Deploy em produção da correção da origem na saída e do reparo de saldos; cache PWA `remobs-inventario-v11`.
+- Backend: imagem ECR `prod-2026-08-12-origem-saida`, task definition `remobs-inventario-backend:13`, rollout `COMPLETED`.
+- Frontend Amplify app `d1oidnxd2f4saq`, branch `prod`, job `34` `SUCCEED`.
+- Plano de deploy: `planos/2026-08-12-deploy-origem-saida-sem-saldo.md`.
+
 ### Corrigido
 - Solicitar saída passa a pré-preencher Origem com o **Local** do item mesmo quando não há linha de saldo (`stock_balances` vazio), usando a lista de Locais cadastrados.
 - Cadastro de item sempre cria saldo no local (quantidade 0 quando a inicial é 0); edição de local cria saldo no novo local se ainda não existir.
