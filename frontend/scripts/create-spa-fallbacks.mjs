@@ -13,6 +13,8 @@ const routes = [
   "app/movements",
   "app/movements/new",
   "app/alerts",
+  "app/locations",
+  "app/locations/new",
   "app/platforms",
   "app/platforms/new",
   "app/sensors",
